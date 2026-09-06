@@ -17,7 +17,12 @@ Three related but separately ablatable rules:
 from __future__ import annotations
 
 from .base import RuleFamily
-from .lexicons import ASSISTANT_ADDRESS_PATTERNS, META_INSTRUCTION_PATTERNS, SECRECY_PATTERNS
+from .lexicons import (
+    ASSISTANT_ADDRESS_PATTERNS,
+    META_INSTRUCTION_PATTERNS,
+    PERSISTENCE_PATTERNS,
+    SECRECY_PATTERNS,
+)
 from .pattern_rule import PatternRule
 
 __all__ = ["AssistantAddressRule", "MetaInstructionRule", "SecrecyRule"]
@@ -28,7 +33,7 @@ class MetaInstructionRule(PatternRule):
         super().__init__(
             rule_id="meta_instruction.v1",
             family=RuleFamily.META_INSTRUCTION,
-            patterns=META_INSTRUCTION_PATTERNS,
+            patterns=META_INSTRUCTION_PATTERNS + PERSISTENCE_PATTERNS,
             feature_prefix="rule.meta",
         )
 

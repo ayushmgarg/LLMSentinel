@@ -19,7 +19,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Repository and environment
 
-- [ ] Inspect the existing repository without deleting generated files.
+- [x] Inspect the existing repository without deleting generated files.
 - [ ] Create the first git commit before substantive implementation begins.
 - [x] Confirm Python version supported by PyTorch, spaCy, and transformers.
 - [x] Create a virtual environment.
@@ -27,19 +27,19 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [ ] Install the spaCy English model.
 - [ ] Download required NLTK resources only if they are used.
 - [x] Run package import test.
-- [ ] Run lint/test commands and record the initial result.
-- [ ] Add a short local setup section if the existing README is inaccurate.
+- [x] Run lint/test commands and record the initial result.
+- [x] Add a short local setup section if the existing README is inaccurate.
 
 ### Research protocol freeze
 
-- [ ] Freeze the threat model.
+- [x] Freeze the threat model.
 - [x] Freeze included source categories: RAG, tool response, MCP metadata.
-- [ ] Freeze exclusions: live servers, images/audio, universal-defense claims, automatic sensitive actions.
+- [x] Freeze exclusions: live servers, images/audio, universal-defense claims, automatic sensitive actions.
 - [x] Freeze primary metrics: AUPRC, TPR@1% FPR, TPR@0.1% FPR, hard-negative FPR, latency.
-- [ ] Freeze the initial baselines.
-- [ ] Define the action categories: read-only, sensitive read, external send, write, destructive.
-- [ ] Define policy outcomes: allow, isolate, confirmation, block.
-- [ ] Create an experiment-log convention: date, commit hash, data version, seed, command, metrics, observation.
+- [x] Freeze the initial baselines.
+- [x] Define the action categories: read-only, sensitive read, external send, write, destructive.
+- [x] Define policy outcomes: allow, isolate, confirmation, block.
+- [x] Create an experiment-log convention: date, commit hash, data version, seed, command, metrics, observation.
 
 ### Unified corpus schema
 
@@ -57,7 +57,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Include injected-span offsets when available.
 - [x] Include split field.
 - [x] Decide how unknown fields are represented.
-- [ ] Validate ten hand-written schema examples.
+- [x] Validate ten hand-written schema examples.
 
 ### Data acquisition and inspection
 
@@ -80,7 +80,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Labels and splits
 
-- [ ] Write a one-page annotation guideline.
+- [x] Write a one-page annotation guideline.
 - [x] Define injection-bearing text as task-conflicting assistant-directed control content, not mere discussion of attacks.
 - [x] Define benign imperative examples.
 - [x] Define quoted attack examples as hard negatives unless they direct the active assistant.
@@ -94,8 +94,8 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Fix split seed and save split manifest.
 - [x] Verify no group crosses train/dev/test.
 - [x] Generate corpus counts by split, channel, label, attack type, and source.
-- [ ] Manually inspect 20 random records after final corpus build.
-- [ ] Manually inspect 20 hard negatives after final corpus build.
+- [x] Manually inspect 20 random records after final corpus build.
+- [x] Manually inspect 20 hard negatives after final corpus build.
 
 ### Normalisation MVP
 
@@ -110,16 +110,16 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Decode only safely valid text encodings.
 - [x] Preserve parent-child relationship for derived decoded spans.
 - [x] Sentence-segment text while retaining character offsets.
-- [ ] Write tests for clean text, JSON, zero-width text, HTML entity text, and encoded text.
+- [x] Write tests for clean text, JSON, zero-width text, HTML entity text, and encoded text.
 
 ### Week 1 exit review
 
-- [ ] Corpus builds from a command.
+- [x] Corpus builds from a command.
 - [x] Corpus card/count report is generated.
 - [x] Leakage checks pass.
-- [ ] Keyword baseline runs.
-- [ ] TF-IDF baseline runs.
-- [ ] Initial results are logged.
+- [x] Keyword baseline runs.
+- [x] TF-IDF baseline runs.
+- [x] Initial results are logged.
 - [ ] Team decides whether scope remains on schedule.
 
 ## Week 2 - detector MVP
@@ -140,38 +140,38 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Baselines
 
-- [ ] Implement majority-class baseline.
-- [ ] Implement keyword/regex baseline.
-- [ ] Implement TF-IDF word n-grams plus logistic regression.
-- [ ] Add character n-grams to TF-IDF baseline.
-- [ ] Train baseline only on train split.
-- [ ] Select thresholds only on dev split.
-- [ ] Freeze test split before model iteration.
+- [x] Implement majority-class baseline.
+- [x] Implement keyword/regex baseline.
+- [x] Implement TF-IDF word n-grams plus logistic regression.
+- [x] Add character n-grams to TF-IDF baseline.
+- [x] Train baseline only on train split.
+- [x] Select thresholds only on dev split.
+- [x] Freeze test split before model iteration.
 - [ ] Record baseline results in experiment log.
 
 ### Rule engine MVP
 
 - [x] Implement meta-instruction rule.
-- [ ] Add tests for benign and malicious meta-instruction text.
+- [x] Add tests for benign and malicious meta-instruction text.
 - [x] Implement obfuscation-evidence rule.
-- [ ] Add tests for zero-width/encoding/markup evidence.
+- [x] Add tests for zero-width/encoding/markup evidence.
 - [x] Implement exfiltration/action-proximity rule.
-- [ ] Add tests for URL/email without malicious action.
-- [ ] Add tests for action verbs with no sensitive destination.
+- [x] Add tests for URL/email without malicious action.
+- [x] Add tests for action verbs with no sensitive destination.
 - [x] Ensure every rule emits score, evidence span, and human-readable trace.
 - [x] Implement rules-only aggregation.
-- [ ] Evaluate each rule family separately.
-- [ ] Keep rule thresholds fitted only on training/dev data.
+- [x] Evaluate each rule family separately.
+- [x] Keep rule thresholds fitted only on training/dev data.
 
 ### Transformer MVP
 
-- [ ] Select primary backbone.
-- [ ] Select CPU-friendly fallback backbone.
-- [ ] Implement tokenisation with fixed maximum length.
-- [ ] Decide and document long-text windowing strategy.
-- [ ] Implement training dataset class.
-- [ ] Implement weighted loss or another documented imbalance method.
-- [ ] Set seed.
+- [x] Select primary backbone.
+- [x] Select CPU-friendly fallback backbone.
+- [x] Implement tokenisation with fixed maximum length.
+- [x] Decide and document long-text windowing strategy.
+- [x] Implement training dataset class.
+- [x] Implement weighted loss or another documented imbalance method.
+- [x] Set seed.
 - [ ] Train first transformer run.
 - [ ] Verify checkpoint can reload in a clean process.
 - [ ] Run validation inference.
@@ -186,12 +186,12 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [ ] Calibrate probabilities with a documented method.
 - [ ] Select operating thresholds on dev only.
 - [ ] Store selected threshold and calibration parameters.
-- [ ] Implement final verdict object.
-- [ ] Include source/channel in verdict.
-- [ ] Include JSON path in verdict where relevant.
-- [ ] Include risk score in verdict.
-- [ ] Include flagged span in verdict.
-- [ ] Include reason/rule trace in verdict.
+- [x] Implement final verdict object.
+- [x] Include source/channel in verdict.
+- [x] Include JSON path in verdict where relevant.
+- [x] Include risk score in verdict.
+- [x] Include flagged span in verdict.
+- [x] Include reason/rule trace in verdict.
 - [ ] Evaluate rules-only, transformer-only, and hybrid systems once on held-out test.
 
 ### Week 2 exit review

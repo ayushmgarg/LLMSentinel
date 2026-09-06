@@ -72,4 +72,5 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["N802"]
+# Keyword-form dicts keep the hand-written schema examples readable.
+"tests/*" = ["N802", "C408"]

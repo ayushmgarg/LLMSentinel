@@ -26,3 +26,132 @@ Provides-Extra: dev
 Requires-Dist: pytest>=8.0; extra == "dev"
 Requires-Dist: pytest-cov>=5.0; extra == "dev"
 Requires-Dist: ruff>=0.4; extra == "dev"
+
+# LLMSentinel
+
+Provenance-aware detection and capability gating for indirect prompt injection in
+RAG and MCP-style agents.
+
+Plan: [PROJECT_PLAN.md](PROJECT_PLAN.md) · Execution checklist:
+[PROJECT_CHECKLIST.md](PROJECT_CHECKLIST.md)
+
+> Research prototype. Detection here is defence in depth, not a guarantee. It
+> complements least privilege, human approval and server-side authorisation; it
+> does not replace them.
+
+## Status
+
+| Area | State |
+|---|---|
+| Corpus schema, loaders, grouped splits, leakage audit, corpus card | built, runs offline |
+| Normalisation (Unicode, markup, encodings, JSON leaves, segmentation) | built |
+| Rule engine (7 families, spans + traces + fusion features + failure telemetry) | built |
+| Metrics (AUPRC, TPR@FPR, realised FPR + budget flag, hard-negative FPR, per-channel, per-attack per operating point, latency, bootstrap) | built, verified on a hand-computed example |
+| Scorer interface | built |
+| Baselines (majority / keyword / TF-IDF), transformer, fusion | not started |
+| Capability policy, demo UI, robustness, ablations, report figures | not started |
+| Tests, CLI entry point | not started |
+
+### What this corpus cannot support
+
+Every record currently comes from the authored built-in seed corpus. BIPIA,
+InjecAgent and MCPTox are **not** present, and the build says so in
+`docs/corpus_card.md` and in `BuildResult.warnings`. Nothing measured here is
+benchmark performance or evidence of generalisation to real attacks.
+
+## Setup
+
+```bash
+python -m venv .venv
+```
+
+```bash
+.venv/Scripts/python.exe -m pip install -r requirements.txt
+```
+
+```bash
+.venv/Scripts/python.exe -m pip install -e .
+```
+
+Optional transformer extra (CPU wheels; the rest of the project runs without it):
+
+```bash
+.venv/Scripts/python.exe -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+```
+
+Verified on Windows with Python 3.14, torch 2.14.0+cpu, transformers, scikit-learn
+1.9. spaCy is optional: `segment_sentences(..., use_spacy=True)` falls back to the
+built-in splitter when it is absent.
+
+## Build the corpus
+
+```bash
+.venv/Scripts/python.exe -c "from llmsentinel.data import build_corpus; r = build_corpus(); print(r.summary()); print(r.leakage.summary())"
+```
+
+Writes `data/processed/corpus.jsonl`, `data/processed/split_manifest.json` and
+`docs/corpus_card.md`. The built-in seed corpus needs no network. BIPIA,
+InjecAgent and MCPTox loaders activate automatically when their releases are
+placed under `data/raw/<name>/`; when absent, the build proceeds and records the
+omission in the corpus card.
+
+Current build: 1803 records (560 injection / 1243 benign), 70/15/15 split, hard
+negatives 67% of the benign class, every (split, channel) cell holding at least
+24 injection examples, leakage checks passing, 0 records dropped.
+
+The split seed was chosen on corpus structure alone — the smallest seed giving
+every channel positives in every split — before any model existed. The rejected
+candidates are tabulated in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md).
+
+## Layout
+
+```
+src/llmsentinel/
+  schema.py        unified corpus record, JSONL I/O, validation
+  constants.py     frozen protocol constants (schema/normalisation version, seed)
+  paths.py         project paths
+  normalize/       offset-preserving normalisation + concealment evidence
+  rules/           high-precision rules, context suppression, engine
+  data/            loaders, dedup, grouped splits, leakage audit, corpus card
+  evaluation/      metrics
+  models/          scorer interface
+data/seed/         authored corpus source (payloads, hosts, hard negatives)
+data/processed/    built corpus + split manifest
+docs/              generated corpus card
+```
+
+## Design decisions worth knowing
+
+- **Provenance travels with the text.** Every analysable string is a
+  `NormalizedUnit` carrying its channel, JSON path, offset map back to the raw
+  bytes, and the evidence collected while cleaning it.
+- **Normalisation is a detector.** Zero-width runs, hidden markup and decoded
+  base64 are recorded as evidence rather than silently cleaned, and the
+  obfuscation rule scores that evidence instead of re-scanning.
+- **Hard negatives decide the project.** An injection is *assistant-directed
+  control content that conflicts with the host task*. Citation framing lowers a
+  rule's score through `rules/context.py`.
+- **Suppression is not attacker-controllable.** Formatting alone (quotes, code
+  fences) buys an attacker almost nothing: deep suppression needs a *discussion*
+  signal the attacker cannot supply without describing their own payload, it is
+  switched off when quoted regions cover most of the input, and un-corroborated
+  suppression is floored. A payload wrapped in quotes or a fence scores the same
+  as the bare payload.
+- **Task conflict is measured, not assumed.** `rules/task_conflict.py` reads
+  `host_task` and the document's directive ratio, so an instruction inside a
+  how-to guide is treated as native content while the same instruction inside
+  descriptive prose is treated as an insertion.
+- **A failed rule is visible.** Rule exceptions never crash the guard, but they
+  are recorded per unit (`RuleReport.errors`), counted
+  (`RuleEngine.error_report()`) and logged; `RuleEngine(strict=True)` re-raises.
+- **Leakage-free by construction and by audit.** Payload family and host document
+  are both grouping keys, assigned by a hash of `(seed, key)` so the generator
+  and the splitter agree; `data/leakage.py` re-derives the guarantee from the
+  written corpus.
+
+## Licence and data
+
+Everything under `data/seed/` was authored for this project and is CC0-1.0. No
+payload contains a real credential or host: destinations use reserved
+`.invalid` / `.test` / `example.com` names. Third-party benchmarks are never
+redistributed here — only loaded from a local clone.
