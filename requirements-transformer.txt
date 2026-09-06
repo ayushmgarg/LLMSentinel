@@ -1,0 +1,7 @@
+# Optional heavy extra: fine-tuned encoder detector.
+# The whole project runs without this file; transformer commands degrade gracefully.
+# CPU-only install:
+#   python -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+torch>=2.2
+transformers>=4.40
+datasets>=2.19
