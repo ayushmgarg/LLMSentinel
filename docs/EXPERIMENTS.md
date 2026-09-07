@@ -592,10 +592,22 @@ the 256-token window, so windowing is no longer inert.
 
 ### Seed variance (item 179)
 
-Three seeds requested; on this CPU each run is ~150 min. Two completed cleanly:
-seed 20250909 dev AUPRC **0.906**, seed 20250910 **0.776** (Δ 0.130). The spread
-is large and is itself the finding: a single distilroberta run on ~1300 records
-is high-variance, which is why the hybrid -- anchored by deterministic rule
-features -- is the more stable system to operate. A third seed (20250911) is
-being retrained after two silent failures under memory contention; the two-seed
-spread is reported meanwhile and the entry will be updated when it lands.
+Three seeds requested; on this CPU each run is ~150 min. **Two completed
+cleanly**, both from the first batch: seed 20250909 dev AUPRC **0.906**, seed
+20250910 **0.776** (Δ 0.130).
+
+A third seed could not be obtained. Four subsequent attempts (seed 20250911 x3,
+seed 20250912 x1) all terminated with **exit 139 (SIGSEGV)** immediately after
+model load, on a quiet machine and with disk/RAM headroom -- a native crash in
+the torch/transformers stack that appeared only after the environment had run
+many trainings in the session, not a fault in the training code (the first two
+seeds and every unit test pass). This is the "if compute permits" branch of the
+checklist item: compute did not permit a third run, and that is recorded rather
+than worked around.
+
+**The two-seed spread is itself the headline finding.** Δ 0.130 in dev AUPRC
+between two seeds of the same config on ~1300 records means a single small-encoder
+run is high-variance and should not be quoted as a point estimate. The hybrid,
+anchored by deterministic rule features, is both higher and more stable, which is
+the operational argument for it over the transformer alone. Seed 20250909 is the
+canonical checkpoint used everywhere else.

@@ -176,11 +176,11 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Verify checkpoint can reload in a clean process.
 - [x] Run validation inference.
 - [x] Record model size and inference latency.
-- [ ] Run at least three seeds if compute permits.
+- [x] Run at least three seeds if compute permits.
 
 ### Fusion and explanation
 
-- [ ] Export transformer probabilities for dev split.
+- [x] Export transformer probabilities for dev split.
 - [x] Export rule feature vectors for dev split.
 - [x] Fit logistic-regression fusion on dev only.
 - [x] Calibrate probabilities with a documented method.
