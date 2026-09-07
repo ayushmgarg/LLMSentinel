@@ -41,6 +41,7 @@ from ..constants import DEFAULT_SEED
 from ..paths import MODELS_DIR
 from ..schema import CorpusRecord
 from .base import Scorer
+from .dataset import build_examples, make_dataloader
 
 __all__ = ["BACKBONE_FALLBACK", "BACKBONE_PRIMARY", "TransformerConfig", "TransformerScorer", "torch_available"]
 
@@ -91,6 +92,10 @@ class TransformerConfig:
     seed: int = DEFAULT_SEED
     device: str = "cpu"
     class_weighted_loss: bool = True
+    #: Expand each training record into the same overlapping windows inference
+    #: scores.  Disabling it truncates to ``max_length`` instead, which is the
+    #: cheaper and noisier option; the two are compared in docs/EXPERIMENTS.md.
+    window_training: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -134,8 +139,18 @@ class TransformerScorer(Scorer):
         if self._model is None:
             self._load_backbone()
 
-        texts = [record.text for record in records]
-        labels = np.asarray([record.y for record in records], dtype=np.int64)
+        # Train on the same windows inference scores.  Truncating training to
+        # the first 256 tokens while inference takes the maximum over
+        # overlapping windows means the model is never shown a payload that
+        # sits in the middle or at the end of a long document -- exactly the
+        # positions the corpus varies on purpose.  Each window inherits its
+        # record's label, which is noisy for long positives (some windows hold
+        # no payload) and is the accepted cost of multiple-instance training at
+        # this scale.
+        examples = build_examples(
+            records, windower=self._windows, window_training=self.config.window_training
+        )
+        labels = np.asarray([example.label for example in examples], dtype=np.int64)
         weights = self._class_weights(labels)
 
         optimiser = torch.optim.AdamW(
@@ -143,7 +158,7 @@ class TransformerScorer(Scorer):
             lr=self.config.learning_rate,
             weight_decay=self.config.weight_decay,
         )
-        steps_per_epoch = math.ceil(len(texts) / self.config.batch_size)
+        steps_per_epoch = math.ceil(len(examples) / self.config.batch_size)
         total_steps = max(1, steps_per_epoch * self.config.epochs)
         scheduler = torch.optim.lr_scheduler.OneCycleLR(
             optimiser,
@@ -158,24 +173,22 @@ class TransformerScorer(Scorer):
             else None
         )
 
-        order = np.arange(len(texts))
-        rng = np.random.default_rng(self.config.seed)
+        loader = make_dataloader(
+            examples,
+            self._tokenizer,
+            batch_size=self.config.batch_size,
+            max_length=self.config.max_length,
+            seed=self.config.seed,
+        )
+
         self._model.train()
         for _epoch in range(self.config.epochs):
-            rng.shuffle(order)
-            for start in range(0, len(order), self.config.batch_size):
-                batch = order[start : start + self.config.batch_size]
-                encoded = self._tokenizer(
-                    [texts[i] for i in batch],
-                    truncation=True,
-                    max_length=self.config.max_length,
-                    padding=True,
-                    return_tensors="pt",
-                ).to(self.config.device)
-                targets = torch.tensor(labels[batch], device=self.config.device)
+            for batch in loader:
+                batch = {key: value.to(self.config.device) for key, value in batch.items()}
+                targets = batch.pop("labels")
 
                 optimiser.zero_grad(set_to_none=True)
-                logits = self._model(**encoded).logits
+                logits = self._model(**batch).logits
                 loss = loss_fn(logits, targets)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self._model.parameters(), 1.0)

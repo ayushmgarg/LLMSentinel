@@ -20,12 +20,15 @@ where fenced text is the norm.
 
 Three properties close that hole:
 
-**Corroboration.**  Formatting alone is weak evidence.  Quotation marks or a
-code fence suppress only mildly unless the surrounding text also *discusses*
-what it quotes -- an attribution, an example marker, research or defensive
-framing, reported speech.  Deep suppression requires that discussion signal,
-which an attacker cannot supply without turning the payload into a description
-of itself.
+**Corroboration, in both directions.**  Neither signal is trusted alone, because
+each is free for an attacker to write.  Quotation marks or a code fence suppress
+only mildly on their own; so does a discussion marker on its own -- prefixing
+"For example," to a payload dropped its score by a third until this was fixed.
+Deep suppression requires *both*: a discussion signal (attribution, example
+marker, research or defensive framing, reported speech) **and** the payload
+being set apart as quoted or fenced material.  An attacker can produce that
+combination, but only by presenting the payload as somebody else's quoted text,
+which is also the form least likely to be followed by the model it targets.
 
 **Dominance.**  A quote that quotes the whole document cites nothing.  When
 quoted or fenced regions cover most of the input, formatting-based suppression
@@ -76,6 +79,10 @@ _UNCORROBORATED_CODE: Final[float] = 0.65
 _CORROBORATED_QUOTE: Final[float] = 0.40
 _CORROBORATED_CODE: Final[float] = 0.25
 _CORROBORATED_INLINE_CODE: Final[float] = 0.50
+
+#: Factor for a discussion marker with nothing set apart as quoted or fenced.
+#: Kept mild: writing "For example," in front of a payload is free.
+_LONE_MARKER_FACTOR: Final[float] = 0.85
 
 #: Floor when nothing corroborates the formatting: a payload that merely wears
 #: quotes or a code fence stays well above any usable operating threshold.
@@ -145,19 +152,30 @@ class ContextIndex:
         """Combine every applicable context factor for span ``[start, end)``."""
 
         citation = self._nearest_citation(start, end)
-        corroborated = citation is not None
+        in_block_code = _contained(self._code, start, end)
+        in_inline_code = _contained(self._inline_code, start, end)
+        in_quote = _contained(self._quotes, start, end)
+
+        # Deep suppression requires *two independent* signals: a discussion
+        # marker AND the payload being set apart as quoted or fenced material.
+        # A marker on its own is as cheap for an attacker as a quotation mark --
+        # prefixing "For example," costs nothing and used to halve the score --
+        # so a lone marker is treated as weak evidence and floored like
+        # formatting is.
+        set_apart = self.formatting_is_meaningful and (in_block_code or in_inline_code or in_quote)
+        corroborated = citation is not None and set_apart
 
         factor = 1.0
         reasons: list[str] = []
 
         if citation is not None:
             name, weight = citation
-            factor *= weight
-            reasons.append(f"framed as {name.replace('_', ' ')}")
-
-        in_block_code = _contained(self._code, start, end)
-        in_inline_code = _contained(self._inline_code, start, end)
-        in_quote = _contained(self._quotes, start, end)
+            factor *= weight if corroborated else _LONE_MARKER_FACTOR
+            reasons.append(
+                f"framed as {name.replace('_', ' ')}"
+                if corroborated
+                else f"weak framing: {name.replace('_', ' ')} with nothing set apart"
+            )
 
         if not self.formatting_is_meaningful and (in_block_code or in_inline_code or in_quote):
             reasons.append(

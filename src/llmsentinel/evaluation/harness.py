@@ -105,7 +105,7 @@ def run_system(
     if fit and train:
         system.fit(train)
 
-    if measure_latency:
+    if measure_latency and not getattr(system, "scores_from_cache", False):
         timed = timed_scores(system, dev, batch=1)
         dev_scores, latencies = timed.scores, timed.latencies_ms
     else:

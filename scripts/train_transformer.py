@@ -25,6 +25,11 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--backbone", default=None)
     parser.add_argument("--out", default=None, help="checkpoint directory")
+    parser.add_argument(
+        "--truncate-training",
+        action="store_true",
+        help="train on truncated records instead of windows (ablation)",
+    )
     args = parser.parse_args()
 
     splits = load_splits()
@@ -36,6 +41,7 @@ def main() -> None:
     )
     if args.backbone:
         config.backbone = args.backbone
+    config.window_training = not args.truncate_training
 
     scorer = TransformerScorer(config)
     began = time.perf_counter()

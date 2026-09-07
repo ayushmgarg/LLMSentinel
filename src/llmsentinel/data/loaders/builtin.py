@@ -47,6 +47,9 @@ _SOURCE_NAME = "builtin"
 #: Where an insertion is placed inside the host text.
 POSITIONS: tuple[str, ...] = ("start", "middle", "end")
 
+#: Hosts shorter than this never receive a mid-text insertion.
+_MIN_CHARS_FOR_MIDDLE: int = 400
+
 _ZERO_WIDTH = "​"
 _HOMOGLYPH_MAP = {"a": "а", "e": "е", "o": "о", "p": "р", "c": "с"}
 
@@ -290,8 +293,18 @@ class BuiltinSeedLoader(Loader):
                     seed=self.config.seed,
                 )
                 for host in chosen:
+                    # A mid-sentence split of a short JSON leaf produces a
+                    # visibly clipped host ("Exports above two million rows are
+                    # split into several assistant: ..."), which no tool would
+                    # ever return.  Short hosts get the payload at one end.
+                    host_text = str(host.get("text") or host.get("leaf_value") or "")
+                    allowed = (
+                        POSITIONS
+                        if len(host_text) >= _MIN_CHARS_FOR_MIDDLE
+                        else tuple(p for p in POSITIONS if p != "middle")
+                    )
                     positions = _deterministic_sample(
-                        list(POSITIONS),
+                        list(allowed),
                         self.config.positions_per_pair,
                         key=f"{insertion.content_id}|{host['doc_id']}",
                         seed=self.config.seed,
@@ -393,17 +406,38 @@ class BuiltinSeedLoader(Loader):
                 family=f"distractor:{item['id']}",
                 text=str(item["text"]).strip(),
                 label=Label.BENIGN,
+                # Page furniture ("see also", "last updated") belongs in a
+                # document or a tool result. A tool *description* never carries
+                # it, and pairing it there produced records no real system would
+                # ever see.
+                channels=("rag_document", "tool_response"),
+            )
+
+        for item in benign.get("metadata_distractors", []):
+            yield InsertionSpec(
+                content_id=f"mdx/{item['id']}",
+                family=f"distractor:{item['id']}",
+                text=str(item["text"]).strip(),
+                label=Label.BENIGN,
+                channels=("tool_metadata",),
             )
 
         # Hard negatives are inserted too: a quoted attack embedded in a real
         # document is the single most realistic false-positive source.
         for item in hard.get("items", []):
+            # Each hard negative declares the channel it was written for.  An
+            # exam rubric or a security blog post is realistic inside a
+            # retrieved document, not inside a tool declaration, and the manual
+            # audit found exactly those implausible pairings in the first build.
+            channel = str(item.get("channel", "rag_document"))
+            channels = (channel,) if channel != "rag_document" else ("rag_document", "tool_response")
             yield InsertionSpec(
                 content_id=f"hn/{item['id']}",
                 family=f"hardneg:{item['id']}",
                 text=" ".join(str(item["text"]).split()),
                 label=Label.BENIGN,
                 is_hard_negative=True,
+                channels=channels,
             )
 
     def _hosts(self) -> dict[str, list[dict[str, Any]]]:

@@ -113,6 +113,27 @@ def test_formatting_alone_cannot_lower_a_detection() -> None:
         assert score(wrapped) >= plain * 0.9, wrapped
 
 
+def test_a_citation_marker_alone_cannot_lower_a_detection() -> None:
+    """Prefixing "For example," is free, so it must not buy suppression."""
+
+    plain = score(PAYLOAD)
+    for framed in (
+        f"For example, {PAYLOAD}",
+        f"A typical payload: {PAYLOAD}",
+        f"Attackers may embed the following. {PAYLOAD}",
+    ):
+        assert score(framed) >= plain * 0.9, framed
+
+
+def test_marker_plus_quotation_still_suppresses_a_real_citation() -> None:
+    text = (
+        "Security researchers show that attackers may embed the phrase "
+        f'"{PAYLOAD}" inside a page footer to hijack an assistant. Defenders '
+        "should strip such text before it reaches the model."
+    )
+    assert score(text) < 0.35
+
+
 def test_dominant_quoting_disables_formatting_suppression() -> None:
     index = ContextIndex(f'"{PAYLOAD}"')
     assert not index.formatting_is_meaningful

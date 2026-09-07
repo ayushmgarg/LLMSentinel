@@ -1,0 +1,21 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Trained model checkpoints — large binaries, distributed via GitHub Releases,
+# rebuilt by scripts/train_transformer.py. See docs/EXPERIMENTS.md for the seed.
+artifacts/models/
+
+# Downloaded third-party benchmark sources — cloned locally, never redistributed.
+data/raw/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

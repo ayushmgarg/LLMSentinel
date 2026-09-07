@@ -34,6 +34,24 @@ Guards
 
 ``host_task`` is read from ``unit.metadata``; the corpus stores it per record and
 :meth:`llmsentinel.rules.engine.RuleEngine.analyse_text` accepts it directly.
+
+What this rule is NOT
+---------------------
+It is not semantic task-conflict detection, and the family name should be read
+as shorthand, not as a claim.  It measures *register* and *lexical* outliers,
+which has two consequences a reader must know before quoting its numbers:
+
+* a malicious instruction inside a legitimately instructional page (a how-to
+  guide, a runbook) is invisible to it -- the document's directive ratio is
+  already high, so the rule abstains by design;
+* a malicious instruction that happens to reuse the host task's vocabulary is
+  *damped* by :data:`_ON_TASK_DAMPING`, which an attacker who can see the user's
+  request could exploit deliberately.
+
+Real task-conflict detection needs entailment between the instruction and the
+user's request, which is out of scope for a rule layer. This rule is therefore
+weighted as corroborating evidence only (see ``RuleEngineConfig``), and the
+limitation is repeated in the report's limitations section.
 """
 
 from __future__ import annotations

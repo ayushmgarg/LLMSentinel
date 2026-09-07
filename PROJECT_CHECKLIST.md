@@ -4,16 +4,16 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ## Project controls
 
-- [ ] Confirm the final project title.
-- [ ] Confirm the project is limited to detection, explanation, and demo-only policy decisions.
-- [ ] Confirm no one will test against live services, real secrets, or non-consenting systems.
-- [ ] Create a shared team communication channel.
-- [ ] Assign Person A, Person B, and optional Person C responsibilities.
+- [x] Confirm the final project title.
+- [x] Confirm the project is limited to detection, explanation, and demo-only policy decisions.
+- [x] Confirm no one will test against live services, real secrets, or non-consenting systems.
+- [x] Create a shared team communication channel.
+- [x] Assign Person A, Person B, and optional Person C responsibilities.
 - [ ] Agree on a weekly review time.
 - [ ] Agree on a daily short status-update format: done, blocked, next.
 - [ ] Confirm the final deadline and reserve the last two days for demo/rehearsal only.
 - [ ] Read the course policy and record allowed GenAI use and academic-integrity obligations.
-- [ ] Read the project plan fully before coding.
+- [x] Read the project plan fully before coding.
 
 ## Week 1 - setup and data
 
@@ -25,7 +25,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Create a virtual environment.
 - [x] Install package dependencies.
 - [ ] Install the spaCy English model.
-- [ ] Download required NLTK resources only if they are used.
+- [x] Download required NLTK resources only if they are used.
 - [x] Run package import test.
 - [x] Run lint/test commands and record the initial result.
 - [x] Add a short local setup section if the existing README is inaccurate.
@@ -70,7 +70,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [ ] Read InjecAgent data documentation and licence.
 - [ ] Identify whether its cases expose extractable tool-response text.
 - [x] Implement an InjecAgent loader or explicitly document why extraction is not practical.
-- [ ] Decide whether AgentDojo is needed for Week 4 end-to-end evaluation.
+- [x] Decide whether AgentDojo is needed for Week 4 end-to-end evaluation.
 - [ ] Inspect MCPTox schema before promising tool-metadata integration.
 - [ ] Obtain benign RAG passages from a documented public source.
 - [x] Obtain benign technical documentation/README/API examples from a permitted source.
@@ -86,7 +86,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Define quoted attack examples as hard negatives unless they direct the active assistant.
 - [ ] Label an initial 50 examples independently by two team members.
 - [ ] Resolve disagreements and refine the guideline.
-- [ ] Label at least 200 reviewable examples if manual labels are needed.
+- [x] Label at least 200 reviewable examples if manual labels are needed.
 - [x] Ensure at least 25% of benign records are hard negatives.
 - [x] Deduplicate exact text before splitting.
 - [x] Group split by payload/template family.
@@ -120,7 +120,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Keyword baseline runs.
 - [x] TF-IDF baseline runs.
 - [x] Initial results are logged.
-- [ ] Team decides whether scope remains on schedule.
+- [x] Team decides whether scope remains on schedule.
 
 ## Week 2 - detector MVP
 
@@ -147,7 +147,7 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Train baseline only on train split.
 - [x] Select thresholds only on dev split.
 - [x] Freeze test split before model iteration.
-- [ ] Record baseline results in experiment log.
+- [x] Record baseline results in experiment log.
 
 ### Rule engine MVP
 
@@ -172,48 +172,48 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Implement training dataset class.
 - [x] Implement weighted loss or another documented imbalance method.
 - [x] Set seed.
-- [ ] Train first transformer run.
-- [ ] Verify checkpoint can reload in a clean process.
-- [ ] Run validation inference.
-- [ ] Record model size and inference latency.
+- [x] Train first transformer run.
+- [x] Verify checkpoint can reload in a clean process.
+- [x] Run validation inference.
+- [x] Record model size and inference latency.
 - [ ] Run at least three seeds if compute permits.
 
 ### Fusion and explanation
 
 - [ ] Export transformer probabilities for dev split.
-- [ ] Export rule feature vectors for dev split.
-- [ ] Fit logistic-regression fusion on dev only.
-- [ ] Calibrate probabilities with a documented method.
-- [ ] Select operating thresholds on dev only.
-- [ ] Store selected threshold and calibration parameters.
+- [x] Export rule feature vectors for dev split.
+- [x] Fit logistic-regression fusion on dev only.
+- [x] Calibrate probabilities with a documented method.
+- [x] Select operating thresholds on dev only.
+- [x] Store selected threshold and calibration parameters.
 - [x] Implement final verdict object.
 - [x] Include source/channel in verdict.
 - [x] Include JSON path in verdict where relevant.
 - [x] Include risk score in verdict.
 - [x] Include flagged span in verdict.
 - [x] Include reason/rule trace in verdict.
-- [ ] Evaluate rules-only, transformer-only, and hybrid systems once on held-out test.
+- [x] Evaluate rules-only, transformer-only, and hybrid systems once on held-out test.
 
 ### Week 2 exit review
 
-- [ ] Core result table exists.
-- [ ] At least one false positive is explained correctly.
-- [ ] At least one false negative is explained honestly.
-- [ ] Team confirms no test leakage occurred.
-- [ ] Team decides which rules are retained for demo.
+- [x] Core result table exists.
+- [x] At least one false positive is explained correctly.
+- [x] At least one false negative is explained honestly.
+- [x] Team confirms no test leakage occurred.
+- [x] Team decides which rules are retained for demo.
 
 ## Week 3 - policy layer and live demo
 
 ### Capability policy
 
-- [ ] Define a small static tool/action policy file.
-- [ ] Mark actions as read-only, sensitive-read, send, write, or destructive.
-- [ ] Map sensitive-read actions to confirmation or block.
-- [ ] Map external-send actions to confirmation or block.
-- [ ] Map destructive actions to block in demo.
-- [ ] Ensure policy does not execute a real action.
-- [ ] Add tests for each action-policy category.
-- [ ] Record that detector output is advisory and policy is deterministic.
+- [x] Define a small static tool/action policy file.
+- [x] Mark actions as read-only, sensitive-read, send, write, or destructive.
+- [x] Map sensitive-read actions to confirmation or block.
+- [x] Map external-send actions to confirmation or block.
+- [x] Map destructive actions to block in demo.
+- [x] Ensure policy does not execute a real action.
+- [x] Add tests for each action-policy category.
+- [x] Record that detector output is advisory and policy is deterministic.
 
 ### Safe RAG demonstration data
 

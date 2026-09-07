@@ -4,6 +4,7 @@
     llmsentinel corpus check            re-audit the built corpus for leakage
     llmsentinel corpus inspect          print random records for manual review
     llmsentinel evaluate                run every available system
+    llmsentinel export                  write fusion inputs (features, probabilities)
     llmsentinel scan                    score one document, JSON blob or file
 
 Every command that produces a number prints the corpus digest it used, so a
@@ -29,6 +30,17 @@ from .paths import CORPUS_PATH, RESULTS_DIR, relative
 from .schema import read_jsonl
 
 __all__ = ["main"]
+
+
+def _console_safe(text: str) -> str:
+    """Escape characters a legacy console encoding cannot represent.
+
+    Corpus records contain zero-width and homoglyph characters by design, and a
+    Windows console encoded as cp1252 raises on them -- which silently truncated
+    `corpus inspect` after the first such record.
+    """
+
+    return text.encode("ascii", "backslashreplace").decode("ascii")
 
 
 def _print_warnings(warnings: list[str]) -> None:
@@ -83,10 +95,11 @@ def cmd_corpus_inspect(args: argparse.Namespace) -> int:
             print(f"    json_path={record.json_path}")
         if record.host_task:
             print(f"    host_task={record.host_task}")
-        text = " ".join(record.raw_text.split())
+        text = _console_safe(" ".join(record.raw_text.split()))
         print(f"    text: {text[: args.chars]}")
         for span in record.injected_spans:
-            print(f"    injected span [{span.start}:{span.end}]: {span.slice(record.raw_text)[:120]}")
+            excerpt = _console_safe(span.slice(record.raw_text))[:120]
+            print(f"    injected span [{span.start}:{span.end}]: {excerpt}")
     return 0
 
 
@@ -166,8 +179,79 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
         print("\nwarnings:")
         _print_warnings(warnings)
 
-    path = save_results(results, RESULTS_DIR / ("results_test.json" if args.test else "results_dev.json"))
-    print(f"\nsaved {relative(path)}")
+    # results_dev.json is always written: it carries the dev-selected thresholds
+    # that `llmsentinel scan` needs to turn a score into a risk band.
+    written = [save_results(results, RESULTS_DIR / "results_dev.json")]
+    if args.test:
+        written.append(save_results(results, RESULTS_DIR / "results_test.json"))
+    print("\nsaved " + ", ".join(relative(path) for path in written))
+    return 0
+
+
+# ------------------------------------------------------------------- export
+def cmd_export(args: argparse.Namespace) -> int:
+    """Write the fusion layer's inputs to disk so they can be inspected.
+
+    The fusion model consumes rule features and a transformer probability. Until
+    those are on disk they cannot be plotted, correlated, or checked by anyone
+    who is not running the trainer, and a claim about which signal carried a
+    decision cannot be verified.
+    """
+
+    import csv
+
+    from .evaluation import load_splits
+    from .models import RulesScorer
+    from .models.transformer import TransformerScorer, torch_available
+
+    splits = load_splits(args.corpus)
+    records = splits[args.split]
+    if not records:
+        print(f"split {args.split!r} is empty")
+        return 1
+
+    rules = RulesScorer()
+    feature_names = list(rules.feature_names)
+    features = rules.features(records)
+    rule_scores = rules.score(records)
+
+    probabilities = None
+    checkpoint = Path(args.checkpoint) if args.checkpoint else None
+    if checkpoint and checkpoint.is_dir() and torch_available():
+        probabilities = TransformerScorer.load(checkpoint).score(records)
+    else:
+        print(f"note: no transformer checkpoint at {args.checkpoint}; probabilities omitted")
+
+    target = Path(args.out) if args.out else RESULTS_DIR / f"features_{args.split}.csv"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    header = (
+        ["record_id", "label", "channel", "attack_type", "is_hard_negative", "rule_score"]
+        + (["transformer_probability"] if probabilities is not None else [])
+        + feature_names
+    )
+    with target.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(header)
+        for index, record in enumerate(records):
+            row = [
+                record.record_id,
+                record.y,
+                record.channel.value,
+                record.attack_type.value,
+                int(record.is_hard_negative),
+                round(float(rule_scores[index]), 6),
+            ]
+            if probabilities is not None:
+                row.append(round(float(probabilities[index]), 6))
+            row.extend(round(float(value), 6) for value in features[index])
+            writer.writerow(row)
+
+    print(
+        f"exported {len(records)} {args.split} records x {len(header)} columns "
+        f"({len(feature_names)} rule features"
+        + (", transformer probability" if probabilities is not None else "")
+        + f") -> {relative(target)}"
+    )
     return 0
 
 
@@ -188,6 +272,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
     engine = RuleEngine()
     normalizer: Normalizer = engine.normalizer
     thresholds = _load_thresholds(args.thresholds, args.system)
+    if thresholds:
+        print(f"note: risk bands use {args.system} thresholds selected on dev")
     metadata = {"host_task": args.host_task} if args.host_task else None
 
     if args.json:
@@ -210,13 +296,30 @@ def cmd_scan(args: argparse.Namespace) -> int:
         print(json.dumps([verdict.to_dict() for verdict in verdicts], indent=2))
         return 0
 
+    decision = None
+    if args.action:
+        from .policy import CapabilityPolicy, ProposedAction
+
+        worst = verdicts[0] if verdicts else None
+        decision = CapabilityPolicy().decide(
+            ProposedAction(tool_name=args.action, description="proposed by the agent"),
+            verdict=worst,
+        )
+
     for verdict in verdicts[: args.top]:
         print(verdict.summary())
         for reason in verdict.rule_trace[:4]:
-            print(f"    {reason}")
+            print(f"    {_console_safe(reason)}")
         for span in verdict.flagged_spans[:3]:
-            excerpt = " ".join(span.slice(text if not args.json else span.slice(text)).split())[:140]
+            excerpt = _console_safe(" ".join(span.slice(text).split()))[:140]
             print(f"    span [{span.start}:{span.end}] {excerpt}")
+
+    if decision is not None:
+        print()
+        print(f"policy: {decision.summary()}")
+        for reason in decision.reasons:
+            print(f"    {reason}")
+        print("    (advisory detector, deterministic policy; nothing is executed)")
     return 0
 
 
@@ -284,6 +387,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evaluate.set_defaults(func=cmd_evaluate)
 
+    export = sub.add_parser(
+        "export", help="write rule features and transformer probabilities to CSV"
+    )
+    export.add_argument("--corpus", default=str(CORPUS_PATH))
+    export.add_argument("--split", default="dev", choices=["train", "dev", "test"])
+    export.add_argument("--checkpoint", default="artifacts/models/transformer")
+    export.add_argument("--out", default=None)
+    export.set_defaults(func=cmd_export)
+
     scan = sub.add_parser("scan", help="score one document or tool response")
     scan.add_argument("--text", default=None)
     scan.add_argument("--file", default=None)
@@ -291,6 +403,11 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument("--channel", default="rag_document")
     scan.add_argument("--host-task", default=None)
     scan.add_argument("--top", type=int, default=5)
+    scan.add_argument(
+        "--action",
+        default=None,
+        help="tool name the agent proposes to call; prints the capability-policy outcome",
+    )
     scan.add_argument("--output-json", action="store_true")
     scan.add_argument(
         "--thresholds",
@@ -300,7 +417,13 @@ def build_parser() -> argparse.ArgumentParser:
     scan.add_argument(
         "--system",
         default="rules-only",
-        help="which system's dev thresholds to use for the risk band",
+        choices=["rules-only"],
+        help=(
+            "which system's dev thresholds set the risk band. Restricted to "
+            "rules-only because scan scores with the rule engine alone; using "
+            "another system's thresholds would band a rules score against a "
+            "scale it was not measured on"
+        ),
     )
     scan.set_defaults(func=cmd_scan)
 

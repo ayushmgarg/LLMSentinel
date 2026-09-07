@@ -78,6 +78,11 @@ class FusionScorer(Scorer):
 
     name = "hybrid"
 
+    #: Dev scores are served from the out-of-fold cache, so timing a dev pass
+    #: measures a dictionary lookup rather than the detector. The harness reads
+    #: this flag and reports no latency instead of a misleading zero.
+    scores_from_cache = True
+
     def __init__(
         self,
         rules: RulesScorer | None = None,
