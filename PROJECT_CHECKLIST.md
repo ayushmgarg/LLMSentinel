@@ -84,8 +84,8 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Define injection-bearing text as task-conflicting assistant-directed control content, not mere discussion of attacks.
 - [x] Define benign imperative examples.
 - [x] Define quoted attack examples as hard negatives unless they direct the active assistant.
-- [ ] Label an initial 50 examples independently by two team members.
-- [ ] Resolve disagreements and refine the guideline.
+- [x] Label an initial 50 examples independently by two team members.
+- [x] Resolve disagreements and refine the guideline.
 - [x] Label at least 200 reviewable examples if manual labels are needed.
 - [x] Ensure at least 25% of benign records are hard negatives.
 - [x] Deduplicate exact text before splitting.

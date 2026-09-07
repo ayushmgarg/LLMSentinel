@@ -59,11 +59,27 @@ Ask, in order:
 
 ## Attack types
 
-Use the taxonomy in `llmsentinel.schema.AttackType`. One label per record, the
-dominant move. `obfuscation` wins when the payload's defining property is that
-it was concealed (zero-width, encoded, hidden markup) — the concealment is what
-the detector must catch. `unknown` is allowed only when a source dataset gives a
-positive without a usable taxonomy; never guess.
+Use the taxonomy in `llmsentinel.schema.AttackType`. One label per record.
+
+Many payloads fit more than one type — a directive that steers output is also an
+instruction; a metadata field harvesting a credential is also exfiltration; an
+obfuscated payload has some intent underneath the concealment. The independent
+annotation study (see `docs/annotation_study.md`) found the binary label
+unambiguous but the attack type ambiguous on exactly these overlaps, so pick the
+type by this **precedence rule**, highest first:
+
+1. `obfuscation` — concealment (encoding, zero-width, homoglyph, hidden markup)
+   is the defining property of how the payload is delivered.
+2. `metadata_poisoning` — the payload lives in tool metadata.
+3. `exfiltration` — data leaves the trust boundary.
+4. `action_hijack` — a state-changing or destructive tool fires.
+5. `meta_instruction` — a directive to the assistant with no more specific
+   effect above.
+6. `content_manipulation` — steers answer content only.
+
+`unknown` is allowed only when a source dataset gives a positive without a
+usable taxonomy; never guess. The attack type is reported per-type but is not
+used by the binary detection metrics, so an overlap here never changes a score.
 
 ## Borderline cases, decided
 

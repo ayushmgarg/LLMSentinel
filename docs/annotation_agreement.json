@@ -1,0 +1,12 @@
+{
+  "n": 50,
+  "inter_annotator_agreement": 1.0,
+  "inter_annotator_kappa": 1.0,
+  "A_vs_gold_agreement": 1.0,
+  "B_vs_gold_agreement": 1.0,
+  "A_vs_gold_kappa": 1.0,
+  "B_vs_gold_kappa": 1.0,
+  "n_ab_disagreements": 0,
+  "ab_disagreements": [],
+  "both_differ_from_gold": []
+}
