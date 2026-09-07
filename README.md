@@ -29,19 +29,19 @@ Plan: [PROJECT_PLAN.md](PROJECT_PLAN.md) · Checklist:
 | Capability policy (Week 3) | done — [docs/capability_policy.md](docs/capability_policy.md) |
 | Demo UI, robustness, ablations, report figures | Week 3–4, not started |
 
-### Headline result
+### Corpus and results status
 
-Hybrid (rules + transformer, calibrated fusion): **0.953 dev / 0.955 test AUPRC**.
-With 40 positives per split the bootstrap intervals are wide and overlap the
-transformer's, so the defensible claim is only that the hybrid is the sole system
-in the top band on *both* splits — not that it beats the transformer.
+The corpus now combines the authored seed data with **real records from BIPIA
+and InjecAgent** (both MIT, cloned locally under `data/raw/`, never
+redistributed): 1669 records across all three channels, leakage-checked. MCPTox
+is not integrated — no verifiable release was located; the `tool_metadata`
+channel is seed-only, which the corpus card flags.
 
-### What this corpus cannot support
-
-Every record comes from the authored built-in seed corpus. BIPIA, InjecAgent and
-MCPTox are **not** present, and the build says so in `docs/corpus_card.md` and in
-`BuildResult.warnings`. Nothing measured here is benchmark performance or
-evidence of generalisation to real attacks.
+Model results are being **recomputed on this combined corpus**; the tables in
+`docs/EXPERIMENTS.md` and `docs/week2_exit_review.md` marked with the
+`bcc271db` digest are from the earlier synthetic-only corpus and are labelled
+superseded. See `docs/EXPERIMENTS.md` for current numbers once the re-evaluation
+run completes.
 
 ## Setup
 

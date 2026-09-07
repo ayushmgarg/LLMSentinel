@@ -55,6 +55,22 @@ _ATTACK_NAME_MAP: dict[str, AttackType] = {
     "bias": AttackType.CONTENT_MANIPULATION,
     "toxic": AttackType.CONTENT_MANIPULATION,
     "substance": AttackType.CONTENT_MANIPULATION,
+    # Categories present in the shipped text_attack files. The encoding family
+    # maps onto our obfuscation type; the rest steer the output, so they are
+    # content_manipulation. The original BIPIA category is preserved in the
+    # record's ``extra['attack_name']`` regardless of this coarse mapping.
+    "conversational": AttackType.META_INSTRUCTION,
+    "research assistance": AttackType.CONTENT_MANIPULATION,
+    "sentiment": AttackType.CONTENT_MANIPULATION,
+    "substitution cipher": AttackType.OBFUSCATION,
+    "base encoding": AttackType.OBFUSCATION,
+    "reverse text": AttackType.OBFUSCATION,
+    "emoji": AttackType.OBFUSCATION,
+    "language translation": AttackType.CONTENT_MANIPULATION,
+    "entertainment": AttackType.CONTENT_MANIPULATION,
+    "fraud": AttackType.EXFILTRATION,
+    "misinformation": AttackType.CONTENT_MANIPULATION,
+    "propaganda": AttackType.CONTENT_MANIPULATION,
 }
 
 
@@ -62,7 +78,7 @@ class BipiaLoader(Loader):
     spec = SourceSpec(
         name="BIPIA",
         homepage="https://github.com/microsoft/BIPIA",
-        license="See the repository LICENSE; verify before redistributing any excerpt.",
+        license="MIT License (confirmed in the cloned repository); not redistributed here, only loaded from a local clone.",
         citation=(
             "Yi et al., Benchmarking and Defending Against Indirect Prompt Injection "
             "Attacks on Large Language Models."
@@ -80,12 +96,17 @@ class BipiaLoader(Loader):
         *,
         seed: int = DEFAULT_SEED,
         max_hosts_per_attack: int = 4,
-        max_records: int = 4000,
+        max_benign: int = 350,
+        max_positive: int = 350,
     ) -> None:
         super().__init__(root or (RAW_DIR / "bipia"))
         self.seed = seed
         self.max_hosts_per_attack = max_hosts_per_attack
-        self.max_records = max_records
+        #: Benign and positive counts are capped independently. A single total
+        #: cap would be filled entirely by benign records (they are emitted
+        #: first) and yield no positives.
+        self.max_benign = max_benign
+        self.max_positive = max_positive
 
     # ------------------------------------------------------------ availability
     def available(self) -> bool:
@@ -97,19 +118,35 @@ class BipiaLoader(Loader):
         nested = self.root / "benchmark"
         return nested if nested.is_dir() else self.root
 
+    def _is_in_scope(self, path: Path) -> bool:
+        """Exclude the ``code`` subset: code-generation attacks are out of scope
+        (docs/threat_model.md), and the abstract/qa subsets ship only an
+        ``index.json`` of external dataset IDs, which have no inline context."""
+
+        parts = {part.lower() for part in path.parts}
+        return "code" not in parts and "code" not in path.stem.lower()
+
     def _context_files(self) -> list[Path]:
         return [
             path
             for path in walk_data_files(self._benchmark_dir())
             if "attack" not in path.name.lower()
+            and "index" not in path.name.lower()
+            and self._is_in_scope(path)
         ]
 
     def _attacks(self) -> list[tuple[str, str]]:
-        """Return ``(attack_name, attack_string)`` pairs from the attack files."""
+        """Return ``(attack_name, attack_string)`` pairs from the attack files.
+
+        BIPIA's ``text_attack_*.json`` is an object keyed by attack category,
+        each value a **list** of payload strings -- the shape handled last
+        below. The list/tuple and dict-of-strings shapes are kept so a future
+        release with a different layout still loads.
+        """
 
         attacks: list[tuple[str, str]] = []
         for path in walk_data_files(self._benchmark_dir()):
-            if "attack" not in path.name.lower():
+            if "attack" not in path.name.lower() or not self._is_in_scope(path):
                 continue
             payload = read_any(path)
             if isinstance(payload, list):
@@ -122,9 +159,13 @@ class BipiaLoader(Loader):
                         if name and text:
                             attacks.append((str(name), str(text)))
             elif isinstance(payload, dict):
-                for name, text in payload.items():
-                    if isinstance(text, str):
-                        attacks.append((str(name), text))
+                for name, value in payload.items():
+                    if isinstance(value, str):
+                        attacks.append((str(name), value))
+                    elif isinstance(value, list):
+                        attacks.extend(
+                            (str(name), item) for item in value if isinstance(item, str)
+                        )
         return attacks
 
     # -------------------------------------------------------------------- load
@@ -132,25 +173,27 @@ class BipiaLoader(Loader):
         attacks = self._attacks()
         if not attacks:
             return
-        emitted = 0
         hosts = list(self._hosts())
         rng = random.Random(self.seed)
 
-        for host in hosts:
-            if emitted >= self.max_records:
-                return
+        # A deterministic subset of hosts becomes benign records, capped so the
+        # benign side does not dwarf the rest of the corpus.
+        benign_hosts = _sample(hosts, self.max_benign, f"{self.seed}|benign")
+        for host in benign_hosts:
             yield self._benign(host)
-            emitted += 1
 
+        positives = 0
         for attack_name, attack_text in attacks:
+            if positives >= self.max_positive:
+                return
             chosen = _sample(hosts, self.max_hosts_per_attack, f"{self.seed}|{attack_name}")
             for host in chosen:
-                if emitted >= self.max_records:
+                if positives >= self.max_positive:
                     return
                 record = self._poisoned(host, attack_name, attack_text, rng)
                 if record is not None:
                     yield record
-                    emitted += 1
+                    positives += 1
 
     # ---------------------------------------------------------------- internals
     def _hosts(self) -> Iterator[dict[str, Any]]:

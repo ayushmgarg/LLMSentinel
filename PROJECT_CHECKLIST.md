@@ -9,10 +9,10 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Confirm no one will test against live services, real secrets, or non-consenting systems.
 - [x] Create a shared team communication channel.
 - [x] Assign Person A, Person B, and optional Person C responsibilities.
-- [ ] Agree on a weekly review time.
-- [ ] Agree on a daily short status-update format: done, blocked, next.
-- [ ] Confirm the final deadline and reserve the last two days for demo/rehearsal only.
-- [ ] Read the course policy and record allowed GenAI use and academic-integrity obligations.
+- [x] Agree on a weekly review time.
+- [x] Agree on a daily short status-update format: done, blocked, next.
+- [x] Confirm the final deadline and reserve the last two days for demo/rehearsal only.
+- [x] Read the course policy and record allowed GenAI use and academic-integrity obligations.
 - [x] Read the project plan fully before coding.
 
 ## Week 1 - setup and data
@@ -20,11 +20,11 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 ### Repository and environment
 
 - [x] Inspect the existing repository without deleting generated files.
-- [ ] Create the first git commit before substantive implementation begins.
+- [x] Create the first git commit before substantive implementation begins.
 - [x] Confirm Python version supported by PyTorch, spaCy, and transformers.
 - [x] Create a virtual environment.
 - [x] Install package dependencies.
-- [ ] Install the spaCy English model.
+- [x] Install the spaCy English model.
 - [x] Download required NLTK resources only if they are used.
 - [x] Run package import test.
 - [x] Run lint/test commands and record the initial result.
@@ -61,18 +61,18 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Data acquisition and inspection
 
-- [ ] Download or clone BIPIA using its official source.
-- [ ] Read BIPIA data documentation and licence.
-- [ ] Identify BIPIA positive, benign, host-task, and payload fields.
+- [x] Download or clone BIPIA using its official source.
+- [x] Read BIPIA data documentation and licence.
+- [x] Identify BIPIA positive, benign, host-task, and payload fields.
 - [x] Implement a BIPIA loader.
-- [ ] Validate five loaded BIPIA records manually.
-- [ ] Download or clone InjecAgent using its official source.
-- [ ] Read InjecAgent data documentation and licence.
-- [ ] Identify whether its cases expose extractable tool-response text.
+- [x] Validate five loaded BIPIA records manually.
+- [x] Download or clone InjecAgent using its official source.
+- [x] Read InjecAgent data documentation and licence.
+- [x] Identify whether its cases expose extractable tool-response text.
 - [x] Implement an InjecAgent loader or explicitly document why extraction is not practical.
 - [x] Decide whether AgentDojo is needed for Week 4 end-to-end evaluation.
-- [ ] Inspect MCPTox schema before promising tool-metadata integration.
-- [ ] Obtain benign RAG passages from a documented public source.
+- [x] Inspect MCPTox schema before promising tool-metadata integration.
+- [x] Obtain benign RAG passages from a documented public source.
 - [x] Obtain benign technical documentation/README/API examples from a permitted source.
 - [x] Obtain benign policy/tutorial examples.
 - [x] Collect examples that quote prompt-injection strings for hard negatives.

@@ -52,7 +52,7 @@ class InjecAgentLoader(Loader):
     spec = SourceSpec(
         name="InjecAgent",
         homepage="https://github.com/uiuc-kang-lab/InjecAgent",
-        license="See the repository LICENSE; verify before redistributing any excerpt.",
+        license="MIT License (confirmed in the cloned repository); not redistributed here, only loaded from a local clone.",
         citation=(
             "Zhan et al., InjecAgent: Benchmarking Indirect Prompt Injections in "
             "Tool-Integrated Large Language Model Agents."
@@ -67,9 +67,18 @@ class InjecAgentLoader(Loader):
         ),
     )
 
-    def __init__(self, root: Path | None = None, *, max_records: int = 4000) -> None:
+    def __init__(
+        self,
+        root: Path | None = None,
+        *,
+        max_benign: int = 350,
+        max_positive: int = 350,
+    ) -> None:
         super().__init__(root or (RAW_DIR / "injecagent"))
-        self.max_records = max_records
+        #: Capped independently so one channel does not dominate the corpus and
+        #: so training stays tractable on CPU. InjecAgent ships ~4000 cases.
+        self.max_benign = max_benign
+        self.max_positive = max_positive
 
     # ------------------------------------------------------------ availability
     def available(self) -> bool:
@@ -107,9 +116,10 @@ class InjecAgentLoader(Loader):
 
     # -------------------------------------------------------------------- load
     def load(self) -> Iterator[CorpusRecord]:
-        emitted = 0
+        benign_count = 0
+        positive_count = 0
         for case in self._cases():
-            if emitted >= self.max_records:
+            if benign_count >= self.max_benign and positive_count >= self.max_positive:
                 return
             template = str(first_present(case, *_TEMPLATE_KEYS) or "")
             attacker = str(
@@ -128,7 +138,7 @@ class InjecAgentLoader(Loader):
 
             group = _case_group(case, template)
             benign_text = _PLACEHOLDER_RE.sub("", template).strip()
-            if len(benign_text) >= 40:
+            if len(benign_text) >= 40 and benign_count < self.max_benign:
                 yield CorpusRecord(
                     record_id=make_record_id(_SOURCE, f"clean/{group}"),
                     source_dataset=_SOURCE,
@@ -147,9 +157,9 @@ class InjecAgentLoader(Loader):
                         "file": case.get("__file", ""),
                     },
                 )
-                emitted += 1
+                benign_count += 1
 
-            if not attacker:
+            if not attacker or positive_count >= self.max_positive:
                 continue
             if _PLACEHOLDER_RE.search(template):
                 composed = _PLACEHOLDER_RE.sub(attacker, template)
@@ -183,7 +193,7 @@ class InjecAgentLoader(Loader):
                     "file": case.get("__file", ""),
                 },
             )
-            emitted += 1
+            positive_count += 1
 
 
 def _attack_type(case: dict[str, Any]) -> AttackType:

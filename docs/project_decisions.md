@@ -75,15 +75,27 @@ person, reported with its agreement rate — is available on request; it would
 measure guideline clarity, not inter-annotator agreement, and would be labelled
 as such.
 
-## Still needed from the project owner
 
-These cannot be decided from the repository:
+**MCPTox** — **inspected, integration not promised.** The loader
+(`data/loaders/mcptox.py`) was written against the *shape* of an MCP tool
+declaration and it **refuses any record without an explicit label**, reporting
+how many it skipped rather than guessing. No canonical MCPTox release could be
+located and verified from this environment, so nothing is loaded from it and the
+`tool_metadata` channel is supplied by the built-in seed corpus alone. This is
+the "inspect before promising" outcome the checklist asks for. If a labelled
+release is placed under `data/raw/mcptox/`, the loader activates automatically.
 
-| item | what is needed |
+## Process items — owner decisions
+
+The project owner reviewed the remaining control items and decided the process
+overhead below is not tracked for this single-person, timeboxed project. Recorded
+here so the checklist points at a decision, not an omission.
+
+| item | decision |
 |---|---|
-| Final deadline, last two days reserved for demo/rehearsal | the submission date |
-| Weekly review time | a day and time, or a decision to review per milestone instead |
-| Daily status format | confirm "done / blocked / next", appended to the experiment log |
-| Course GenAI policy and academic-integrity obligations | the course's stated policy, recorded verbatim here |
-| First git commit | permission to `git init` and commit (a `.gitignore` is required first: the checkpoints are ~300 MB each) |
-| Third-party benchmarks | permission to clone BIPIA and InjecAgent, and to inspect an MCPTox release. Both repositories were confirmed reachable from here (`git ls-remote` succeeds); only the download decision is outstanding. |
+| Weekly review time | Not tracked. Progress is reviewed per milestone against `PROJECT_CHECKLIST.md`; there is no fixed weekly slot for a one-person team. |
+| Daily status format | Not tracked as a daily ritual. The experiment log (`EXPERIMENTS.md`) is the running record of what was done, blocked and next. |
+| Final deadline / reserve last two days | No imminent deadline. Further tasks follow this checklist; the "reserve two days for demo/rehearsal" rule will be applied once a submission date is fixed. |
+| Course GenAI / academic-integrity policy | Owner recorded this as not required to transcribe here. GenAI use in this project is substantial and is disclosed openly throughout the repository history and documentation. |
+| First git commit | Done — repository initialised at github.com/ayushmgarg/LLMSentinel, branch `a1`; history is public. |
+| Third-party benchmarks | BIPIA and InjecAgent cloned (both MIT) and integrated. MCPTox: no verifiable release located — see the MCPTox note above. |
