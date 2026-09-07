@@ -19,3 +19,6 @@ data/raw/
 # OS / editor cruft
 .DS_Store
 Thumbs.db
+
+# Release artifacts (uploaded to GitHub Releases, not tracked)
+dist/
