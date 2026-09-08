@@ -22,3 +22,7 @@ Thumbs.db
 
 # Release artifacts (uploaded to GitHub Releases, not tracked)
 dist/
+
+# Demo server log
+artifacts/results/streamlit.log
+src/*.egg-info/

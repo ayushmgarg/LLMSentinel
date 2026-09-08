@@ -138,6 +138,28 @@ BIPIA, InjecAgent and MCPTox loaders activate automatically when their releases
 are placed under `data/raw/<name>/`; when absent, the build proceeds and records
 the omission.
 
+## Demo (Week 3)
+
+Offline, credential-free. Rules-only detector so it starts instantly from a
+clean checkout.
+
+Headless run (deterministic; the recorded fallback):
+
+```bash
+python scripts/demo_run.py
+```
+
+Live page (Streamlit, http://localhost:8601):
+
+```bash
+python scripts/run_demo.py
+```
+
+It inspects a poisoned RAG document, a poisoned MCP-style tool response, and a
+poisoned/drifted tool manifest; highlights the flagged spans; and shows the
+deterministic capability-policy decision (guard off vs guard on). See
+[docs/week3_exit_review.md](docs/week3_exit_review.md).
+
 ## Layout
 
 ```

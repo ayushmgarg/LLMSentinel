@@ -217,61 +217,61 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Safe RAG demonstration data
 
-- [ ] Choose a harmless local document topic.
-- [ ] Create or collect clean source documents with clear provenance.
-- [ ] Add one known public-style injection fixture.
-- [ ] Verify fixture contains no real secret or harmful action.
-- [ ] Build a local retriever/index or deterministic retrieval simulation.
-- [ ] Build clean query example.
-- [ ] Build poisoned query example.
-- [ ] Define expected guard-off behaviour for display only.
-- [ ] Define expected guard-on result.
+- [x] Choose a harmless local document topic.
+- [x] Create or collect clean source documents with clear provenance.
+- [x] Add one known public-style injection fixture.
+- [x] Verify fixture contains no real secret or harmful action.
+- [x] Build a local retriever/index or deterministic retrieval simulation.
+- [x] Build clean query example.
+- [x] Build poisoned query example.
+- [x] Define expected guard-off behaviour for display only.
+- [x] Define expected guard-on result.
 
 ### Safe MCP-style demonstration data
 
-- [ ] Define a fake `search_notes` or `get_report` tool response.
-- [ ] Create clean nested JSON fixture.
-- [ ] Create poisoned nested JSON fixture.
-- [ ] Ensure a suspicious string is inside a named JSON path.
-- [ ] Create fake sensitive downstream action proposal.
-- [ ] Verify guard outcome is deterministic and non-destructive.
-- [ ] Add MCP-manifest fixture with benign description.
-- [ ] Add MCP-manifest fixture with suspicious metadata or changed hash.
+- [x] Define a fake `search_notes` or `get_report` tool response.
+- [x] Create clean nested JSON fixture.
+- [x] Create poisoned nested JSON fixture.
+- [x] Ensure a suspicious string is inside a named JSON path.
+- [x] Create fake sensitive downstream action proposal.
+- [x] Verify guard outcome is deterministic and non-destructive.
+- [x] Add MCP-manifest fixture with benign description.
+- [x] Add MCP-manifest fixture with suspicious metadata or changed hash.
 
 ### Visual demo page
 
-- [ ] Choose implementation framework.
-- [ ] Create page shell.
-- [ ] Add source selector: RAG / tool response / tool manifest.
-- [ ] Add clean-versus-poisoned sample selector.
-- [ ] Add safe text/JSON paste input.
-- [ ] Add run-analysis button.
-- [ ] Show source provenance.
-- [ ] Show JSON tree/path for JSON input.
-- [ ] Show original text or JSON.
-- [ ] Show normalised/derived evidence when applicable.
-- [ ] Highlight suspicious spans.
-- [ ] Show confidence/risk score.
-- [ ] Show rule and model explanations.
-- [ ] Show proposed tool action.
-- [ ] Show deterministic policy result.
-- [ ] Add guard-off versus guard-on comparison.
-- [ ] Add a limitations/disclaimer panel.
-- [ ] Test page with clean RAG input.
-- [ ] Test page with poisoned RAG input.
-- [ ] Test page with clean JSON input.
-- [ ] Test page with poisoned JSON input.
-- [ ] Test page after restarting from a clean terminal.
-- [ ] Measure page response time.
+- [x] Choose implementation framework.
+- [x] Create page shell.
+- [x] Add source selector: RAG / tool response / tool manifest.
+- [x] Add clean-versus-poisoned sample selector.
+- [x] Add safe text/JSON paste input.
+- [x] Add run-analysis button.
+- [x] Show source provenance.
+- [x] Show JSON tree/path for JSON input.
+- [x] Show original text or JSON.
+- [x] Show normalised/derived evidence when applicable.
+- [x] Highlight suspicious spans.
+- [x] Show confidence/risk score.
+- [x] Show rule and model explanations.
+- [x] Show proposed tool action.
+- [x] Show deterministic policy result.
+- [x] Add guard-off versus guard-on comparison.
+- [x] Add a limitations/disclaimer panel.
+- [x] Test page with clean RAG input.
+- [x] Test page with poisoned RAG input.
+- [x] Test page with clean JSON input.
+- [x] Test page with poisoned JSON input.
+- [x] Test page after restarting from a clean terminal.
+- [x] Measure page response time.
 
 ### Week 3 exit review
 
-- [ ] Demo runs locally without external API credentials.
-- [ ] Demo visibly highlights an injection in a RAG document.
-- [ ] Demo visibly highlights an injection in MCP-style JSON.
-- [ ] Demo blocks/requires confirmation for unsafe proposed action.
-- [ ] Demo preserves a normal clean task.
-- [ ] Screen-record a complete successful demo run.
+- [x] Demo runs locally without external API credentials.
+- [x] Demo visibly highlights an injection in a RAG document.
+- [x] Demo visibly highlights an injection in MCP-style JSON.
+- [x] Demo blocks/requires confirmation for unsafe proposed action.
+- [x] Demo preserves a normal clean task.
+- [x] Screen-record a complete successful demo run.
 
 ## Week 4 - research evidence and polish
 

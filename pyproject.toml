@@ -42,6 +42,7 @@ dev = [
 
 [project.scripts]
 llmsentinel = "llmsentinel.cli:main"
+llmsentinel-demo = "llmsentinel.demo.launch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
