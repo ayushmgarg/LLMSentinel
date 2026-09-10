@@ -187,8 +187,12 @@ def _toy_corpus() -> list[CorpusRecord]:
             if malicious
             else f"Backups run nightly and are retained for {index + 10} days in each region."
         )
+        # Family and host are aligned into four independent blocks so that the
+        # leakage-free fold grouping (union of family and host) yields separable
+        # groups; crossing the two moduli would transitively link every record
+        # into one component and make out-of-fold splitting impossible.
         records.append(
-            _record(f"r{index}", f"family:{index % 4}", f"host:{index % 5}", int(malicious))
+            _record(f"r{index}", f"family:{index % 4}", f"host:{index % 4}", int(malicious))
         )
         records[-1].raw_text = text
     return records

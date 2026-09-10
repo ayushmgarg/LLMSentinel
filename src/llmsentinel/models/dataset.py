@@ -18,6 +18,7 @@ machine without the optional extra still works.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -26,14 +27,49 @@ from ..schema import CorpusRecord
 
 __all__ = ["WindowExample", "build_examples", "make_dataloader"]
 
+#: Characters of an injected span used to locate it inside a window. A short,
+#: whitespace-normalised prefix is robust to the tokenizer's decode spacing.
+_SPAN_PROBE_CHARS = 40
+
+
+def _norm(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
+def _positive_window_labels(record: CorpusRecord, windows: Sequence[str]) -> list[int]:
+    """Label each window of a positive record 1 only if it carries the payload.
+
+    Uses the injected-span text (a normalised prefix) to decide which windows
+    actually contain the instruction, so a clean window of a long positive is
+    not taught as an injection. Falls back to the document label for the whole
+    record when it has no spans, or when no window matches (a match failure must
+    not silently turn a positive record into an all-negative one).
+    """
+
+    if not record.injected_spans:
+        return [1] * len(windows)
+
+    probes = []
+    for span in record.injected_spans:
+        raw = record.text_for_field(span.field) or record.raw_text
+        probe = _norm(span.slice(raw))[:_SPAN_PROBE_CHARS]
+        if probe:
+            probes.append(probe)
+    if not probes:
+        return [1] * len(windows)
+
+    labels = [1 if any(p in _norm(w) for p in probes) else 0 for w in windows]
+    return labels if any(labels) else [1] * len(windows)
+
 
 @dataclass(frozen=True, slots=True)
 class WindowExample:
     """One training item: a window of text plus the label of its record.
 
     ``record_id`` is carried so a training item can always be traced back to the
-    record it came from -- the label is inherited, and for a long positive some
-    windows may contain no payload at all.
+    record it came from. With span-aware labelling the label is assigned per
+    window (1 only where the injected span lands); without span information it
+    falls back to the record's document label.
     """
 
     text: str
@@ -54,6 +90,7 @@ def build_examples(
     *,
     windower: Any,
     window_training: bool = True,
+    span_aware_labels: bool = True,
 ) -> list[WindowExample]:
     """Expand records into the windows the model will be trained on.
 
@@ -61,16 +98,28 @@ def build_examples(
     in practice ``TransformerScorer._windows``, so training and inference split
     text with exactly the same code rather than two implementations that can
     drift apart.
+
+    With ``span_aware_labels`` (default), a positive record's windows are
+    labelled 1 only where the injected span actually lands, so a clean window of
+    a long positive is not taught as an injection; records without spans keep the
+    document label. Set it ``False`` to reproduce the older all-windows-inherit
+    behaviour.
     """
 
     examples: list[WindowExample] = []
     for record in records:
         windows = windower(record.text) if window_training else [record.text]
-        for index, window in enumerate(windows):
+        if record.y == 0:
+            labels = [0] * len(windows)
+        elif span_aware_labels:
+            labels = _positive_window_labels(record, windows)
+        else:
+            labels = [1] * len(windows)
+        for index, (window, label) in enumerate(zip(windows, labels, strict=True)):
             examples.append(
                 WindowExample(
                     text=window,
-                    label=record.y,
+                    label=label,
                     record_id=record.record_id,
                     window_index=index,
                     window_count=len(windows),

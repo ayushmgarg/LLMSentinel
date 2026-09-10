@@ -17,7 +17,7 @@ visible, and the rule trace is what makes it visible.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -30,7 +30,14 @@ from ..rules.metadata import ManifestPin
 from ..schema import Channel
 from ..verdict import RiskBand, Verdict, build_verdict
 
-__all__ = ["DemoResult", "UnitFinding", "analyse_manifest", "analyse_rag", "analyse_tool_response"]
+__all__ = [
+    "DemoResult",
+    "UnitFinding",
+    "analyse_manifest",
+    "analyse_rag",
+    "analyse_rag_text",
+    "analyse_tool_response",
+]
 
 
 @dataclass(slots=True)
@@ -196,6 +203,42 @@ def analyse_rag(scenario: Any, catalog: dict[str, dict[str, str]] | None = None)
     )
 
 
+def analyse_rag_text(
+    text: str,
+    query: str = "",
+    catalog: dict[str, dict[str, str]] | None = None,
+    proposed_action: str | None = None,
+) -> DemoResult:
+    """Analyse a single pasted RAG document (no retrieval), for the paste input."""
+
+    engine = _engine()
+    normalizer: Normalizer = engine.normalizer
+    thresholds = rules_thresholds()
+    unit = normalizer.normalize_text(
+        text,
+        channel=Channel.RAG_DOCUMENT,
+        metadata={"host_task": query} if query else None,
+    )
+    verdict = build_verdict(unit, engine.analyse(unit), thresholds=thresholds)
+    findings = [
+        UnitFinding(
+            provenance="pasted document",
+            raw_text=text,
+            normalized_text=unit.normalized_text,
+            verdict=verdict,
+        )
+    ]
+    action = _proposed(proposed_action, catalog or {})
+    return DemoResult(
+        source_kind="rag_document",
+        title="RAG document — pasted",
+        findings=findings,
+        proposed_action=action,
+        policy_decision=_decide(findings, action),
+        expected_guard_on="Pasted input: no fixed expectation.",
+    )
+
+
 # --------------------------------------------------------------- tool response
 def analyse_tool_response(
     scenario: Any, catalog: dict[str, dict[str, str]] | None = None
@@ -268,15 +311,41 @@ def analyse_manifest(
                 f"live digest {manifest_hash(scenario.tool)[:12]}…"
             )
 
-    # A poisoned or drifted manifest raises the effective risk for the policy
-    # even when the rewritten description reads as harmless on its own.
+    # A poisoned or drifted manifest is an enforceable gate, not just an audit
+    # note: a silent change to an approved tool raises the risk of *using* that
+    # tool, independently of whether the rewritten text reads as harmless.
     field_findings = scan_tool_declaration(scenario.tool)
+    drifted = "drift" in note
+    worst = max(findings, key=lambda f: f.risk, default=None)
+    flagged = worst is not None and worst.verdict.band != RiskBand.LOW
+
+    action: ProposedAction | None = None
+    decision: PolicyDecision | None = None
+    if drifted or flagged:
+        tool_name = str(scenario.tool.get("name") or "advertised_tool")
+        # Drift forces HIGH: the signal is the unapproved change itself, not the
+        # content's own score. A flagged-but-undrifted manifest uses its band.
+        band = RiskBand.HIGH if drifted else worst.verdict.band
+        action = ProposedAction(
+            tool_name=tool_name,
+            description="invoke this advertised tool in the agent",
+        )
+        decision = _policy().decide(
+            action,
+            verdict=worst.verdict if worst else None,
+            risk_band=band,
+            degraded=drifted,
+        )
+        if drifted:
+            reason = "manifest drift: the approved tool was changed after approval"
+            decision = replace(decision, reasons=(reason, *decision.reasons))
+
     return DemoResult(
         source_kind="tool_metadata",
         title=scenario.name,
         findings=findings,
-        proposed_action=None,
-        policy_decision=None,
+        proposed_action=action,
+        policy_decision=decision,
         manifest_note=note,
         extra={"field_findings": field_findings},
     )
@@ -297,7 +366,7 @@ def guard_off_action(action: ProposedAction | None) -> str:
 
     if action is None:
         return "no downstream action proposed"
-    return f"call {action.tool_name}({action.category.value if action.category else '?'}) — executed unchecked"
+    return f"call {action.tool_name}({action.category.value if action.category else '?'}) - executed unchecked"
 
 
 def guard_on_action(decision: PolicyDecision | None) -> str:

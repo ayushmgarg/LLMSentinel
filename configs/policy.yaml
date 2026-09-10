@@ -18,11 +18,12 @@
 version: 1
 
 # --------------------------------------------------------------- action classes
-# read_only       reads data already inside the task's scope
-# sensitive_read  reads credentials, private files, conversation history
-# external_send   transmits data outside the trust boundary
-# write           changes state others can observe
-# destructive     irreversible deletion, security-control removal, money movement
+# read_only            reads data already inside the task's scope
+# sensitive_read       reads credentials, private files, conversation history
+# external_send        transmits data outside the trust boundary
+# write                changes state others can observe
+# destructive          irreversible deletion, security-control removal, money movement
+# privilege_escalation raises the agent's own access or grants access to others
 #
 # A tool is classified by its WORST possible effect, not its typical one.
 tools:
@@ -50,6 +51,12 @@ tools:
   drop_table: destructive
   transfer_funds: destructive
   revoke_access: destructive
+  grant_admin: privilege_escalation
+  grant_role: privilege_escalation
+  add_role: privilege_escalation
+  disable_mfa: privilege_escalation
+  impersonate_user: privilege_escalation
+  create_api_key: privilege_escalation
 
 # Applied when a tool is not listed above. Deliberately not `read_only`: an
 # unknown tool is an unreviewed tool, and the corpus shows attackers naming
@@ -84,6 +91,10 @@ decisions:
     elevated: confirm
     high: block
   destructive:
+    low: block
+    elevated: block
+    high: block
+  privilege_escalation:
     low: block
     elevated: block
     high: block

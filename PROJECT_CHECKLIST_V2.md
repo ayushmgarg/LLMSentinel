@@ -133,10 +133,17 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 9. Transformer and long-context detection
 
+> Scope note: span-aware window labelling (windows labelled 1 only where the
+> injected span lands) is implemented and is the default for future training,
+> but the **shipped checkpoint predates it** and was trained with document-label
+> windows; a re-train (~53 min CPU) to adopt it is deferred. Truncation beyond
+> `max_windows` is now reported, not silent, and the highest-risk window
+> index/text is preserved via `TransformerScorer.score_details`.
+
 - [x] Select primary compact model and CPU-friendly fallback; record licence/tokenizer/parameter count.
-- [x] Set maximum length, overlap, maximum windows, and bounded-input behaviour.
+- [x] Set maximum length, overlap, maximum windows, and bounded-input behaviour. *(truncation telemetry added)*
 - [x] Use equivalent overlapping windows during training and inference.
-- [x] Preserve highest-risk window position/evidence for each document.
+- [x] Preserve highest-risk window position/evidence for each document. *(score_details returns the argmax window index and text)*
 - [x] Implement training dataset/data loader and documented imbalance method.
 - [x] Train first model; save checkpoint, tokenizer, config, corpus digest, and seed.
 - [x] Reload checkpoint in a clean process and run validation inference.
@@ -160,9 +167,16 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 11. Semantic and context-aware extensions
 
+> Scope note: the "embedding" backend shipped and used in all reported numbers is
+> a deterministic **character n-gram lexical proxy**, not a neural sentence
+> embedder. A sentence-transformer backend is available behind the optional
+> `semantic` extra and the `LLMSENTINEL_EMBEDDER=st` switch but is **not evaluated
+> here**. The action-destination / authority / tool features carry the signal;
+> the similarity term is a lightweight add-on. All of this layer is experimental.
+
 - [x] Define task, untrusted instruction, and proposed-action representations.
 - [x] Collect cases where lexical overlap disagrees with semantic task conflict.
-- [x] Add embedding-based semantic similarity, contradiction, or action-destination features.
+- [x] Add embedding-based semantic similarity, contradiction, or action-destination features. *(action-destination features implemented; similarity via a lexical proxy by default, optional neural backend unevaluated)*
 - [x] Compare semantic features against lexical/register baselines.
 - [x] Test attacks reusing task vocabulary while changing destination, authority, or tool.
 - [x] Test benign off-topic instructions that should not be labelled attacks automatically.
@@ -203,17 +217,23 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 14. Live demo and usability
 
+> Scope note: the demo runs the **rules-only** detector (no checkpoint, starts
+> offline), so its risk numbers are not the headline transformer/hybrid results
+> and it shows the **rule trace**, not fusion evidence. The recorded fallback is
+> a deterministic **text transcript** (`docs/demo_transcript.txt`), not a
+> screen-capture video.
+
 - [x] Choose local UI framework and create page shell.
 - [x] Add RAG/tool-response/MCP-manifest selector.
-- [x] Add clean-versus-poisoned samples plus safe free text/JSON paste.
-- [x] Show original content, JSON tree/path, source provenance, and normalised evidence.
+- [x] Add clean-versus-poisoned samples plus safe free text/JSON paste. *(RAG text paste and tool-response JSON paste both supported)*
+- [x] Show original content, JSON tree/path, source provenance, and normalised evidence. *(normalised text shown in an expander when it differs from raw)*
 - [x] Highlight suspicious raw-text spans.
-- [x] Show risk, threshold, risk band, uncertainty/degraded warning, rule trace, and model/fusion evidence.
-- [x] Show proposed action, capability class, and deterministic policy decision.
+- [x] Show risk, threshold, risk band, uncertainty/degraded warning, rule trace, and model evidence. *(rule trace + normalisation evidence; the demo is rules-only, so no fusion term is shown)*
+- [x] Show proposed action, capability class, and deterministic policy decision. *(including an enforceable gate on manifest drift)*
 - [x] Add guard-off versus guard-on comparison.
 - [x] Add limitations, safety, and non-production disclaimer.
 - [x] Test clean/poisoned RAG, JSON, and MCP-manifest flows.
-- [x] Test a fresh restart, measure response time, and record fallback demo video.
+- [x] Test a fresh restart, measure response time, and record fallback demo transcript (text, not video).
 
 ## 15. Analysis, report, and presentation
 

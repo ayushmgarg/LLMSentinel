@@ -127,6 +127,18 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     print(f"corpus {relative(Path(args.corpus))} digest={digest} "
           f"train={len(splits['train'])} dev={len(splits['dev'])} test={len(splits['test'])}")
 
+    # Enforce "score test once": the held-out test split may be scored only once
+    # per corpus digest. A repeat needs --force-test and is recorded, so an
+    # accidental second peek cannot pass unnoticed.
+    if args.test and not _test_run_allowed(digest, force=args.force_test):
+        print(
+            f"refusing: the test split was already scored for corpus digest {digest} "
+            f"(see {relative(RESULTS_DIR / 'test_runs.json')}). "
+            f"Re-run with --force-test only if you understand this breaks the "
+            f"score-test-once protocol; rebuild the corpus for a fresh digest otherwise."
+        )
+        return 1
+
     rules = RulesScorer()
     systems: list[Any] = [
         MajorityBaseline(),
@@ -194,8 +206,37 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     written = [save_results(results, RESULTS_DIR / "results_dev.json")]
     if args.test:
         written.append(save_results(results, RESULTS_DIR / "results_test.json"))
+        _record_test_run(digest, forced=args.force_test)
     print("\nsaved " + ", ".join(relative(path) for path in written))
     return 0
+
+
+def _test_run_allowed(digest: str, *, force: bool) -> bool:
+    """True when the test split may be scored for this corpus digest."""
+
+    if force:
+        return True
+    log = RESULTS_DIR / "test_runs.json"
+    if not log.is_file():
+        return True
+    entries = json.loads(log.read_text(encoding="utf-8"))
+    return not any(entry.get("digest") == digest for entry in entries)
+
+
+def _record_test_run(digest: str, *, forced: bool) -> None:
+    import datetime
+
+    log = RESULTS_DIR / "test_runs.json"
+    entries = json.loads(log.read_text(encoding="utf-8")) if log.is_file() else []
+    entries.append(
+        {
+            "digest": digest,
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+            "forced": forced,
+        }
+    )
+    log.parent.mkdir(parents=True, exist_ok=True)
+    log.write_text(json.dumps(entries, indent=2), encoding="utf-8")
 
 
 # ------------------------------------------------------------------- export
@@ -394,6 +435,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--test",
         action="store_true",
         help="also score the held-out test split, once, with dev thresholds",
+    )
+    evaluate.add_argument(
+        "--force-test",
+        action="store_true",
+        help="score the test split even if it was already scored for this corpus "
+        "digest; breaks the score-test-once protocol and is recorded as forced",
     )
     evaluate.set_defaults(func=cmd_evaluate)
 

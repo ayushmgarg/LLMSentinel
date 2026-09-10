@@ -22,10 +22,14 @@ both a fold's training and validation halves -- and :meth:`score` returns those
 for any record it has an out-of-fold prediction for.  Dev numbers are therefore
 honest, and test is scored by the model refitted on all of dev.
 
-Calibration is the fusion model itself: a logistic regression fitted with log
-loss outputs probabilities calibrated to the dev distribution, which is what the
-threshold selection consumes.  No separate Platt or isotonic stage is applied,
-because on this corpus size a second calibration split costs more than it buys.
+On calibration: the fusion model is a logistic regression fitted with log loss,
+whose outputs are probability-like and are consumed directly by threshold
+selection.  They are **not** separately calibrated and should not be described as
+calibrated: no Platt or isotonic stage is applied and no reliability curve,
+Brier score or ECE has been measured on this corpus.  The project uses the
+output directly because all reported operating points are chosen by thresholding
+on dev, which needs a monotone score, not a calibrated one; validating
+calibration (a reliability plot and ECE) is deferred to the analysis section.
 """
 
 from __future__ import annotations
@@ -45,6 +49,41 @@ from .base import Scorer
 from .rules_scorer import RulesScorer
 
 __all__ = ["FusionScorer"]
+
+
+def _fold_groups(records: Sequence[CorpusRecord]) -> list[str]:
+    """Leakage-free fold labels: records sharing a payload family *or* a host
+    document land in the same group, via the transitive closure of both keys.
+
+    Grouping on ``group_id`` alone let two records that share a host document
+    fall in different folds; naively concatenating the two keys would instead
+    split one payload family across folds. A union-find over both edges keeps
+    every record connected by either relation together, so neither a host nor a
+    template can appear in both a fold's train and validation halves.
+    """
+
+    parent: dict[str, str] = {}
+
+    def find(node: str) -> str:
+        parent.setdefault(node, node)
+        root = node
+        while parent[root] != root:
+            root = parent[root]
+        while parent[node] != root:
+            parent[node], node = root, parent[node]
+        return root
+
+    def union(a: str, b: str) -> None:
+        parent[find(a)] = find(b)
+
+    for record in records:
+        rid = f"r:{record.record_id}"
+        union(rid, f"g:{record.group_id}")
+        host = str(record.extra.get("host_group", "")) if record.extra else ""
+        if host:
+            union(rid, f"h:{host}")
+
+    return [find(f"r:{record.record_id}") for record in records]
 
 
 @dataclass(slots=True)
@@ -140,7 +179,10 @@ class FusionScorer(Scorer):
             )
         features = self._matrix(records)
         labels = np.asarray([record.y for record in records], dtype=int)
-        groups = np.asarray([record.group_id for record in records], dtype=object)
+        # Group by payload family *and* host identity: grouping on group_id alone
+        # let two records that share a host document land in different folds, so
+        # the out-of-fold score could still see a near-duplicate host at fit time.
+        groups = np.asarray(_fold_groups(records), dtype=object)
 
         self._oof = {}
         usable_folds = min(self.folds, len(set(groups.tolist())))

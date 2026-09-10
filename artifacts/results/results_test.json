@@ -5,16 +5,11 @@
       "prior": 0.4510108864696734,
       "type": "MajorityBaseline"
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.2436548223350254,
       "auroc": 0.5,
-      "ci": {
-        "auprc": [
-          0.18781725888324874,
-          0.2945431472081217
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 48,
@@ -42,10 +37,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 0.029799994081258774,
-        "mean": 0.001687816223649658,
-        "p50": 0.001500011421740055,
-        "p95": 0.001600012183189392
+        "max": 0.03090000245720148,
+        "mean": 0.008300507809319131,
+        "p50": 0.007499998901039362,
+        "p95": 0.01171999901998788
       },
       "n": 197,
       "negatives": 149,
@@ -71,6 +66,24 @@
           "positives": 29.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.272108843537415,
+          "auroc": 0.5,
+          "n": 147.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "n": 9.0,
+          "positives": 8.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -90,12 +103,7 @@
     "test": {
       "auprc": 0.25268817204301075,
       "auroc": 0.5,
-      "ci": {
-        "auprc": [
-          0.1881720430107527,
-          0.3172043010752688
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 47,
@@ -150,6 +158,26 @@
           "positives": 23.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 0.10869565217391304,
+          "auroc": 0.5,
+          "n": 46.0,
+          "positives": 5.0
+        },
+        "builtin": {
+          "auprc": 0.291970802919708,
+          "auroc": 0.5,
+          "n": 137.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.6666666666666666,
+          "auroc": 0.5,
+          "n": 3.0,
+          "positives": 2.0
+        }
+      },
       "positive_rate": 0.25268817204301075,
       "positives": 47,
       "split": "test",
@@ -172,16 +200,11 @@
       "saturate_at": 2,
       "type": "KeywordBaseline"
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.25637901861252116,
       "auroc": 0.5262863534675616,
-      "ci": {
-        "auprc": [
-          0.19261832764341794,
-          0.3228618023485108
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 48,
@@ -209,10 +232,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 0.9418000117875636,
-        "mean": 0.16347918662994268,
-        "p50": 0.11610001092776656,
-        "p95": 0.5024399841204286
+        "max": 2.8660999960266054,
+        "mean": 0.5635071069688825,
+        "p50": 0.39790000300854445,
+        "p95": 1.7461400042520832
       },
       "n": 197,
       "negatives": 149,
@@ -238,6 +261,24 @@
           "positives": 29.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.281687074829932,
+          "auroc": 0.5205607476635513,
+          "n": 147.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "n": 9.0,
+          "positives": 8.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -257,12 +298,7 @@
     "test": {
       "auprc": 0.40656600320292835,
       "auroc": 0.6625593142507271,
-      "ci": {
-        "auprc": [
-          0.2977891424075531,
-          0.5194386216327601
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 47,
@@ -317,6 +353,26 @@
           "positives": 23.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 0.10869565217391304,
+          "auroc": 0.5,
+          "n": 46.0,
+          "positives": 5.0
+        },
+        "builtin": {
+          "auprc": 0.45411800486618004,
+          "auroc": 0.680798969072165,
+          "n": 137.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.6666666666666666,
+          "auroc": 0.5,
+          "n": 3.0,
+          "positives": 2.0
+        }
+      },
       "positive_rate": 0.25268817204301075,
       "positives": 47,
       "split": "test",
@@ -340,16 +396,11 @@
       "seed": 0,
       "type": "TfidfBaseline"
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.7689861962312345,
       "auroc": 0.8786353467561522,
-      "ci": {
-        "auprc": [
-          0.662344796272429,
-          0.8431372940556203
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 39,
@@ -377,10 +428,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 4.003899986855686,
-        "mean": 1.331961418260929,
-        "p50": 1.2156000011600554,
-        "p95": 2.1118399803526695
+        "max": 7.312899993848987,
+        "mean": 3.664437562435851,
+        "p50": 3.652699990198016,
+        "p95": 5.487460005679167
       },
       "n": 197,
       "negatives": 149,
@@ -439,6 +490,34 @@
           "recall@fpr=0.01": 0.7241379310344828
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.741432157509036,
+          "auroc": 0.8422897196261682,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.025,
+          "recall@fpr=0.01": 0.375
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 1.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -458,12 +537,7 @@
     "test": {
       "auprc": 0.674810786925996,
       "auroc": 0.7928975968161641,
-      "ci": {
-        "auprc": [
-          0.5515802129335676,
-          0.7833936240995335
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 42,
@@ -559,6 +633,38 @@
           "recall@fpr=0.01": 0.5652173913043478
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 0.09994506642782505,
+          "auroc": 0.36585365853658536,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 46.0,
+          "positives": 5.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        },
+        "builtin": {
+          "auprc": 0.7150898745576122,
+          "auroc": 0.8244845360824742,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.030927835051546393,
+          "n": 137.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.075,
+          "recall@fpr=0.01": 0.375
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 1.0,
+          "n": 3.0,
+          "positives": 2.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.25268817204301075,
       "positives": 47,
       "split": "test",
@@ -584,16 +690,11 @@
       "seed": 0,
       "type": "TfidfCharBaseline"
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.730184477988101,
       "auroc": 0.8654921700223712,
-      "ci": {
-        "auprc": [
-          0.6268338902769209,
-          0.8150519773925753
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 32,
@@ -621,10 +722,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 157.13559999130666,
-        "mean": 7.898387816784251,
-        "p50": 6.664499989710748,
-        "p95": 11.504439974669364
+        "max": 162.92689999681897,
+        "mean": 9.09533096425091,
+        "p50": 8.062599998083897,
+        "p95": 13.352360008866524
       },
       "n": 197,
       "negatives": 149,
@@ -683,6 +784,34 @@
           "recall@fpr=0.01": 0.5862068965517241
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.6664541806553417,
+          "auroc": 0.8170560747663551,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.2,
+          "recall@fpr=0.01": 0.275
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 1.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -702,12 +831,7 @@
     "test": {
       "auprc": 0.7252823628246989,
       "auroc": 0.8281034746670748,
-      "ci": {
-        "auprc": [
-          0.6147961350676368,
-          0.8312583874460382
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 32,
@@ -803,6 +927,38 @@
           "recall@fpr=0.01": 0.782608695652174
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 0.12316716616716616,
+          "auroc": 0.4975609756097561,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 46.0,
+          "positives": 5.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        },
+        "builtin": {
+          "auprc": 0.7648204268473975,
+          "auroc": 0.8618556701030927,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.07216494845360824,
+          "n": 137.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.325,
+          "recall@fpr=0.01": 0.5
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 3.0,
+          "positives": 2.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.25268817204301075,
       "positives": 47,
       "split": "test",
@@ -847,16 +1003,11 @@
       "strict": false,
       "type": "RulesScorer"
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.7688610526810655,
       "auroc": 0.8748601789709173,
-      "ci": {
-        "auprc": [
-          0.6493712022714556,
-          0.8808602455053048
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 47,
@@ -884,10 +1035,10 @@
         "fpr=0.01": 0.02127659574468085
       },
       "latency_ms": {
-        "max": 79.80220002355054,
-        "mean": 15.49342893262578,
-        "p50": 12.55059998948127,
-        "p95": 43.249420018400954
+        "max": 101.20940000342671,
+        "mean": 15.270533503167956,
+        "p50": 9.68020000436809,
+        "p95": 48.64964000007597
       },
       "n": 197,
       "negatives": 149,
@@ -946,6 +1097,34 @@
           "recall@fpr=0.01": 0.41379310344827586
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.8862158472822577,
+          "auroc": 0.9740654205607477,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.025,
+          "recall@fpr=0.01": 0.5
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -965,12 +1144,7 @@
     "test": {
       "auprc": 0.6733915735375419,
       "auroc": 0.7561610286239094,
-      "ci": {
-        "auprc": [
-          0.5556955597547947,
-          0.7853282127419121
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 41,
@@ -1066,6 +1240,38 @@
           "recall@fpr=0.01": 0.13043478260869565
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 0.10869565217391304,
+          "auroc": 0.45121951219512196,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.024390243902439025,
+          "n": 46.0,
+          "positives": 5.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        },
+        "builtin": {
+          "auprc": 0.7824737889847379,
+          "auroc": 0.8137886597938145,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 137.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.15,
+          "recall@fpr=0.01": 0.225
+        },
+        "injecagent": {
+          "auprc": 0.6666666666666666,
+          "auroc": 0.5,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 3.0,
+          "positives": 2.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        }
+      },
       "positive_rate": 0.25268817204301075,
       "positives": 47,
       "split": "test",
@@ -1101,16 +1307,11 @@
       "weight_decay": 0.01,
       "window_training": true
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
       "auprc": 0.9058836175629985,
       "auroc": 0.9503635346756151,
-      "ci": {
-        "auprc": [
-          0.8419166798776758,
-          0.9564332970584396
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 19,
@@ -1138,10 +1339,10 @@
         "fpr=0.01": 0.02127659574468085
       },
       "latency_ms": {
-        "max": 1336.5870999987237,
-        "mean": 226.95341269127542,
-        "p50": 111.54329997953027,
-        "p95": 938.1881399895063
+        "max": 1834.1110999899684,
+        "mean": 298.7272324873611,
+        "p50": 142.77120000042487,
+        "p95": 1271.578000008594
       },
       "n": 197,
       "negatives": 149,
@@ -1200,6 +1401,34 @@
           "recall@fpr=0.01": 0.7241379310344828
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.8881487488719131,
+          "auroc": 0.9352803738317756,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.55,
+          "recall@fpr=0.01": 0.575
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.875,
+          "recall@fpr=0.01": 0.875
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -1219,12 +1448,7 @@
     "test": {
       "auprc": 0.9701606898842311,
       "auroc": 0.9790295423235877,
-      "ci": {
-        "auprc": [
-          0.9299718611352065,
-          0.997131727193302
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 9,
@@ -1318,6 +1542,38 @@
           "positives": 23.0,
           "recall@fpr=0.001": 0.8695652173913043,
           "recall@fpr=0.01": 0.8695652173913043
+        }
+      },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 46.0,
+          "positives": 5.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        },
+        "builtin": {
+          "auprc": 0.9671032601147203,
+          "auroc": 0.9726804123711341,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 137.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.775,
+          "recall@fpr=0.01": 0.8
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 3.0,
+          "positives": 2.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
         }
       },
       "positive_rate": 0.25268817204301075,
@@ -1481,28 +1737,23 @@
       "type": "FusionScorer",
       "used_transformer": true
     },
-    "data_version": "44bff1b438d50f12",
+    "data_version": "3756b0f76e34f81d",
     "dev": {
-      "auprc": 0.9569529620301808,
-      "auroc": 0.9848993288590604,
-      "ci": {
-        "auprc": [
-          0.919469330079791,
-          0.986484567427232
-        ]
-      },
+      "auprc": 0.9224586265482624,
+      "auroc": 0.9688199105145414,
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
-          "fn": 14,
+          "fn": 17,
           "fp": 0,
           "tn": 149,
-          "tp": 34
+          "tp": 31
         },
         "fpr=0.01": {
-          "fn": 12,
+          "fn": 13,
           "fp": 1,
           "tn": 148,
-          "tp": 36
+          "tp": 35
         }
       },
       "fpr_achieved": {
@@ -1529,7 +1780,7 @@
           "meta_instruction__support": 15.0,
           "metadata_poisoning": 0.8,
           "metadata_poisoning__support": 5.0,
-          "obfuscation": 0.75,
+          "obfuscation": 0.6,
           "obfuscation__support": 20.0
         },
         "fpr=0.01": {
@@ -1539,14 +1790,14 @@
           "meta_instruction__support": 15.0,
           "metadata_poisoning": 1.0,
           "metadata_poisoning__support": 5.0,
-          "obfuscation": 0.8,
+          "obfuscation": 0.75,
           "obfuscation__support": 20.0
         }
       },
       "per_channel": {
         "rag_document": {
-          "auprc": 0.9200346805388823,
-          "auroc": 0.982363315696649,
+          "auprc": 0.8975001005186763,
+          "auroc": 0.9753086419753086,
           "fpr@fpr=0.001": 0.0,
           "fpr@fpr=0.01": 0.0,
           "n": 95.0,
@@ -1565,14 +1816,42 @@
           "recall@fpr=0.01": 1.0
         },
         "tool_response": {
-          "auprc": 0.9793167117972459,
-          "auroc": 0.9891443167305236,
+          "auprc": 0.9401669496321449,
+          "auroc": 0.9655172413793103,
           "fpr@fpr=0.001": 0.0,
           "fpr@fpr=0.01": 0.018518518518518517,
           "n": 83.0,
           "positives": 29.0,
-          "recall@fpr=0.001": 0.6896551724137931,
-          "recall@fpr=0.01": 0.7241379310344828
+          "recall@fpr=0.001": 0.5862068965517241,
+          "recall@fpr=0.01": 0.6896551724137931
+        }
+      },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.9695794583842685,
+          "auroc": 0.9864485981308412,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.775,
+          "recall@fpr=0.01": 0.875
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
         }
       },
       "positive_rate": 0.2436548223350254,
@@ -1580,12 +1859,12 @@
       "split": "dev",
       "system": "hybrid",
       "thresholds": {
-        "fpr=0.001": 0.9221655588741288,
-        "fpr=0.01": 0.8824176465585155
+        "fpr=0.001": 0.9192339342456595,
+        "fpr=0.01": 0.9172278865835689
       },
       "tpr_at_fpr": {
-        "fpr=0.001": 0.7083333333333334,
-        "fpr=0.01": 0.75
+        "fpr=0.001": 0.6458333333333334,
+        "fpr=0.01": 0.7291666666666666
       },
       "warnings": []
     },
@@ -1594,12 +1873,7 @@
     "test": {
       "auprc": 0.9705457820914484,
       "auroc": 0.9778049900505128,
-      "ci": {
-        "auprc": [
-          0.926400218936198,
-          0.997747953951631
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 22,
@@ -1608,10 +1882,10 @@
           "tp": 25
         },
         "fpr=0.01": {
-          "fn": 20,
+          "fn": 22,
           "fp": 0,
           "tn": 139,
-          "tp": 27
+          "tp": 25
         }
       },
       "fpr_achieved": {
@@ -1630,8 +1904,8 @@
       "n": 186,
       "negatives": 139,
       "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.882418",
-        "threshold for fpr=0.001 taken from dev: 0.922166"
+        "threshold for fpr=0.01 taken from dev: 0.917228",
+        "threshold for fpr=0.001 taken from dev: 0.919234"
       ],
       "per_attack_recall": {
         "fpr=0.001": {
@@ -1657,7 +1931,7 @@
           "meta_instruction__support": 18.0,
           "metadata_poisoning": 0.0,
           "metadata_poisoning__support": 4.0,
-          "obfuscation": 1.0,
+          "obfuscation": 0.7777777777777778,
           "obfuscation__support": 9.0,
           "unknown": 0.0,
           "unknown__support": 5.0
@@ -1672,7 +1946,7 @@
           "n": 95.0,
           "positives": 19.0,
           "recall@fpr=0.001": 0.5263157894736842,
-          "recall@fpr=0.01": 0.5789473684210527
+          "recall@fpr=0.01": 0.5263157894736842
         },
         "tool_metadata": {
           "auprc": 0.632983682983683,
@@ -1692,7 +1966,39 @@
           "n": 69.0,
           "positives": 23.0,
           "recall@fpr=0.001": 0.6086956521739131,
-          "recall@fpr=0.01": 0.6521739130434783
+          "recall@fpr=0.01": 0.6086956521739131
+        }
+      },
+      "per_dataset": {
+        "bipia": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 46.0,
+          "positives": 5.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        },
+        "builtin": {
+          "auprc": 0.9679883966341684,
+          "auroc": 0.9713917525773197,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 137.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.625,
+          "recall@fpr=0.01": 0.625
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 3.0,
+          "positives": 2.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
         }
       },
       "positive_rate": 0.25268817204301075,
@@ -1700,12 +2006,12 @@
       "split": "test",
       "system": "hybrid",
       "thresholds": {
-        "fpr=0.001": 0.9221655588741288,
-        "fpr=0.01": 0.8824176465585155
+        "fpr=0.001": 0.9192339342456595,
+        "fpr=0.01": 0.9172278865835689
       },
       "tpr_at_fpr": {
         "fpr=0.001": 0.5319148936170213,
-        "fpr=0.01": 0.574468085106383
+        "fpr=0.01": 0.5319148936170213
       },
       "warnings": []
     }

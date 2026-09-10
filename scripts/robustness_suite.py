@@ -31,7 +31,7 @@ from llmsentinel.models import RulesScorer, TfidfBaseline
 from llmsentinel.models.base import Scorer
 from llmsentinel.paths import CORPUS_PATH, RESULTS_DIR
 from llmsentinel.robustness import run_suite
-from llmsentinel.schema import Channel, CorpusRecord, read_jsonl
+from llmsentinel.schema import Channel, CorpusRecord, Split, read_jsonl
 
 CHANNELS = ("rag_document", "tool_response", "tool_metadata")
 
@@ -134,9 +134,11 @@ def main() -> int:
     parser.add_argument("--checkpoint", default=None)
     args = parser.parse_args()
 
-    records = read_jsonl(CORPUS_PATH)
+    # Exploratory probe: never touch the held-out test split, so running this
+    # repeatedly cannot leak test information into design choices.
+    records = [r for r in read_jsonl(CORPUS_PATH) if r.split is not Split.TEST]
     threshold = _rules_threshold()
-    print(f"corpus {CORPUS_PATH.name}: {len(records)} records\n")
+    print(f"corpus {CORPUS_PATH.name}: {len(records)} train+dev records (test excluded)\n")
     _perturbation_report(records, threshold, args.checkpoint)
     _cross_channel(records)
     _metadata_vs_response(records)

@@ -25,7 +25,7 @@ import numpy as np
 
 from llmsentinel.evaluation.metrics import average_precision
 from llmsentinel.paths import CORPUS_PATH
-from llmsentinel.schema import CorpusRecord, read_jsonl
+from llmsentinel.schema import CorpusRecord, Split, read_jsonl
 from llmsentinel.semantic import SemanticScorer
 
 SOURCES = ("builtin", "bipia", "injecagent")
@@ -48,9 +48,13 @@ def _auprc(scorer: SemanticScorer, records: Sequence[CorpusRecord]) -> tuple[flo
 
 
 def main() -> int:
-    records = read_jsonl(CORPUS_PATH)
+    # Exploratory transfer probe: exclude the held-out test split entirely so
+    # repeated runs cannot leak test information. "Held-out source" below refers
+    # to a source dataset, not the test split.
+    records = [r for r in read_jsonl(CORPUS_PATH) if r.split is not Split.TEST]
     grouped = _by_source(records)
-    print("corpus sizes by source: " + ", ".join(f"{k}={len(v)}" for k, v in grouped.items()))
+    print("train+dev sizes by source (test split excluded): "
+          + ", ".join(f"{k}={len(v)}" for k, v in grouped.items()))
     print("\n## Leave-one-source-out transfer (semantic scorer)\n")
     print("| held-out source | n / positives | AUPRC with source feats | AUPRC without | delta |")
     print("|---|---|---|---|---|")

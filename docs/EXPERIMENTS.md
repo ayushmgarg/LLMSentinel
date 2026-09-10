@@ -542,8 +542,9 @@ not match their literal wording:
   never written to disk.
 
 **Lint and test baseline recorded.** `ruff check src tests scripts` clean;
-`pytest tests -q` 91 passed. This is the recorded initial result for the
-corresponding Week 1 checklist item.
+`pytest tests -q` 91 passed. This is the recorded initial Week-1 result and is
+left as the historical baseline; the suite has grown since (166 tests as of
+2026-09-10 — see that date's entries), so this figure is not the current count.
 
 ---
 
@@ -771,3 +772,91 @@ Per-channel rules AUPRC: tool_response 0.619, tool_metadata 0.735 (33 positives)
 
 **Out of scope (stated):** genuine paraphrase, multilingual, and adaptive
 white-box attackers.
+
+---
+
+## 2026-09-10 · Known data limitations (split confound and source skew)
+
+Recorded so that results are read with the right caveats; these are limitations,
+not results.
+
+- **Split support is thin and uneven per source.** Under the canonical seed the
+  dev split has **zero BIPIA positives**, very few InjecAgent benign examples,
+  and only a handful of `tool_metadata` positives; test has similarly small
+  metadata support. Per-source and per-channel numbers with single-digit support
+  are sanity signals, not estimates, and the per-dataset / per-channel tables
+  print support counts for exactly this reason. A source-stratified re-split
+  (guaranteeing per-source positives in every split) is future work; it would
+  change the frozen digest and require a full re-evaluation, so it is not done
+  here.
+- **InjecAgent is label-skewed** (214/230 records are injections) with a
+  different style from BIPIA and the builtin data. The near-perfect
+  `tool_response` and InjecAgent numbers can therefore reflect source/style
+  recognition as much as injection detection; the cross-channel and
+  leave-one-source-out transfer probes (docs/robustness.md, provenance_transfer)
+  are the honest check on this, and they show the transfer is not free.
+- **Consequence.** Treat the combined-corpus headline AUPRC as confounded by
+  source and channel. The per-source, per-channel, and transfer breakdowns are
+  the numbers to quote when a claim is about detection rather than about this
+  particular corpus.
+
+## 2026-09-10 · Integrity and protocol fixes (no new scores)
+
+- **Corpus digest now hashes full record content**, not just record ids, so an
+  edited record changes the reported `data_version`. Digests logged before this
+  date were id-only and are not comparable to digests produced afterwards.
+- **Test-split protocol is enforced.** `llmsentinel evaluate --test` records each
+  test scoring in `artifacts/results/test_runs.json` keyed by corpus digest and
+  refuses a second run for the same digest without `--force-test` (which is
+  recorded as forced). The robustness and provenance-transfer scripts now load
+  **train+dev only**, never the held-out test split.
+- **Fusion out-of-fold grouping** now unions payload family *and* host identity
+  (connected components), so neither a host nor a template can appear in both a
+  fold's train and validation halves.
+- **Calibration claim withdrawn.** The fusion output is used directly for
+  threshold selection and is described as probability-like, not calibrated; no
+  reliability curve / Brier / ECE has been measured (deferred to analysis).
+
+Commit-hash convention: entries predating source control identify code by data
+digest and commands; entries from 2026-09-10 onward are carried by the dated
+commits on branch `a1` (see `git log`), which name each change in their subject.
+
+## 2026-09-10 · Re-evaluation after the fusion OOF-grouping fix
+
+**Why.** The fusion out-of-fold grouping now unions payload family and host
+identity (previously grouped by family alone), and the corpus digest is now
+content-based. Re-ran `llmsentinel evaluate --test` once (recorded in
+test_runs.json) to refresh the tables.
+
+**Dev (out-of-fold for hybrid).** rules-only AUPRC 0.673, transformer 0.888,
+**hybrid 0.970** (was 0.957 under family-only OOF grouping — the stricter
+grouping changed the dev out-of-fold estimate; test is unaffected).
+
+**Test (scored once with dev thresholds).** transformer AUPRC 0.970, **hybrid
+0.971**. Per-source test AUPRC: builtin 0.968, bipia 1.000 (5 positives),
+injecagent 1.000 (2 positives) — the tiny bipia/injecagent test support is why
+those read 1.000 and must not be quoted as headline detection numbers. TF-IDF
+baselines overran the 1% FPR budget on test (realised 0.029 / 0.050), flagged in
+the table; the transformer and hybrid held 0.000 realised FPR.
+
+**Note.** These supersede the dev hybrid 0.957 figure in earlier entries.
+
+## 2026-09-10 · Transformer windowing fixes (section 9)
+
+Three section-9 gaps closed in code:
+
+- **Span-aware window labels.** `build_examples(..., span_aware_labels=True)` now
+  labels a positive record's windows 1 only where the injected span lands (a
+  normalised-prefix match), with a document-label fallback for records that have
+  no spans or whose spans match no window. This replaces "every window inherits
+  the document label". **The shipped checkpoint predates this change** — it was
+  trained with document-label windows (see the 2026-09-06 training entry) — so
+  realising the improvement needs a re-train (~53 min CPU), which is deferred;
+  the code default is now span-aware for the next training run.
+- **Truncation is no longer silent.** `_window_plan` returns the windows scored
+  and the total a document would need; `score_details` exposes `truncated` and
+  the overflow count, so text beyond `max_windows` is reported rather than
+  dropped unseen.
+- **Highest-risk window preserved.** `score_details` returns, per record, the
+  argmax window index and its text alongside the risk — the evidence the V2
+  checkbox asks for, previously discarded by the max-over-windows reduction.

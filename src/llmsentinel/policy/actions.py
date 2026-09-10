@@ -30,6 +30,10 @@ class ActionCategory(str, Enum):
     EXTERNAL_SEND = "external_send"
     WRITE = "write"
     DESTRUCTIVE = "destructive"
+    #: Actions that raise the agent's own privilege or grant access to others
+    #: (role grants, admin elevation, disabling authentication, impersonation).
+    #: Treated as the most severe class because it widens every later action.
+    PRIVILEGE_ESCALATION = "privilege_escalation"
 
     @classmethod
     def coerce(cls, value: Any) -> ActionCategory:

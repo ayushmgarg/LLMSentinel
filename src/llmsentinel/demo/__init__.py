@@ -7,6 +7,7 @@ from .pipeline import (
     UnitFinding,
     analyse_manifest,
     analyse_rag,
+    analyse_rag_text,
     analyse_tool_response,
 )
 from .retriever import Document, RetrievedChunk, Retriever
@@ -31,6 +32,7 @@ __all__ = [
     "UnitFinding",
     "analyse_manifest",
     "analyse_rag",
+    "analyse_rag_text",
     "analyse_tool_response",
     "load_manifest_scenarios",
     "load_rag_scenarios",

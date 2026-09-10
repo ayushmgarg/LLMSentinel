@@ -84,6 +84,13 @@ def test_destructive_is_blocked_even_at_zero_risk() -> None:
     assert decision.outcome is Outcome.BLOCK
 
 
+def test_privilege_escalation_is_blocked_at_every_risk_level() -> None:
+    for band in BANDS:
+        decision = decide("grant_admin", band)
+        assert decision.category is ActionCategory.PRIVILEGE_ESCALATION
+        assert decision.outcome is Outcome.BLOCK
+
+
 # ------------------------------------------------------------- fail-safe rules
 def test_unknown_tool_takes_the_restrictive_fallback() -> None:
     decision = decide("some_tool_nobody_reviewed", RiskBand.LOW)

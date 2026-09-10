@@ -43,7 +43,29 @@ from ..schema import CorpusRecord
 from .base import Scorer
 from .dataset import build_examples, make_dataloader
 
-__all__ = ["BACKBONE_FALLBACK", "BACKBONE_PRIMARY", "TransformerConfig", "TransformerScorer", "torch_available"]
+__all__ = [
+    "BACKBONE_FALLBACK",
+    "BACKBONE_PRIMARY",
+    "TransformerConfig",
+    "TransformerScorer",
+    "WindowScore",
+    "torch_available",
+]
+
+
+@dataclass(slots=True)
+class WindowScore:
+    """A record's risk plus the evidence of which window produced it."""
+
+    risk: float
+    top_window_index: int
+    windows_scored: int
+    windows_total: int
+    truncated: bool
+    top_window_text: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
 BACKBONE_PRIMARY = "distilroberta-base"
 BACKBONE_FALLBACK = "distilbert-base-uncased"
@@ -96,6 +118,11 @@ class TransformerConfig:
     #: scores.  Disabling it truncates to ``max_length`` instead, which is the
     #: cheaper and noisier option; the two are compared in docs/EXPERIMENTS.md.
     window_training: bool = True
+    #: Label a positive record's windows 1 only where the injected span lands,
+    #: instead of inheriting the document label on every window.  Records without
+    #: spans fall back to the document label.  See docs/EXPERIMENTS.md for which
+    #: checkpoints were trained with this on.
+    span_aware_labels: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -139,16 +166,15 @@ class TransformerScorer(Scorer):
         if self._model is None:
             self._load_backbone()
 
-        # Train on the same windows inference scores.  Truncating training to
-        # the first 256 tokens while inference takes the maximum over
-        # overlapping windows means the model is never shown a payload that
-        # sits in the middle or at the end of a long document -- exactly the
-        # positions the corpus varies on purpose.  Each window inherits its
-        # record's label, which is noisy for long positives (some windows hold
-        # no payload) and is the accepted cost of multiple-instance training at
-        # this scale.
+        # Train on the same windows inference scores.  With span-aware labelling
+        # a positive record's windows are labelled 1 only where the injected span
+        # lands, so a clean window of a long positive is not taught as an
+        # injection; records without spans fall back to the document label.
         examples = build_examples(
-            records, windower=self._windows, window_training=self.config.window_training
+            records,
+            windower=self._windows,
+            window_training=self.config.window_training,
+            span_aware_labels=self.config.span_aware_labels,
         )
         labels = np.asarray([example.label for example in examples], dtype=np.int64)
         weights = self._class_weights(labels)
@@ -210,17 +236,29 @@ class TransformerScorer(Scorer):
 
     # -------------------------------------------------------------- inference
     def score(self, records: Sequence[CorpusRecord]) -> np.ndarray:
+        return np.asarray([detail.risk for detail in self.score_details(records)], dtype=float)
+
+    def score_details(self, records: Sequence[CorpusRecord]) -> list[WindowScore]:
+        """Score each record and preserve which window carried the risk.
+
+        The highest-risk window's index and text are retained (the V2 checkbox
+        "preserve highest-risk window position/evidence"), and truncation is
+        reported rather than silent: when a document needs more than
+        ``max_windows`` windows, the overflow is counted so a clipped input is
+        visible, not ignored.
+        """
+
         torch, _ = _require_torch()
         if self._model is None:
             raise RuntimeError("transformer must be fitted or loaded before scoring")
+        details: list[WindowScore] = []
         if not records:
-            return np.zeros(0, dtype=float)
+            return details
 
-        scores = np.zeros(len(records), dtype=float)
         self._model.eval()
         with torch.no_grad():
-            for index, record in enumerate(records):
-                windows = self._windows(record.text)
+            for record in records:
+                windows, total = self._window_plan(record.text)
                 encoded = self._tokenizer(
                     windows,
                     truncation=True,
@@ -231,22 +269,41 @@ class TransformerScorer(Scorer):
                 probabilities = torch.softmax(self._model(**encoded).logits, dim=-1)[:, 1]
                 # Max over windows: one malicious sentence must not be averaged
                 # away by the clean remainder of a long document.
-                scores[index] = float(probabilities.max().item())
-        return scores
+                top = int(torch.argmax(probabilities).item())
+                details.append(
+                    WindowScore(
+                        risk=float(probabilities[top].item()),
+                        top_window_index=top,
+                        windows_scored=len(windows),
+                        windows_total=total,
+                        truncated=total > len(windows),
+                        top_window_text=windows[top][:200],
+                    )
+                )
+        return details
 
-    def _windows(self, text: str) -> list[str]:
-        """Split long text into overlapping windows of whole tokens."""
+    def _window_plan(self, text: str) -> tuple[list[str], int]:
+        """Overlapping windows (capped at ``max_windows``) and the total count.
+
+        Returns the windows actually scored together with how many windows the
+        text would have produced before the cap, so the caller can tell when a
+        long input was clipped.
+        """
 
         ids = self._tokenizer(text, add_special_tokens=False)["input_ids"]
         budget = self.config.max_length - 2  # room for the special tokens
         if len(ids) <= budget:
-            return [text]
+            return [text], 1
         step = max(1, budget - self.config.stride)
-        windows = [
-            self._tokenizer.decode(ids[start : start + budget])
-            for start in range(0, len(ids), step)
-        ][: self.config.max_windows]
-        return windows or [text]
+        starts = list(range(0, len(ids), step))
+        windows = [self._tokenizer.decode(ids[start : start + budget]) for start in starts]
+        capped = windows[: self.config.max_windows] or [text]
+        return capped, len(starts)
+
+    def _windows(self, text: str) -> list[str]:
+        """Windows used for training; the scored subset of :meth:`_window_plan`."""
+
+        return self._window_plan(text)[0]
 
     # ------------------------------------------------------------------- I/O
     def save(self, path: str | Path | None = None) -> Path:

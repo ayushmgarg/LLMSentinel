@@ -81,6 +81,11 @@ def test_changed_hash_manifest_reports_drift() -> None:
     # The rewrite reads harmless, but a silent change to an approved tool is the
     # signal: drift must be reported regardless of the new description's content.
     assert "drift" in result.manifest_note
+    # Drift is an enforceable gate, not just a note: it must produce a blocking
+    # policy decision for using the changed tool.
+    assert result.policy_decision is not None
+    assert result.policy_decision.outcome is Outcome.BLOCK
+    assert any("drift" in reason for reason in result.policy_decision.reasons)
 
 
 def test_demo_result_serialises() -> None:

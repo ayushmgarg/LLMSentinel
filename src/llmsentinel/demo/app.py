@@ -28,6 +28,7 @@ import streamlit as st
 from llmsentinel.demo import (
     analyse_manifest,
     analyse_rag,
+    analyse_rag_text,
     analyse_tool_response,
     load_manifest_scenarios,
     load_rag_scenarios,
@@ -93,6 +94,15 @@ def _render_finding(finding: Any, show_json_path: bool) -> None:
     if show_json_path and v.json_path:
         st.caption(f"JSON path: `{v.json_path}`")
     st.markdown(_highlight(finding.raw_text, v.flagged_spans), unsafe_allow_html=True)
+    normalized = getattr(finding, "normalized_text", "") or ""
+    if normalized and normalized != finding.raw_text:
+        with st.expander("normalised text (what the detector scored)"):
+            st.markdown(
+                "<div style='white-space:pre-wrap;font-family:monospace;font-size:0.85em'>"
+                + html.escape(normalized)
+                + "</div>",
+                unsafe_allow_html=True,
+            )
     if v.rule_trace:
         with st.expander(f"why — {len(v.rule_trace)} rule signal(s)"):
             for reason in v.rule_trace:
@@ -156,6 +166,12 @@ def _disclaimer() -> None:
             "is executed — the policy returns a decision, never an action. "
             "Runs fully offline; no credentials, no network."
         )
+        st.caption(
+            "**This demo scores with the rules-only detector**, so it starts with "
+            "no checkpoint and its risk numbers are **not** the headline "
+            "transformer/hybrid results — those are in docs/EXPERIMENTS.md. The "
+            "rule trace is what makes the reasoning visible here."
+        )
 
 
 # ------------------------------------------------------------------------ page
@@ -184,12 +200,21 @@ def main() -> None:
     if source == "RAG document":
         scenarios = load_rag_scenarios()
         choice = st.sidebar.radio("Sample", ["clean", "poisoned"])
+        pasted = st.sidebar.text_area("…or paste your own document text", height=140)
         scenario = scenarios[choice]
         st.markdown(f"### {scenario.name}")
         st.markdown(f"**User query (host task):** {scenario.query}")
-        st.caption(f"provenance: local demo corpus · {len(scenario.documents)} documents indexed")
+        if pasted.strip():
+            st.caption("using pasted document text (no retrieval)")
+            st.markdown(_highlight(pasted, []))
+        else:
+            st.caption(f"provenance: local demo corpus · {len(scenario.documents)} documents indexed")
         if st.button("Run analysis", type="primary"):
-            result = analyse_rag(scenario, catalog)
+            result = (
+                analyse_rag_text(pasted, query=scenario.query, catalog=catalog)
+                if pasted.strip()
+                else analyse_rag(scenario, catalog)
+            )
 
     elif source == "Tool response (JSON)":
         scenarios = load_tool_scenarios()

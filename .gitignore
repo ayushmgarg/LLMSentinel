@@ -25,4 +25,7 @@ dist/
 
 # Demo server log
 artifacts/results/streamlit.log
+
+# Local score-test-once ledger (machine state, not shared evidence)
+artifacts/results/test_runs.json
 src/*.egg-info/

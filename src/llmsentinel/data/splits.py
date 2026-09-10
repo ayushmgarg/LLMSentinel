@@ -179,9 +179,17 @@ def apply_splits(
 
 
 def corpus_digest(records: Sequence[CorpusRecord]) -> str:
-    """Content hash of a corpus, used as the ``data_version`` in experiment logs."""
+    """Content hash of a corpus, used as the ``data_version`` in experiment logs.
+
+    Hashes the full serialised record -- text, label, channel, attack type,
+    spans, host task, json path, split and id -- not just the id. An earlier
+    version hashed ids alone, so editing a record's text without changing its id
+    left the reported ``data_version`` unchanged; that is the bug this closes.
+    The digest value therefore differs from ids-only digests logged before
+    2026-09-10, which is expected and noted in the experiment log.
+    """
 
     digest = hashlib.sha256()
-    for record_id in sorted(record.record_id for record in records):
-        digest.update(record_id.encode("utf-8"))
+    for line in sorted(record.to_json() for record in records):
+        digest.update(line.encode("utf-8"))
     return digest.hexdigest()[:16]
