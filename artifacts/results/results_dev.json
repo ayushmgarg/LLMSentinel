@@ -9,12 +9,7 @@
     "dev": {
       "auprc": 0.2436548223350254,
       "auroc": 0.5,
-      "ci": {
-        "auprc": [
-          0.18781725888324874,
-          0.2945431472081217
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 48,
@@ -42,10 +37,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 0.029799994081258774,
-        "mean": 0.001687816223649658,
-        "p50": 0.001500011421740055,
-        "p95": 0.001600012183189392
+        "max": 0.01750000228639692,
+        "mean": 0.0024736042076551595,
+        "p50": 0.0021000014385208488,
+        "p95": 0.005019994569011026
       },
       "n": 197,
       "negatives": 149,
@@ -71,6 +66,24 @@
           "positives": 29.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.272108843537415,
+          "auroc": 0.5,
+          "n": 147.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "n": 9.0,
+          "positives": 8.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -87,83 +100,7 @@
     },
     "name": "majority",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.25268817204301075,
-      "auroc": 0.5,
-      "ci": {
-        "auprc": [
-          0.1881720430107527,
-          0.3172043010752688
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 47,
-          "fp": 0,
-          "tn": 139,
-          "tp": 0
-        },
-        "fpr=0.01": {
-          "fn": 47,
-          "fp": 0,
-          "tn": 139,
-          "tp": 0
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": false
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: inf",
-        "threshold for fpr=0.001 taken from dev: inf"
-      ],
-      "per_attack_recall": {},
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.2,
-          "auroc": 0.5,
-          "n": 95.0,
-          "positives": 19.0
-        },
-        "tool_metadata": {
-          "auprc": 0.22727272727272727,
-          "auroc": 0.5,
-          "n": 22.0,
-          "positives": 5.0
-        },
-        "tool_response": {
-          "auprc": 0.3333333333333333,
-          "auroc": 0.5,
-          "n": 69.0,
-          "positives": 23.0
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "majority",
-      "thresholds": {
-        "fpr=0.001": Infinity,
-        "fpr=0.01": Infinity
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "warnings": []
-    }
+    "test": null
   },
   {
     "config": {
@@ -176,12 +113,7 @@
     "dev": {
       "auprc": 0.25637901861252116,
       "auroc": 0.5262863534675616,
-      "ci": {
-        "auprc": [
-          0.19261832764341794,
-          0.3228618023485108
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 48,
@@ -209,10 +141,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 0.9418000117875636,
-        "mean": 0.16347918662994268,
-        "p50": 0.11610001092776656,
-        "p95": 0.5024399841204286
+        "max": 1.0194999922532588,
+        "mean": 0.21283959369777897,
+        "p50": 0.16680000408086926,
+        "p95": 0.5967399978544562
       },
       "n": 197,
       "negatives": 149,
@@ -238,6 +170,24 @@
           "positives": 29.0
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.281687074829932,
+          "auroc": 0.5205607476635513,
+          "n": 147.0,
+          "positives": 40.0
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "n": 9.0,
+          "positives": 8.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -254,83 +204,7 @@
     },
     "name": "keyword",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.40656600320292835,
-      "auroc": 0.6625593142507271,
-      "ci": {
-        "auprc": [
-          0.2977891424075531,
-          0.5194386216327601
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 47,
-          "fp": 0,
-          "tn": 139,
-          "tp": 0
-        },
-        "fpr=0.01": {
-          "fn": 47,
-          "fp": 0,
-          "tn": 139,
-          "tp": 0
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": false
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: inf",
-        "threshold for fpr=0.001 taken from dev: inf"
-      ],
-      "per_attack_recall": {},
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.40977443609022557,
-          "auroc": 0.7039473684210527,
-          "n": 95.0,
-          "positives": 19.0
-        },
-        "tool_metadata": {
-          "auprc": 0.22727272727272727,
-          "auroc": 0.5,
-          "n": 22.0,
-          "positives": 5.0
-        },
-        "tool_response": {
-          "auprc": 0.4601449275362319,
-          "auroc": 0.6521739130434783,
-          "n": 69.0,
-          "positives": 23.0
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "keyword",
-      "thresholds": {
-        "fpr=0.001": Infinity,
-        "fpr=0.01": Infinity
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "warnings": []
-    }
+    "test": null
   },
   {
     "config": {
@@ -344,12 +218,7 @@
     "dev": {
       "auprc": 0.7689861962312345,
       "auroc": 0.8786353467561522,
-      "ci": {
-        "auprc": [
-          0.662344796272429,
-          0.8431372940556203
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 39,
@@ -377,10 +246,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 4.003899986855686,
-        "mean": 1.331961418260929,
-        "p50": 1.2156000011600554,
-        "p95": 2.1118399803526695
+        "max": 2.1241999929770827,
+        "mean": 0.9760076141246089,
+        "p50": 0.9293999901274219,
+        "p95": 1.2477000069338828
       },
       "n": 197,
       "negatives": 149,
@@ -439,6 +308,34 @@
           "recall@fpr=0.01": 0.7241379310344828
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.741432157509036,
+          "auroc": 0.8422897196261682,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.025,
+          "recall@fpr=0.01": 0.375
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 1.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -455,126 +352,7 @@
     },
     "name": "tfidf-word",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.674810786925996,
-      "auroc": 0.7928975968161641,
-      "ci": {
-        "auprc": [
-          0.5515802129335676,
-          0.7833936240995335
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 42,
-          "fp": 0,
-          "tn": 139,
-          "tp": 5
-        },
-        "fpr=0.01": {
-          "fn": 30,
-          "fp": 4,
-          "tn": 135,
-          "tp": 17
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.02877697841726619
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": true
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.05454545454545454
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.487136",
-        "threshold for fpr=0.001 taken from dev: 0.703749"
-      ],
-      "per_attack_recall": {
-        "fpr=0.001": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.1111111111111111,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.05555555555555555,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.1111111111111111,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        },
-        "fpr=0.01": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.6666666666666666,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.3333333333333333,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.3333333333333333,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        }
-      },
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.5819617775925052,
-          "auroc": 0.747229916897507,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 95.0,
-          "positives": 19.0,
-          "recall@fpr=0.001": 0.0,
-          "recall@fpr=0.01": 0.15789473684210525
-        },
-        "tool_metadata": {
-          "auprc": 0.405006105006105,
-          "auroc": 0.49411764705882355,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.17647058823529413,
-          "n": 22.0,
-          "positives": 5.0,
-          "recall@fpr=0.001": 0.0,
-          "recall@fpr=0.01": 0.2
-        },
-        "tool_response": {
-          "auprc": 0.8783475882735827,
-          "auroc": 0.9139886578449905,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.021739130434782608,
-          "n": 69.0,
-          "positives": 23.0,
-          "recall@fpr=0.001": 0.21739130434782608,
-          "recall@fpr=0.01": 0.5652173913043478
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "tfidf-word",
-      "thresholds": {
-        "fpr=0.001": 0.7037491025141233,
-        "fpr=0.01": 0.48713645379439235
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.10638297872340426,
-        "fpr=0.01": 0.3617021276595745
-      },
-      "warnings": [
-        "fpr=0.01: realised FPR 0.0288 exceeds the 0.01 budget (4 false positives on 139 negatives); the reported TPR is not a 0.01-FPR operating point on this split"
-      ]
-    }
+    "test": null
   },
   {
     "config": {
@@ -588,12 +366,7 @@
     "dev": {
       "auprc": 0.730184477988101,
       "auroc": 0.8654921700223712,
-      "ci": {
-        "auprc": [
-          0.6268338902769209,
-          0.8150519773925753
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 32,
@@ -621,10 +394,10 @@
         "fpr=0.01": 0.0
       },
       "latency_ms": {
-        "max": 157.13559999130666,
-        "mean": 7.898387816784251,
-        "p50": 6.664499989710748,
-        "p95": 11.504439974669364
+        "max": 63.00080000073649,
+        "mean": 3.5532096444882058,
+        "p50": 2.9624000017065555,
+        "p95": 4.819480000878684
       },
       "n": 197,
       "negatives": 149,
@@ -683,6 +456,34 @@
           "recall@fpr=0.01": 0.5862068965517241
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.6664541806553417,
+          "auroc": 0.8170560747663551,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.2,
+          "recall@fpr=0.01": 0.275
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 1.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 1.0,
+          "recall@fpr=0.01": 1.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -699,126 +500,7 @@
     },
     "name": "tfidf-word+char",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.7252823628246989,
-      "auroc": 0.8281034746670748,
-      "ci": {
-        "auprc": [
-          0.6147961350676368,
-          0.8312583874460382
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 32,
-          "fp": 0,
-          "tn": 139,
-          "tp": 15
-        },
-        "fpr=0.01": {
-          "fn": 25,
-          "fp": 7,
-          "tn": 132,
-          "tp": 22
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.050359712230215826
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": true
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.12727272727272726
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.501980",
-        "threshold for fpr=0.001 taken from dev: 0.610600"
-      ],
-      "per_attack_recall": {
-        "fpr=0.001": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.6666666666666666,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.2222222222222222,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.3333333333333333,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        },
-        "fpr=0.01": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.6666666666666666,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.5555555555555556,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.4444444444444444,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        }
-      },
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.6969058800047052,
-          "auroc": 0.7901662049861496,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 95.0,
-          "positives": 19.0,
-          "recall@fpr=0.001": 0.15789473684210525,
-          "recall@fpr=0.01": 0.15789473684210525
-        },
-        "tool_metadata": {
-          "auprc": 0.21710526315789475,
-          "auroc": 0.35294117647058826,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.4117647058823529,
-          "n": 22.0,
-          "positives": 5.0,
-          "recall@fpr=0.001": 0.0,
-          "recall@fpr=0.01": 0.2
-        },
-        "tool_response": {
-          "auprc": 0.9276835483357223,
-          "auroc": 0.9413988657844989,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 69.0,
-          "positives": 23.0,
-          "recall@fpr=0.001": 0.5217391304347826,
-          "recall@fpr=0.01": 0.782608695652174
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "tfidf-word+char",
-      "thresholds": {
-        "fpr=0.001": 0.6106002060444758,
-        "fpr=0.01": 0.5019801437996453
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.3191489361702128,
-        "fpr=0.01": 0.46808510638297873
-      },
-      "warnings": [
-        "fpr=0.01: realised FPR 0.0504 exceeds the 0.01 budget (7 false positives on 139 negatives); the reported TPR is not a 0.01-FPR operating point on this split"
-      ]
-    }
+    "test": null
   },
   {
     "config": {
@@ -829,7 +511,7 @@
         "healthy": true,
         "rule_failures": {},
         "total_failures": 0,
-        "units_scored": 372
+        "units_scored": 191
       },
       "feature_count": 46,
       "name": "rules-only",
@@ -851,12 +533,7 @@
     "dev": {
       "auprc": 0.7688610526810655,
       "auroc": 0.8748601789709173,
-      "ci": {
-        "auprc": [
-          0.6493712022714556,
-          0.8808602455053048
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 47,
@@ -884,10 +561,10 @@
         "fpr=0.01": 0.02127659574468085
       },
       "latency_ms": {
-        "max": 79.80220002355054,
-        "mean": 15.49342893262578,
-        "p50": 12.55059998948127,
-        "p95": 43.249420018400954
+        "max": 298.6549999914132,
+        "mean": 8.88977258857387,
+        "p50": 3.6657000018749386,
+        "p95": 40.008079996914596
       },
       "n": 197,
       "negatives": 149,
@@ -946,6 +623,34 @@
           "recall@fpr=0.01": 0.41379310344827586
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.8862158472822577,
+          "auroc": 0.9740654205607477,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.025,
+          "recall@fpr=0.01": 0.5
+        },
+        "injecagent": {
+          "auprc": 0.8888888888888888,
+          "auroc": 0.5,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -962,124 +667,7 @@
     },
     "name": "rules-only",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.6733915735375419,
-      "auroc": 0.7561610286239094,
-      "ci": {
-        "auprc": [
-          0.5556955597547947,
-          0.7853282127419121
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 41,
-          "fp": 0,
-          "tn": 139,
-          "tp": 6
-        },
-        "fpr=0.01": {
-          "fn": 38,
-          "fp": 1,
-          "tn": 138,
-          "tp": 9
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.007194244604316547
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": false
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.875128",
-        "threshold for fpr=0.001 taken from dev: 0.941668"
-      ],
-      "per_attack_recall": {
-        "fpr=0.001": {
-          "action_hijack": 0.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.0,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.0,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.6666666666666666,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        },
-        "fpr=0.01": {
-          "action_hijack": 0.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.0,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.1111111111111111,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.7777777777777778,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        }
-      },
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.6368819776714514,
-          "auroc": 0.75,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.013157894736842105,
-          "n": 95.0,
-          "positives": 19.0,
-          "recall@fpr=0.001": 0.21052631578947367,
-          "recall@fpr=0.01": 0.3157894736842105
-        },
-        "tool_metadata": {
-          "auprc": 0.38181818181818183,
-          "auroc": 0.34117647058823525,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 22.0,
-          "positives": 5.0,
-          "recall@fpr=0.001": 0.0,
-          "recall@fpr=0.01": 0.0
-        },
-        "tool_response": {
-          "auprc": 0.8028870940024059,
-          "auroc": 0.8412098298676749,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 69.0,
-          "positives": 23.0,
-          "recall@fpr=0.001": 0.08695652173913043,
-          "recall@fpr=0.01": 0.13043478260869565
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "rules-only",
-      "thresholds": {
-        "fpr=0.001": 0.941668,
-        "fpr=0.01": 0.875128
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.1276595744680851,
-        "fpr=0.01": 0.19148936170212766
-      },
-      "warnings": []
-    }
+    "test": null
   },
   {
     "config": {
@@ -1105,12 +693,7 @@
     "dev": {
       "auprc": 0.9058836175629985,
       "auroc": 0.9503635346756151,
-      "ci": {
-        "auprc": [
-          0.8419166798776758,
-          0.9564332970584396
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 19,
@@ -1138,10 +721,10 @@
         "fpr=0.01": 0.02127659574468085
       },
       "latency_ms": {
-        "max": 1336.5870999987237,
-        "mean": 226.95341269127542,
-        "p50": 111.54329997953027,
-        "p95": 938.1881399895063
+        "max": 2455.116299999645,
+        "mean": 355.5350548229186,
+        "p50": 112.92280000634491,
+        "p95": 1307.7490200026657
       },
       "n": 197,
       "negatives": 149,
@@ -1200,6 +783,34 @@
           "recall@fpr=0.01": 0.7241379310344828
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.8881487488719131,
+          "auroc": 0.9352803738317756,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.55,
+          "recall@fpr=0.01": 0.575
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.875,
+          "recall@fpr=0.01": 0.875
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -1216,124 +827,7 @@
     },
     "name": "transformer",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.9701606898842311,
-      "auroc": 0.9790295423235877,
-      "ci": {
-        "auprc": [
-          0.9299718611352065,
-          0.997131727193302
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 9,
-          "fp": 0,
-          "tn": 139,
-          "tp": 38
-        },
-        "fpr=0.01": {
-          "fn": 8,
-          "fp": 0,
-          "tn": 139,
-          "tp": 39
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": false
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.999159",
-        "threshold for fpr=0.001 taken from dev: 0.999216"
-      ],
-      "per_attack_recall": {
-        "fpr=0.001": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.6666666666666666,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.8888888888888888,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 1.0,
-          "obfuscation__support": 9.0,
-          "unknown": 1.0,
-          "unknown__support": 5.0
-        },
-        "fpr=0.01": {
-          "action_hijack": 1.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.6666666666666666,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 0.9444444444444444,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 1.0,
-          "obfuscation__support": 9.0,
-          "unknown": 1.0,
-          "unknown__support": 5.0
-        }
-      },
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.9973684210526316,
-          "auroc": 0.9993074792243768,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 95.0,
-          "positives": 19.0,
-          "recall@fpr=0.001": 0.8947368421052632,
-          "recall@fpr=0.01": 0.9473684210526315
-        },
-        "tool_metadata": {
-          "auprc": 0.5503921568627452,
-          "auroc": 0.6352941176470588,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 22.0,
-          "positives": 5.0,
-          "recall@fpr=0.001": 0.2,
-          "recall@fpr=0.01": 0.2
-        },
-        "tool_response": {
-          "auprc": 1.0,
-          "auroc": 1.0,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 69.0,
-          "positives": 23.0,
-          "recall@fpr=0.001": 0.8695652173913043,
-          "recall@fpr=0.01": 0.8695652173913043
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "transformer",
-      "thresholds": {
-        "fpr=0.001": 0.9992161989212036,
-        "fpr=0.01": 0.9991593360900879
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.8085106382978723,
-        "fpr=0.01": 0.8297872340425532
-      },
-      "warnings": []
-    }
+    "test": null
   },
   {
     "config": {
@@ -1485,12 +979,7 @@
     "dev": {
       "auprc": 0.9569529620301808,
       "auroc": 0.9848993288590604,
-      "ci": {
-        "auprc": [
-          0.919469330079791,
-          0.986484567427232
-        ]
-      },
+      "ci": {},
       "confusion": {
         "fpr=0.001": {
           "fn": 14,
@@ -1575,6 +1064,34 @@
           "recall@fpr=0.01": 0.7241379310344828
         }
       },
+      "per_dataset": {
+        "bipia": {
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 41.0,
+          "positives": 0.0
+        },
+        "builtin": {
+          "auprc": 0.9827283880054294,
+          "auroc": 0.9925233644859813,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.009345794392523364,
+          "n": 147.0,
+          "positives": 40.0,
+          "recall@fpr=0.001": 0.85,
+          "recall@fpr=0.01": 0.9
+        },
+        "injecagent": {
+          "auprc": 1.0,
+          "auroc": 1.0,
+          "fpr@fpr=0.001": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "n": 9.0,
+          "positives": 8.0,
+          "recall@fpr=0.001": 0.0,
+          "recall@fpr=0.01": 0.0
+        }
+      },
       "positive_rate": 0.2436548223350254,
       "positives": 48,
       "split": "dev",
@@ -1591,123 +1108,6 @@
     },
     "name": "hybrid",
     "seed": 20250909,
-    "test": {
-      "auprc": 0.9705457820914484,
-      "auroc": 0.9778049900505128,
-      "ci": {
-        "auprc": [
-          0.926400218936198,
-          0.997747953951631
-        ]
-      },
-      "confusion": {
-        "fpr=0.001": {
-          "fn": 22,
-          "fp": 0,
-          "tn": 139,
-          "tp": 25
-        },
-        "fpr=0.01": {
-          "fn": 20,
-          "fp": 0,
-          "tn": 139,
-          "tp": 27
-        }
-      },
-      "fpr_achieved": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "fpr_budget_exceeded": {
-        "fpr=0.001": false,
-        "fpr=0.01": false
-      },
-      "hard_negative_fpr": {
-        "fpr=0.001": 0.0,
-        "fpr=0.01": 0.0
-      },
-      "latency_ms": {},
-      "n": 186,
-      "negatives": 139,
-      "notes": [
-        "threshold for fpr=0.01 taken from dev: 0.882418",
-        "threshold for fpr=0.001 taken from dev: 0.922166"
-      ],
-      "per_attack_recall": {
-        "fpr=0.001": {
-          "action_hijack": 0.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.0,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 1.0,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 0.7777777777777778,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        },
-        "fpr=0.01": {
-          "action_hijack": 0.0,
-          "action_hijack__support": 2.0,
-          "content_manipulation": 0.0,
-          "content_manipulation__support": 9.0,
-          "meta_instruction": 1.0,
-          "meta_instruction__support": 18.0,
-          "metadata_poisoning": 0.0,
-          "metadata_poisoning__support": 4.0,
-          "obfuscation": 1.0,
-          "obfuscation__support": 9.0,
-          "unknown": 0.0,
-          "unknown__support": 5.0
-        }
-      },
-      "per_channel": {
-        "rag_document": {
-          "auprc": 0.9973684210526316,
-          "auroc": 0.9993074792243768,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 95.0,
-          "positives": 19.0,
-          "recall@fpr=0.001": 0.5263157894736842,
-          "recall@fpr=0.01": 0.5789473684210527
-        },
-        "tool_metadata": {
-          "auprc": 0.632983682983683,
-          "auroc": 0.8,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 22.0,
-          "positives": 5.0,
-          "recall@fpr=0.001": 0.2,
-          "recall@fpr=0.01": 0.2
-        },
-        "tool_response": {
-          "auprc": 1.0,
-          "auroc": 1.0,
-          "fpr@fpr=0.001": 0.0,
-          "fpr@fpr=0.01": 0.0,
-          "n": 69.0,
-          "positives": 23.0,
-          "recall@fpr=0.001": 0.6086956521739131,
-          "recall@fpr=0.01": 0.6521739130434783
-        }
-      },
-      "positive_rate": 0.25268817204301075,
-      "positives": 47,
-      "split": "test",
-      "system": "hybrid",
-      "thresholds": {
-        "fpr=0.001": 0.9221655588741288,
-        "fpr=0.01": 0.8824176465585155
-      },
-      "tpr_at_fpr": {
-        "fpr=0.001": 0.5319148936170213,
-        "fpr=0.01": 0.574468085106383
-      },
-      "warnings": []
-    }
+    "test": null
   }
 ]

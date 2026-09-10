@@ -611,3 +611,115 @@ run is high-variance and should not be quoted as a point estimate. The hybrid,
 anchored by deterministic rule features, is both higher and more stable, which is
 the operational argument for it over the transformer alone. Seed 20250909 is the
 canonical checkpoint used everywhere else.
+
+---
+
+## 2026-09-10 · Per-source-dataset breakdown (rules-only, dev)
+
+**Why.** Headline AUPRC on the combined corpus (BIPIA + InjecAgent + builtin) can
+be carried by one source. The metric layer now reports per-source AUPRC with
+support counts next to the per-channel table, so this is visible rather than
+assumed.
+
+**Command.** `llmsentinel evaluate` (per-dataset table), rules-only system, dev.
+
+| source | dev AUPRC | support (n / positives) |
+|---|---|---|
+| builtin | 0.886 | 147 / 40 |
+| injecagent | 0.889 | 9 / 8 |
+| bipia | n/a | 41 / 0 |
+
+**Observation.** BIPIA contributes no positive records to the dev split under the
+canonical seed (its positives land in train/test), so a dev AUPRC cannot be
+computed for it — exactly the kind of gap the breakdown is meant to surface. The
+builtin and InjecAgent dev numbers are close, but InjecAgent dev support is only
+eight positives; it is a sanity signal, not a result. Per-source test numbers
+carry the same caveat and are read from `results_test.json` when `--test` is set.
+
+---
+
+## 2026-09-10 · Attack-position robustness (rules-only)
+
+**Why.** A guard that only fires when the payload sits at the top of a document
+is trivially evaded by moving it into the body.
+
+**Method.** `scripts/placement_robustness.py` takes the 20 longest benign RAG
+documents in the corpus (3345–7020 chars), injects one fixed meta-instruction +
+exfiltration payload at the beginning, middle, and end of each, and scores every
+variant.
+
+| position | mean risk | min risk | detected (>= 0.8751, 1% FPR) |
+|---|---|---|---|
+| beginning | 0.966 | 0.966 | 100% |
+| middle | 0.966 | 0.966 | 100% |
+| end | 0.966 | 0.966 | 100% |
+
+**Observation.** Mean-risk spread across positions is 0.000: the rule engine is
+position-invariant by construction, because it scores the highest-risk unit in a
+document and aggregates by max, so dilution in a long host does not lower the
+score. This is a property of the rules, not of the transformer — the script
+takes `--checkpoint` to run the same probe on the windowed transformer, whose
+long-context dilution behaviour is the interesting case and is evaluated
+separately when a checkpoint is present.
+
+---
+
+## 2026-09-10 · Semantic / context-aware layer vs lexical baseline (experimental)
+
+**Why.** Section 11 asks whether reasoning about task-conflict and action
+destination adds anything over surface matching. The layer exposes 18 named
+features (task similarity, off-topic, action/destination/secret/authority
+signals, and source-aware provenance features) and a corroboration-gated
+`conflict_flag`.
+
+**Command.** `scripts/semantic_eval.py`, lexical embedder, dev split.
+
+| system | dev AUPRC | dev AUROC |
+|---|---|---|
+| tfidf-word (lexical) | 0.769 | 0.879 |
+| rules-only | 0.769 | 0.875 |
+| semantic (18 feats) | 0.358 | 0.590 |
+| semantic-no-source | 0.279 | 0.474 |
+
+**Observation.** As a *standalone* detector the semantic scorer is well below the
+lexical and rule baselines — its interpretable features are complementary signal,
+not a replacement. Its value is precision on the cases it is built for: on the
+hand-written contrastive set the corroboration-gated `conflict_flag` is correct
+on 8/8 vocabulary-reuse attacks and benign off-topic imperatives, including
+export/report attacks that reuse the host task's words verbatim (and whose
+lexical overlap with the task is *higher* than their benign twin). The honest
+failure mode is also recorded: the learned scorer gives benign off-topic prose a
+mean score of 0.41 because `off_topic` correlates weakly with injection in the
+corpus — which is why detection is gated on the destination/authority/secret
+corroboration features, not on topicality. Reported-speech hard negatives (an
+incident write-up quoting an attacker URL) trip the flag and remain the rule
+engine's citation-suppression job. Set `LLMSENTINEL_EMBEDDER=st` with the
+`semantic` extra to swap the lexical similarity proxy for a neural sentence
+embedder; the lexical backend is the default so these numbers are reproducible
+offline.
+
+---
+
+## 2026-09-10 · Provenance features and cross-source transfer (experimental)
+
+**Why.** Source-aware features (channel, JSON-path class, document type, tool
+identity) can encode the shape of the training sources rather than of an attack,
+hurting transfer to an unseen source.
+
+**Method.** `scripts/provenance_transfer.py` trains the semantic scorer on two of
+the three source datasets and tests on the held-out one, with provenance features
+on and off.
+
+| held-out source | n / positives | AUPRC with source feats | without | delta |
+|---|---|---|---|---|
+| builtin | 923 / 266 | 0.302 | 0.342 | -0.039 |
+| bipia | 516 / 195 | 0.370 | 0.353 | +0.017 |
+| injecagent | 230 / 214 | 0.940 | 0.934 | +0.006 |
+
+**Observation.** Mean delta -0.005: on this corpus the provenance features are
+roughly neutral for transfer, but not uniformly — they *hurt* by 0.039 when
+builtin is held out (features fitted to BIPIA/InjecAgent provenance mislead on
+builtin) and help slightly on the other two. The large InjecAgent AUPRC reflects
+its extreme positive rate (214/230) and is not comparable across rows. The
+takeaway for the report: provenance features are not a free lunch for
+generalisation and should be justified per deployment, not assumed.

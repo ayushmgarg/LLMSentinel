@@ -211,6 +211,10 @@ class BinaryMetrics:
     fpr_budget_exceeded: dict[str, bool] = field(default_factory=dict)
     hard_negative_fpr: dict[str, float] = field(default_factory=dict)
     per_channel: dict[str, dict[str, float]] = field(default_factory=dict)
+    #: Same breakdown as ``per_channel`` but keyed by source dataset, so a
+    #: combined corpus cannot hide that headline AUPRC is carried by one source.
+    #: Support counts are included because per-source dev/test cells are small.
+    per_dataset: dict[str, dict[str, float]] = field(default_factory=dict)
     #: Recall per attack type, keyed by operating point then by attack type --
     #: recall is meaningless without saying at which threshold it was measured.
     per_attack_recall: dict[str, dict[str, float]] = field(default_factory=dict)
@@ -251,6 +255,7 @@ def evaluate_scores(
     y_score: Sequence[float],
     is_hard_negative: Sequence[bool] | None = None,
     channels: Sequence[str] | None = None,
+    source_datasets: Sequence[str] | None = None,
     attack_types: Sequence[str] | None = None,
     target_fprs: Sequence[float] = TARGET_FPRS,
     latencies_ms: Sequence[float] | None = None,
@@ -319,7 +324,9 @@ def evaluate_scores(
                 )
 
     if channels is not None:
-        metrics.per_channel = _per_channel(labels, scores, channels, metrics.thresholds)
+        metrics.per_channel = _per_group(labels, scores, channels, metrics.thresholds)
+    if source_datasets is not None:
+        metrics.per_dataset = _per_group(labels, scores, source_datasets, metrics.thresholds)
     if attack_types is not None:
         metrics.per_attack_recall = _per_attack_recall(
             labels, scores, attack_types, metrics.thresholds
@@ -343,16 +350,23 @@ def _fpr_key(target: float) -> str:
     return f"fpr={target:g}"
 
 
-def _per_channel(
+def _per_group(
     labels: np.ndarray,
     scores: np.ndarray,
-    channels: Sequence[str],
+    groups: Sequence[str],
     thresholds: dict[str, float],
 ) -> dict[str, dict[str, float]]:
-    channel_array = np.asarray(channels, dtype=object)
+    """Per-subgroup metrics (used for both channel and source-dataset splits).
+
+    AUPRC/AUROC are reported only for a subgroup that carries both classes; a
+    recall/FPR pair is added at each finite operating point. Support counts stay
+    in every row so a metric over a handful of records is read as such.
+    """
+
+    group_array = np.asarray(groups, dtype=object)
     result: dict[str, dict[str, float]] = {}
-    for channel in sorted(set(channel_array.tolist())):
-        mask = channel_array == channel
+    for group in sorted(set(group_array.tolist())):
+        mask = group_array == group
         subset_labels = labels[mask]
         subset_scores = scores[mask]
         entry: dict[str, float] = {
@@ -370,7 +384,7 @@ def _per_channel(
                 entry[f"recall@{key}"] = float(predicted[subset_labels == 1].mean())
             if (subset_labels == 0).any():
                 entry[f"fpr@{key}"] = float(predicted[subset_labels == 0].mean())
-        result[channel] = entry
+        result[str(group)] = entry
     return result
 
 

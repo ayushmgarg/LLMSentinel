@@ -30,6 +30,12 @@ transformer = [
 demo = [
     "streamlit>=1.34",
 ]
+# Optional neural sentence-embedding backend for the semantic layer. Without it
+# the semantic features fall back to a deterministic lexical similarity proxy, so
+# the package runs and its tests pass offline.
+semantic = [
+    "sentence-transformers>=2.2",
+]
 figures = [
     "matplotlib>=3.8",
     "pandas>=2.2",
@@ -75,3 +81,5 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 # Keyword-form dicts keep the hand-written schema examples readable.
 "tests/*" = ["N802", "C408"]
+# A space-separated stopword string reads better than a 60-element list literal.
+"src/llmsentinel/semantic/representations.py" = ["SIM905"]

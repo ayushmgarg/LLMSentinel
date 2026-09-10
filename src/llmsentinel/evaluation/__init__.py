@@ -5,6 +5,7 @@ from __future__ import annotations
 from .harness import (
     SystemResult,
     load_splits,
+    per_dataset_table,
     results_table,
     run_system,
     run_systems,
@@ -31,6 +32,7 @@ __all__ = [
     "confusion_at",
     "evaluate_scores",
     "load_splits",
+    "per_dataset_table",
     "results_table",
     "roc_auc",
     "roc_curve",

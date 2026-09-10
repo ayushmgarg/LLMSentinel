@@ -30,6 +30,7 @@ from .metrics import BinaryMetrics, evaluate_scores
 __all__ = [
     "SystemResult",
     "load_splits",
+    "per_dataset_table",
     "results_table",
     "run_system",
     "run_systems",
@@ -79,6 +80,7 @@ def _fields(records: Sequence[CorpusRecord]) -> dict[str, list[Any]]:
         "y_true": [record.y for record in records],
         "is_hard_negative": [record.is_hard_negative for record in records],
         "channels": [record.channel.value for record in records],
+        "source_datasets": [record.source_dataset for record in records],
         "attack_types": [record.attack_type.value for record in records],
     }
 
@@ -199,6 +201,45 @@ def results_table(results: Sequence[SystemResult], split: str = "dev") -> str:
         f"_Split `{split}`: {first.n} records, {first.positives} injection "
         f"({first.positive_rate:.1%} positive). Realised FPR is shown in brackets; "
         f"`OVER` marks an operating point whose false-positive budget was not met._"
+    )
+    return "\n".join(lines)
+
+
+def per_dataset_table(results: Sequence[SystemResult], split: str = "dev") -> str:
+    """Per-source-dataset AUPRC for each system, so a combined-corpus headline
+    cannot hide that one source carries it. ``n/a`` marks a source with too few
+    of either class to compute AUPRC on this split."""
+
+    datasets: list[str] = []
+    for result in results:
+        metrics = result.dev if split == "dev" else result.test
+        if metrics is None:
+            continue
+        for name in metrics.per_dataset:
+            if name not in datasets:
+                datasets.append(name)
+    datasets.sort()
+    if not datasets:
+        return f"_no per-dataset metrics for split {split}_"
+
+    support = {}
+    headers = ["system", *datasets]
+    lines = ["| " + " | ".join(headers) + " |", "|" + "|".join("---" for _ in headers) + "|"]
+    for result in results:
+        metrics = result.dev if split == "dev" else result.test
+        if metrics is None:
+            continue
+        cells = [result.name]
+        for name in datasets:
+            entry = metrics.per_dataset.get(name, {})
+            support[name] = (int(entry.get("n", 0)), int(entry.get("positives", 0)))
+            cells.append(f"{entry['auprc']:.3f}" if "auprc" in entry else "n/a")
+        lines.append("| " + " | ".join(cells) + " |")
+    lines.append("")
+    lines.append(
+        "_Per-source AUPRC on `" + split + "`; support (n, positives): "
+        + ", ".join(f"{name} {n}/{pos}" for name, (n, pos) in sorted(support.items()))
+        + "._"
     )
     return "\n".join(lines)
 

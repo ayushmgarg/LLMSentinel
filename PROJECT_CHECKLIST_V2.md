@@ -4,170 +4,170 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 1. Governance, safety, and reproducibility
 
-- [ ] Confirm the final title, problem statement, and scope.
-- [ ] Assign named owners for data, modelling/evaluation, and demo/report work.
-- [ ] Record allowed GenAI use and academic-integrity requirements.
-- [ ] Record project decisions, rejected ideas, and scope changes.
-- [ ] Confirm no live third-party systems, real secrets, personal data, or non-consenting systems will be tested.
-- [ ] Confirm the demo never executes sensitive, destructive, or external actions.
-- [ ] Define safe-fixture review and accidental-secret-removal procedures.
-- [ ] Create the first source-control commit before substantive implementation.
-- [ ] Record OS, Python, hardware, dependency, and model versions.
-- [ ] Create a virtual environment and install versioned dependencies.
-- [ ] Separate optional transformer dependencies from the core setup.
-- [ ] Add import smoke tests, unit tests, lint/format checks, and documented commands.
-- [ ] Verify fresh setup, corpus rebuild, evaluation, and demo startup commands.
-- [ ] Seed Python, NumPy, PyTorch, and model training deterministically.
+- [x] Confirm the final title, problem statement, and scope.
+- [x] Assign named owners for data, modelling/evaluation, and demo/report work.
+- [x] Record allowed GenAI use and academic-integrity requirements.
+- [x] Record project decisions, rejected ideas, and scope changes.
+- [x] Confirm no live third-party systems, real secrets, personal data, or non-consenting systems will be tested.
+- [x] Confirm the demo never executes sensitive, destructive, or external actions.
+- [x] Define safe-fixture review and accidental-secret-removal procedures.
+- [x] Create the first source-control commit before substantive implementation.
+- [x] Record OS, Python, hardware, dependency, and model versions.
+- [x] Create a virtual environment and install versioned dependencies.
+- [x] Separate optional transformer dependencies from the core setup.
+- [x] Add import smoke tests, unit tests, lint/format checks, and documented commands.
+- [x] Verify fresh setup, corpus rebuild, evaluation, and demo startup commands.
+- [x] Seed Python, NumPy, PyTorch, and model training deterministically.
 
 ## 2. Threat model and experiment protocol
 
-- [ ] Define trusted user intent, trusted system policy, and untrusted context.
-- [ ] Include RAG documents, tool-response JSON, and MCP manifests in scope.
-- [ ] Define attacker goals: override, exfiltration, action hijack, destructive action, metadata poisoning.
-- [ ] Define attacker capabilities: text control, formatting, obfuscation, long context, and multi-chunk placement.
-- [ ] State that detection is defence in depth, not universal protection.
-- [ ] Freeze exclusions: live exploitation, real action execution, unsupported modalities, and guarantee claims.
-- [ ] Define action classes: read-only, sensitive read, external send, write, destructive, privilege escalation.
-- [ ] Define policy outcomes: allow, isolate, confirmation required, block.
-- [ ] Freeze metrics: AUPRC, TPR@1% FPR, TPR@0.1% FPR, hard-negative FPR, latency.
-- [ ] Define secondary metrics: AUROC, calibration, model size, memory, and support counts.
-- [ ] Freeze baselines and test-set policy before tuning.
-- [ ] Define experiment-log fields: date, commit, data digest, seed, machine, command, metrics, warnings, observations.
+- [x] Define trusted user intent, trusted system policy, and untrusted context.
+- [x] Include RAG documents, tool-response JSON, and MCP manifests in scope.
+- [x] Define attacker goals: override, exfiltration, action hijack, destructive action, metadata poisoning.
+- [x] Define attacker capabilities: text control, formatting, obfuscation, long context, and multi-chunk placement.
+- [x] State that detection is defence in depth, not universal protection.
+- [x] Freeze exclusions: live exploitation, real action execution, unsupported modalities, and guarantee claims.
+- [x] Define action classes: read-only, sensitive read, external send, write, destructive, privilege escalation.
+- [x] Define policy outcomes: allow, isolate, confirmation required, block.
+- [x] Freeze metrics: AUPRC, TPR@1% FPR, TPR@0.1% FPR, hard-negative FPR, latency.
+- [x] Define secondary metrics: AUROC, calibration, model size, memory, and support counts.
+- [x] Freeze baselines and test-set policy before tuning.
+- [x] Define experiment-log fields: date, commit, data digest, seed, machine, command, metrics, warnings, observations.
 
 ## 3. Schema, provenance, and corpus construction
 
-- [ ] Define a versioned JSONL schema.
-- [ ] Include stable source-scoped record ID, raw text, and normalisation version.
-- [ ] Include label, rationale where available, channel, attack type, and host task.
-- [ ] Include source dataset/document/tool ID, licence, acquisition note, and provenance.
-- [ ] Include JSON path, manifest version/hash, and injected spans where applicable.
-- [ ] Include content group, host group, hard-negative flag, and split.
-- [ ] Define missing/unknown-field handling and validate at least ten schema examples.
-- [ ] Add invalid-schema and span-offset tests.
-- [ ] Build corpus from a command and generate corpus card, source/licence inventory, split manifest, and data digest.
+- [x] Define a versioned JSONL schema.
+- [x] Include stable source-scoped record ID, raw text, and normalisation version.
+- [x] Include label, rationale where available, channel, attack type, and host task.
+- [x] Include source dataset/document/tool ID, licence, acquisition note, and provenance.
+- [x] Include JSON path, manifest version/hash, and injected spans where applicable.
+- [x] Include content group, host group, hard-negative flag, and split.
+- [x] Define missing/unknown-field handling and validate at least ten schema examples.
+- [x] Add invalid-schema and span-offset tests.
+- [x] Build corpus from a command and generate corpus card, source/licence inventory, split manifest, and data digest.
 
 ## 4. Data sources and licensing
 
-- [ ] Obtain BIPIA from its official source; read documentation and licence.
-- [ ] Identify BIPIA positives, benign data, host task, payload, and provenance fields.
-- [ ] Implement BIPIA loader and manually validate five output records.
-- [ ] Obtain InjecAgent; read its documentation/licence and determine safe tool-text extraction.
-- [ ] Implement InjecAgent loader or document why reliable extraction is infeasible.
-- [ ] Manually validate five InjecAgent records if used.
-- [ ] Decide whether AgentDojo is needed; inspect its task format/licence before use.
-- [ ] Inspect an MCP-oriented dataset such as MCPTox before integration.
-- [ ] Record schema, labels, licence, and limitations for every MCP dataset used.
-- [ ] Obtain permissively usable benign RAG passages, technical docs, API references, READMEs, policies, and tutorials.
-- [ ] Obtain security writing and code examples that quote attacks as hard negatives.
-- [ ] Record source and licence for each manually added source.
-- [ ] Ensure tool descriptions and tool-response leaves are channel-realistic.
-- [ ] Keep synthetic/demo/robustness fixtures explicitly separate from benchmark results.
-- [ ] Never report synthetic-only outcomes as public-benchmark performance.
+- [x] Obtain BIPIA from its official source; read documentation and licence.
+- [x] Identify BIPIA positives, benign data, host task, payload, and provenance fields.
+- [x] Implement BIPIA loader and manually validate five output records.
+- [x] Obtain InjecAgent; read its documentation/licence and determine safe tool-text extraction.
+- [x] Implement InjecAgent loader or document why reliable extraction is infeasible.
+- [x] Manually validate five InjecAgent records if used.
+- [x] Decide whether AgentDojo is needed; inspect its task format/licence before use.
+- [x] Inspect an MCP-oriented dataset such as MCPTox before integration.
+- [x] Record schema, labels, licence, and limitations for every MCP dataset used.
+- [x] Obtain permissively usable benign RAG passages, technical docs, API references, READMEs, policies, and tutorials.
+- [x] Obtain security writing and code examples that quote attacks as hard negatives.
+- [x] Record source and licence for each manually added source.
+- [x] Ensure tool descriptions and tool-response leaves are channel-realistic.
+- [x] Keep synthetic/demo/robustness fixtures explicitly separate from benchmark results.
+- [x] Never report synthetic-only outcomes as public-benchmark performance.
 
 ## 5. Labels, hard negatives, and data integrity
 
-- [ ] Write a one-page annotation guideline.
-- [ ] Define injection as assistant-directed task/policy-conflicting control text.
-- [ ] Define legitimate imperatives, policies, code, citations, and quoted payloads as benign/hard-negative cases as appropriate.
-- [ ] Define ambiguity handling and attack taxonomy.
-- [ ] Independently label an initial sample with at least two reviewers.
-- [ ] Record disagreements and revise the guideline.
-- [ ] Ensure hard negatives are at least 25% of benign examples.
-- [ ] Deduplicate exact text before splitting.
-- [ ] Audit near duplicates across splits.
-- [ ] Group splits by payload/template family and host source identity.
-- [ ] Ensure no content/host/payload group crosses train, dev, and test.
-- [ ] Fix and record split seed; save the manifest.
-- [ ] Generate counts by split, channel, label, source, attack type, and hard-negative status.
-- [ ] Ensure every reportable channel has positive and benign dev/test support.
-- [ ] Inspect 20 random final examples and 20 hard negatives.
-- [ ] Record unrealistic channel pairs, clipped context, and other corpus limitations.
-- [ ] Freeze the final corpus digest before final comparison.
+- [x] Write a one-page annotation guideline.
+- [x] Define injection as assistant-directed task/policy-conflicting control text.
+- [x] Define legitimate imperatives, policies, code, citations, and quoted payloads as benign/hard-negative cases as appropriate.
+- [x] Define ambiguity handling and attack taxonomy.
+- [x] Independently label an initial sample with at least two reviewers.
+- [x] Record disagreements and revise the guideline.
+- [x] Ensure hard negatives are at least 25% of benign examples.
+- [x] Deduplicate exact text before splitting.
+- [x] Audit near duplicates across splits.
+- [x] Group splits by payload/template family and host source identity.
+- [x] Ensure no content/host/payload group crosses train, dev, and test.
+- [x] Fix and record split seed; save the manifest.
+- [x] Generate counts by split, channel, label, source, attack type, and hard-negative status.
+- [x] Ensure every reportable channel has positive and benign dev/test support.
+- [x] Inspect 20 random final examples and 20 hard negatives.
+- [x] Record unrealistic channel pairs, clipped context, and other corpus limitations.
+- [x] Freeze the final corpus digest before final comparison.
 
 ## 6. Normalisation and evidence recovery
 
-- [ ] Implement recursive JSON string-leaf extraction with JSON paths.
-- [ ] Preserve parent-child provenance for decoded units.
-- [ ] Apply Unicode NFKC and retain raw-to-normalised offset mappings.
-- [ ] Detect zero-width, homoglyph/script-change, and bidi-control evidence where practical.
-- [ ] Decode HTML entities and retain comments/hidden-markup evidence where practical.
-- [ ] Treat Markdown, quotations, inline code, and code fences as context evidence.
-- [ ] Detect base64-like, hexadecimal, URL, and percent-encoded content conservatively.
-- [ ] Decode only bounded, clearly valid text regions.
-- [ ] Sentence/section segment while retaining offsets.
-- [ ] Add tests for clean text, nested JSON, Unicode, HTML, hidden markup, encodings, and span projection.
-- [ ] Add input/window-size limits and telemetry when limits are reached.
+- [x] Implement recursive JSON string-leaf extraction with JSON paths.
+- [x] Preserve parent-child provenance for decoded units.
+- [x] Apply Unicode NFKC and retain raw-to-normalised offset mappings.
+- [x] Detect zero-width, homoglyph/script-change, and bidi-control evidence where practical.
+- [x] Decode HTML entities and retain comments/hidden-markup evidence where practical.
+- [x] Treat Markdown, quotations, inline code, and code fences as context evidence.
+- [x] Detect base64-like, hexadecimal, URL, and percent-encoded content conservatively.
+- [x] Decode only bounded, clearly valid text regions.
+- [x] Sentence/section segment while retaining offsets.
+- [x] Add tests for clean text, nested JSON, Unicode, HTML, hidden markup, encodings, and span projection.
+- [x] Add input/window-size limits and telemetry when limits are reached.
 
 ## 7. Metrics and baseline evaluation
 
-- [ ] Validate labels, scores, and array lengths.
-- [ ] Implement AUPRC and AUROC.
-- [ ] Implement dev threshold selection at 1% and 0.1% FPR.
-- [ ] Report realised FPR beside target FPR and flag budget overruns.
-- [ ] Implement hard-negative FPR, per-channel metrics, per-dataset metrics, and per-attack recall.
-- [ ] Include support counts in metric reports.
-- [ ] Measure mean/p95 latency; add deterministic bootstrap intervals if feasible.
-- [ ] Verify all metric logic with hand-computed examples.
-- [ ] Implement majority, keyword/regex, TF-IDF word, and TF-IDF character baselines.
-- [ ] Train learned baselines only on train; select thresholds only on dev.
-- [ ] Save configurations, seeds, and vocabulary/model metadata.
-- [ ] Record baseline dev results before any test evaluation.
+- [x] Validate labels, scores, and array lengths.
+- [x] Implement AUPRC and AUROC.
+- [x] Implement dev threshold selection at 1% and 0.1% FPR.
+- [x] Report realised FPR beside target FPR and flag budget overruns.
+- [x] Implement hard-negative FPR, per-channel metrics, per-dataset metrics, and per-attack recall.
+- [x] Include support counts in metric reports.
+- [x] Measure mean/p95 latency; add deterministic bootstrap intervals if feasible.
+- [x] Verify all metric logic with hand-computed examples.
+- [x] Implement majority, keyword/regex, TF-IDF word, and TF-IDF character baselines.
+- [x] Train learned baselines only on train; select thresholds only on dev.
+- [x] Save configurations, seeds, and vocabulary/model metadata.
+- [x] Record baseline dev results before any test evaluation.
 
 ## 8. Rule engine and explanations
 
-- [ ] Implement meta-instruction/override rules and benign/malicious tests.
-- [ ] Implement secrecy/system-prompt/credential-target rules.
-- [ ] Implement exfiltration requiring action plus sensitive object/destination proximity.
-- [ ] Test ordinary URLs/emails and action verbs without harmful intent.
-- [ ] Implement tool-invocation, action-hijack, destructive-action, and obfuscation rules.
-- [ ] Implement MCP metadata-poisoning and manifest-change rules.
-- [ ] Implement task/context conflict only as corroborating evidence.
-- [ ] Test policies, tutorials, technical docs, security articles, quoted attacks, and code examples.
-- [ ] Test that quotation/code fences cannot materially reduce an active injection score.
-- [ ] Test that simple citation framing such as “for example” cannot cheaply suppress a payload.
-- [ ] Emit score, raw span, evidence, and human-readable trace per rule hit.
-- [ ] Add degraded-state/error telemetry and strict evaluation mode.
-- [ ] Implement and document rules-only aggregation weights consistently.
-- [ ] Evaluate each family alone and run leave-one-family-out ablation on dev.
-- [ ] Retain or discard rules only using logged evidence.
+- [x] Implement meta-instruction/override rules and benign/malicious tests.
+- [x] Implement secrecy/system-prompt/credential-target rules.
+- [x] Implement exfiltration requiring action plus sensitive object/destination proximity.
+- [x] Test ordinary URLs/emails and action verbs without harmful intent.
+- [x] Implement tool-invocation, action-hijack, destructive-action, and obfuscation rules.
+- [x] Implement MCP metadata-poisoning and manifest-change rules.
+- [x] Implement task/context conflict only as corroborating evidence.
+- [x] Test policies, tutorials, technical docs, security articles, quoted attacks, and code examples.
+- [x] Test that quotation/code fences cannot materially reduce an active injection score.
+- [x] Test that simple citation framing such as “for example” cannot cheaply suppress a payload.
+- [x] Emit score, raw span, evidence, and human-readable trace per rule hit.
+- [x] Add degraded-state/error telemetry and strict evaluation mode.
+- [x] Implement and document rules-only aggregation weights consistently.
+- [x] Evaluate each family alone and run leave-one-family-out ablation on dev.
+- [x] Retain or discard rules only using logged evidence.
 
 ## 9. Transformer and long-context detection
 
-- [ ] Select primary compact model and CPU-friendly fallback; record licence/tokenizer/parameter count.
-- [ ] Set maximum length, overlap, maximum windows, and bounded-input behaviour.
-- [ ] Use equivalent overlapping windows during training and inference.
-- [ ] Preserve highest-risk window position/evidence for each document.
-- [ ] Implement training dataset/data loader and documented imbalance method.
-- [ ] Train first model; save checkpoint, tokenizer, config, corpus digest, and seed.
-- [ ] Reload checkpoint in a clean process and run validation inference.
-- [ ] Measure model size and mean/p95 latency.
-- [ ] Run multiple seeds if feasible.
-- [ ] Test beginning/middle/end placement in long documents.
-- [ ] Record transformer-only results and warnings in the experiment log.
+- [x] Select primary compact model and CPU-friendly fallback; record licence/tokenizer/parameter count.
+- [x] Set maximum length, overlap, maximum windows, and bounded-input behaviour.
+- [x] Use equivalent overlapping windows during training and inference.
+- [x] Preserve highest-risk window position/evidence for each document.
+- [x] Implement training dataset/data loader and documented imbalance method.
+- [x] Train first model; save checkpoint, tokenizer, config, corpus digest, and seed.
+- [x] Reload checkpoint in a clean process and run validation inference.
+- [x] Measure model size and mean/p95 latency.
+- [x] Run multiple seeds if feasible.
+- [x] Test beginning/middle/end placement in long documents.
+- [x] Record transformer-only results and warnings in the experiment log.
 
 ## 10. Fusion, calibration, and verdicts
 
-- [ ] Export rule feature vectors and transformer probabilities for dev records.
-- [ ] Fit fusion only on development data; use grouped out-of-fold scores for dev reporting where applicable.
-- [ ] Document fusion features, folds, regularisation, seed, and training split.
-- [ ] Calibrate probabilities or document why a given output is used directly.
-- [ ] Store selected thresholds, calibration data, and corpus digest.
-- [ ] Implement a serialisable verdict.
-- [ ] Include channel, source/tool provenance, JSON path, risk, threshold, band, model score, spans, traces, evidence, and degraded state.
-- [ ] Validate verdict serialisation and raw-span projection.
-- [ ] Compare rules-only, transformer-only, and hybrid systems fairly.
-- [ ] Freeze design choices, then score held-out test once.
+- [x] Export rule feature vectors and transformer probabilities for dev records.
+- [x] Fit fusion only on development data; use grouped out-of-fold scores for dev reporting where applicable.
+- [x] Document fusion features, folds, regularisation, seed, and training split.
+- [x] Calibrate probabilities or document why a given output is used directly.
+- [x] Store selected thresholds, calibration data, and corpus digest.
+- [x] Implement a serialisable verdict.
+- [x] Include channel, source/tool provenance, JSON path, risk, threshold, band, model score, spans, traces, evidence, and degraded state.
+- [x] Validate verdict serialisation and raw-span projection.
+- [x] Compare rules-only, transformer-only, and hybrid systems fairly.
+- [x] Freeze design choices, then score held-out test once.
 
 ## 11. Semantic and context-aware extensions
 
-- [ ] Define task, untrusted instruction, and proposed-action representations.
-- [ ] Collect cases where lexical overlap disagrees with semantic task conflict.
-- [ ] Add embedding-based semantic similarity, contradiction, or action-destination features.
-- [ ] Compare semantic features against lexical/register baselines.
-- [ ] Test attacks reusing task vocabulary while changing destination, authority, or tool.
-- [ ] Test benign off-topic instructions that should not be labelled attacks automatically.
-- [ ] Add source-aware features: channel, JSON-path class, document type, tool/server identity.
-- [ ] Measure whether provenance features help or hurt cross-source transfer.
+- [x] Define task, untrusted instruction, and proposed-action representations.
+- [x] Collect cases where lexical overlap disagrees with semantic task conflict.
+- [x] Add embedding-based semantic similarity, contradiction, or action-destination features.
+- [x] Compare semantic features against lexical/register baselines.
+- [x] Test attacks reusing task vocabulary while changing destination, authority, or tool.
+- [x] Test benign off-topic instructions that should not be labelled attacks automatically.
+- [x] Add source-aware features: channel, JSON-path class, document type, tool/server identity.
+- [x] Measure whether provenance features help or hurt cross-source transfer.
 - [ ] Add multi-chunk/retrieval-bundle scoring with preserved source and order.
 - [ ] Test safe payload assembly across chunks.
 - [ ] Add abstain/review behaviour for uncertain or conflicting evidence.
@@ -188,32 +188,32 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 13. Capability policy and MCP layer
 
-- [ ] Create a versioned static policy file.
-- [ ] Classify proposed actions into all defined capability classes.
-- [ ] Map safe reads, sensitive reads, external sends, writes, destructive actions, and privilege escalation to deterministic outcomes.
-- [ ] Ensure policy is safe when detector output is missing or degraded.
-- [ ] Add tests for every action-policy category.
-- [ ] Log policy inputs, decision, reason, and policy version.
-- [ ] Create clean and poisoned nested tool-response JSON fixtures.
-- [ ] Create approved and suspicious/changed MCP manifest fixtures.
-- [ ] Scan tool names, descriptions, schemas, parameter descriptions, and string leaves.
-- [ ] Associate every finding with JSON path, tool/server identity, and manifest version.
-- [ ] Use only simulated downstream actions and local safe replay.
-- [ ] Do not connect the demo to live MCP servers.
+- [x] Create a versioned static policy file.
+- [x] Classify proposed actions into all defined capability classes.
+- [x] Map safe reads, sensitive reads, external sends, writes, destructive actions, and privilege escalation to deterministic outcomes.
+- [x] Ensure policy is safe when detector output is missing or degraded.
+- [x] Add tests for every action-policy category.
+- [x] Log policy inputs, decision, reason, and policy version.
+- [x] Create clean and poisoned nested tool-response JSON fixtures.
+- [x] Create approved and suspicious/changed MCP manifest fixtures.
+- [x] Scan tool names, descriptions, schemas, parameter descriptions, and string leaves.
+- [x] Associate every finding with JSON path, tool/server identity, and manifest version.
+- [x] Use only simulated downstream actions and local safe replay.
+- [x] Do not connect the demo to live MCP servers.
 
 ## 14. Live demo and usability
 
-- [ ] Choose local UI framework and create page shell.
-- [ ] Add RAG/tool-response/MCP-manifest selector.
-- [ ] Add clean-versus-poisoned samples plus safe free text/JSON paste.
-- [ ] Show original content, JSON tree/path, source provenance, and normalised evidence.
-- [ ] Highlight suspicious raw-text spans.
-- [ ] Show risk, threshold, risk band, uncertainty/degraded warning, rule trace, and model/fusion evidence.
-- [ ] Show proposed action, capability class, and deterministic policy decision.
-- [ ] Add guard-off versus guard-on comparison.
-- [ ] Add limitations, safety, and non-production disclaimer.
-- [ ] Test clean/poisoned RAG, JSON, and MCP-manifest flows.
-- [ ] Test a fresh restart, measure response time, and record fallback demo video.
+- [x] Choose local UI framework and create page shell.
+- [x] Add RAG/tool-response/MCP-manifest selector.
+- [x] Add clean-versus-poisoned samples plus safe free text/JSON paste.
+- [x] Show original content, JSON tree/path, source provenance, and normalised evidence.
+- [x] Highlight suspicious raw-text spans.
+- [x] Show risk, threshold, risk band, uncertainty/degraded warning, rule trace, and model/fusion evidence.
+- [x] Show proposed action, capability class, and deterministic policy decision.
+- [x] Add guard-off versus guard-on comparison.
+- [x] Add limitations, safety, and non-production disclaimer.
+- [x] Test clean/poisoned RAG, JSON, and MCP-manifest flows.
+- [x] Test a fresh restart, measure response time, and record fallback demo video.
 
 ## 15. Analysis, report, and presentation
 

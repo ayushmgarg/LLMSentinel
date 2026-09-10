@@ -3,8 +3,8 @@
 Provenance-aware detection and capability gating for indirect prompt injection in
 RAG and MCP-style agents.
 
-Plan: [PROJECT_PLAN.md](PROJECT_PLAN.md) · Checklist:
-[PROJECT_CHECKLIST.md](PROJECT_CHECKLIST.md) · Threat model and frozen protocol:
+Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
+[PROJECT_CHECKLIST_V2.md](PROJECT_CHECKLIST_V2.md) · Threat model and frozen protocol:
 [docs/threat_model.md](docs/threat_model.md) · Labelling rules:
 [docs/annotation_guideline.md](docs/annotation_guideline.md) · Experiment log:
 [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md)
@@ -13,7 +13,7 @@ Plan: [PROJECT_PLAN.md](PROJECT_PLAN.md) · Checklist:
 > complements least privilege, human approval and server-side authorisation; it
 > does not replace them.
 
-## Status — through Week 2
+## Status — through Week 3 (+ section-11 extensions)
 
 | Area | State |
 |---|---|
@@ -27,7 +27,10 @@ Plan: [PROJECT_PLAN.md](PROJECT_PLAN.md) · Checklist:
 | Evaluation harness + CLI + test suite | done |
 | Week 2 exit review | done — [docs/week2_exit_review.md](docs/week2_exit_review.md) |
 | Capability policy (Week 3) | done — [docs/capability_policy.md](docs/capability_policy.md) |
-| Demo UI, robustness, ablations, report figures | Week 3–4, not started |
+| Offline Streamlit demo (Week 3) | done — [docs/week3_exit_review.md](docs/week3_exit_review.md) |
+| Per-dataset metrics, attack-position robustness | done |
+| Semantic / context-aware layer (experimental) | done — see below |
+| Full robustness sweep, error analysis, report figures | Week 4, not started |
 
 ### Corpus and results status
 
@@ -37,11 +40,10 @@ redistributed): 1669 records across all three channels, leakage-checked. MCPTox
 is not integrated — no verifiable release was located; the `tool_metadata`
 channel is seed-only, which the corpus card flags.
 
-Model results are being **recomputed on this combined corpus**; the tables in
-`docs/EXPERIMENTS.md` and `docs/week2_exit_review.md` marked with the
-`bcc271db` digest are from the earlier synthetic-only corpus and are labelled
-superseded. See `docs/EXPERIMENTS.md` for current numbers once the re-evaluation
-run completes.
+Model results are computed on this combined corpus; earlier tables marked with
+the `bcc271db` digest are from the synthetic-only corpus and are labelled
+superseded. Current numbers — including per-source breakdowns, attack-position
+robustness, and the experimental semantic layer — are in `docs/EXPERIMENTS.md`.
 
 ## Setup
 
@@ -107,6 +109,25 @@ Per-family and leave-one-family-out rule ablation:
 .venv/Scripts/python.exe scripts/rule_family_eval.py
 ```
 
+Attack-position robustness (payload at beginning / middle / end of long docs):
+
+```bash
+.venv/Scripts/python.exe scripts/placement_robustness.py
+```
+
+Semantic / context-aware layer: compare against the lexical baseline and probe
+the contrastive cases:
+
+```bash
+.venv/Scripts/python.exe scripts/semantic_eval.py
+```
+
+Do provenance features help or hurt cross-source transfer:
+
+```bash
+.venv/Scripts/python.exe scripts/provenance_transfer.py
+```
+
 Scan a document, and gate a proposed tool action against the policy:
 
 ```bash
@@ -121,8 +142,10 @@ Tests and lint:
 
 ## Corpus
 
-923 records (266 injection / 657 benign), 70/15/15 split, every (split, channel)
-cell populated, leakage checks passing, 0 records dropped.
+1669 records (BIPIA + InjecAgent + authored seed) across all three channels,
+train/dev/test = 1286/197/186, every (split, channel) cell populated, leakage
+checks passing. Per-source support is reported by `llmsentinel evaluate` so a
+combined-corpus headline cannot hide that one source carries it.
 
 An earlier 1803-record build was discarded: a manual audit found benign text
 placed into implausible hosts (an exam rubric inside a tool description) and
@@ -160,6 +183,26 @@ poisoned/drifted tool manifest; highlights the flagged spans; and shows the
 deterministic capability-policy decision (guard off vs guard on). See
 [docs/week3_exit_review.md](docs/week3_exit_review.md).
 
+## Semantic / context-aware layer (experimental)
+
+A layer that asks a different question from the rules — *does this instruction
+belong to the host task, and where would it send the result?* — rather than
+matching surface patterns. It derives a task / untrusted-instruction /
+proposed-action representation from a record and exposes 18 named features:
+task similarity, off-topic, action/destination/secret/authority signals, and
+source-aware provenance features (channel, JSON-path class, document type, tool
+identity). A similarity backend is pluggable — a deterministic lexical proxy by
+default, or a neural sentence embedder with the `semantic` extra and
+`LLMSENTINEL_EMBEDDER=st`.
+
+It is reported **alongside** the frozen systems, never folded into the headline
+hybrid. Honest findings are logged in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md):
+as a standalone detector it is weaker than the lexical and rule baselines, but
+its corroboration-gated conflict flag is precise on the cases it targets —
+vocabulary-reuse attacks that change destination/authority/tool, and benign
+off-topic instructions that must not be flagged. Curated probes live in
+`data/semantic/contrastive_cases.yaml`.
+
 ## Layout
 
 ```
@@ -171,12 +214,15 @@ src/llmsentinel/
   normalize/       offset-preserving normalisation + concealment evidence
   rules/           high-precision rules, context suppression, engine
   data/            loaders, dedup, grouped splits, leakage audit, corpus card
-  evaluation/      metrics and the evaluation harness
+  evaluation/      metrics (incl. per-channel/per-dataset) and the harness
   models/          scorer interface, baselines, transformer, fusion
+  semantic/        experimental context-aware layer (representations, features, scorer)
   policy/          deterministic capability gate over proposed tool actions
-scripts/           transformer training, rule-family ablation
-tests/             schema, normalisation, rules, metrics, splits, models
+  demo/            offline Streamlit page, retriever, scenario pipeline
+scripts/           transformer training, rule-family & position ablation, semantic evals
+tests/             schema, normalisation, rules, metrics, policy, demo, semantic
 data/seed/         authored corpus source (payloads, hosts, hard negatives)
+data/semantic/     hand-written contrastive cases for the semantic layer
 docs/              threat model, annotation guideline, corpus card, experiment log
 ```
 

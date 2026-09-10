@@ -105,7 +105,13 @@ def cmd_corpus_inspect(args: argparse.Namespace) -> int:
 
 # ----------------------------------------------------------------- evaluate
 def cmd_evaluate(args: argparse.Namespace) -> int:
-    from .evaluation import load_splits, results_table, run_system, save_results
+    from .evaluation import (
+        load_splits,
+        per_dataset_table,
+        results_table,
+        run_system,
+        save_results,
+    )
     from .models import (
         KeywordBaseline,
         MajorityBaseline,
@@ -170,9 +176,13 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
 
     print()
     print(results_table(results, split="dev"))
+    print()
+    print(per_dataset_table(results, split="dev"))
     if args.test:
         print()
         print(results_table(results, split="test"))
+        print()
+        print(per_dataset_table(results, split="test"))
 
     warnings = sorted({warning for result in results for warning in result.warnings})
     if warnings:
