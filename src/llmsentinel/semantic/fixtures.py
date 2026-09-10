@@ -19,9 +19,17 @@ import yaml
 from ..paths import DATA_DIR
 from ..schema import Channel, CorpusRecord, Label, make_record_id
 
-__all__ = ["CONTRASTIVE_PATH", "ContrastiveCase", "load_contrastive_cases"]
+__all__ = [
+    "CONTRASTIVE_PATH",
+    "MULTICHUNK_PATH",
+    "ContrastiveCase",
+    "MultiChunkCase",
+    "load_contrastive_cases",
+    "load_multichunk_cases",
+]
 
 CONTRASTIVE_PATH = DATA_DIR / "semantic" / "contrastive_cases.yaml"
+MULTICHUNK_PATH = DATA_DIR / "semantic" / "multichunk_cases.yaml"
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,10 +72,38 @@ class ContrastiveCase:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class MultiChunkCase:
+    """An ordered retrieval bundle and whether it should assemble into an attack."""
+
+    case_id: str
+    host_task: str
+    chunks: tuple[tuple[str, str], ...]  # (source, text) in retrieval order
+    expect_assembly: bool
+    note: str
+
+
 def load_contrastive_cases(path: str | Path | None = None) -> list[ContrastiveCase]:
     source = Path(path) if path else CONTRASTIVE_PATH
     payload = yaml.safe_load(source.read_text(encoding="utf-8"))
     return list(_parse(payload))
+
+
+def load_multichunk_cases(path: str | Path | None = None) -> list[MultiChunkCase]:
+    source = Path(path) if path else MULTICHUNK_PATH
+    payload = yaml.safe_load(source.read_text(encoding="utf-8"))
+    cases = []
+    for raw in payload.get("bundles", []):
+        cases.append(
+            MultiChunkCase(
+                case_id=str(raw["id"]),
+                host_task=str(raw["host_task"]),
+                chunks=tuple((str(c["source"]), str(c["text"]).strip()) for c in raw["chunks"]),
+                expect_assembly=bool(raw["expect_assembly"]),
+                note=str(raw.get("note", "")),
+            )
+        )
+    return cases
 
 
 def _parse(payload: dict) -> Iterator[ContrastiveCase]:

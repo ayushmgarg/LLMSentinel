@@ -723,3 +723,51 @@ builtin) and help slightly on the other two. The large InjecAgent AUPRC reflects
 its extreme positive rate (214/230) and is not comparable across rows. The
 takeaway for the report: provenance features are not a free lunch for
 generalisation and should be justified per deployment, not assumed.
+
+---
+
+## 2026-09-10 · Multi-chunk (retrieval-bundle) assembly (experimental)
+
+**Why.** An attacker can split one instruction across two retrieved chunks so
+neither looks like an injection alone; the model reassembles it when it reads
+them in order (section 11, payload assembly).
+
+**Method.** `llmsentinel.semantic.bundle.score_bundle` scores each chunk
+(preserving source and order) and also the ordered concatenation. Fixtures in
+`data/semantic/multichunk_cases.yaml`, rules-only, dev thresholds.
+
+| bundle | max chunk risk | assembled risk | review |
+|---|---|---|---|
+| benign_bundle | 0.000 | 0.000 | no |
+| split_payload_bundle | 0.807 | 0.976 | yes — assembled crosses 0.875 that no chunk reaches |
+
+**Observation.** The split case hides the override phrase across the chunk 2 / 3
+boundary: no single chunk reaches the elevated threshold, but the concatenation
+reconstructs a contiguous trigger and crosses it. The assembled-vs-max gap is the
+signal and routes the bundle to review. **Limitation (logged):** when a payload's
+action/object/destination are spread across *sentences* rather than rejoined into
+a contiguous phrase, the rules' proximity window misses them in both passes — the
+assembled pass only recovers boundary-split contiguous triggers.
+
+## 2026-09-10 · Robustness perturbation suite (section 12)
+
+**Why.** Measure how much recall survives meaning-preserving perturbations, and
+whether those perturbations manufacture false positives on hard negatives.
+
+**Method.** `scripts/robustness_suite.py`. Recall *kept* from a baseline of 47
+rules-detected positives; hard-neg FPR on 60 hard negatives; rules-only dev
+threshold 0.8751 applied unchanged. Full table and mitigations in
+`docs/robustness.md`.
+
+**Headline.** Surface and Unicode transforms keep recall 0.96–1.00 (NFKC folding
+and zero-width stripping run before scoring); dilution/distractors keep 0.96
+(max-aggregation). **Failures:** `base64_embed` recall 0.00 (the rules *scorer*
+does not decode embedded base64, though the `scan` pipeline's derived-unit pass
+does); `punctuation` recall 0.79 (commas split trigger regexes); quote/fence
+wrapping and zero-width/bidi injection raise hard-negative FPR to 0.07–0.15.
+Cross-channel transfer (tfidf-word) degrades off-diagonal, worst training on
+`tool_metadata` and testing on documents (AUPRC 0.558) vs 0.98 in-channel.
+Per-channel rules AUPRC: tool_response 0.619, tool_metadata 0.735 (33 positives).
+
+**Out of scope (stated):** genuine paraphrase, multilingual, and adaptive
+white-box attackers.

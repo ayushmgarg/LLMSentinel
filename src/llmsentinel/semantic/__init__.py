@@ -8,12 +8,18 @@ hybrid until independently benchmarked.
 
 from __future__ import annotations
 
+from .bundle import BundleChunk, BundleResult, ChunkFinding, score_bundle
 from .features import (
     SEMANTIC_FEATURE_NAMES,
     SemanticFeatureExtractor,
     SemanticFeatures,
 )
-from .fixtures import ContrastiveCase, load_contrastive_cases
+from .fixtures import (
+    ContrastiveCase,
+    MultiChunkCase,
+    load_contrastive_cases,
+    load_multichunk_cases,
+)
 from .representations import (
     ProposedAction,
     TaskContext,
@@ -21,6 +27,7 @@ from .representations import (
     build_context,
     extract_actions,
 )
+from .review import REVIEW, review_reasons
 from .scorer import SemanticScorer
 from .similarity import (
     Embedder,
@@ -31,10 +38,15 @@ from .similarity import (
 )
 
 __all__ = [
+    "REVIEW",
     "SEMANTIC_FEATURE_NAMES",
+    "BundleChunk",
+    "BundleResult",
+    "ChunkFinding",
     "ContrastiveCase",
     "Embedder",
     "LexicalEmbedder",
+    "MultiChunkCase",
     "ProposedAction",
     "SemanticFeatureExtractor",
     "SemanticFeatures",
@@ -47,4 +59,7 @@ __all__ = [
     "default_embedder",
     "extract_actions",
     "load_contrastive_cases",
+    "load_multichunk_cases",
+    "review_reasons",
+    "score_bundle",
 ]

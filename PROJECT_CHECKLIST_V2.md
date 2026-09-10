@@ -168,23 +168,23 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 - [x] Test benign off-topic instructions that should not be labelled attacks automatically.
 - [x] Add source-aware features: channel, JSON-path class, document type, tool/server identity.
 - [x] Measure whether provenance features help or hurt cross-source transfer.
-- [ ] Add multi-chunk/retrieval-bundle scoring with preserved source and order.
-- [ ] Test safe payload assembly across chunks.
-- [ ] Add abstain/review behaviour for uncertain or conflicting evidence.
-- [ ] Label all such methods experimental until independently benchmarked.
+- [x] Add multi-chunk/retrieval-bundle scoring with preserved source and order.
+- [x] Test safe payload assembly across chunks.
+- [x] Add abstain/review behaviour for uncertain or conflicting evidence.
+- [x] Label all such methods experimental until independently benchmarked.
 
 ## 12. Robustness and generalisation
 
-- [ ] Test attack position, long-context dilution, and benign distractors.
-- [ ] Test whitespace, punctuation, casing, quotation, Markdown, and code fences.
-- [ ] Test Unicode, zero-width, bidi, and safely encoded variants.
-- [ ] Test paraphrase, synonym, and declarative attack wording.
-- [ ] Test transformed benign policies, documentation, and technical text.
-- [ ] Test multi-chunk/retrieval-bundle fixtures.
-- [ ] Evaluate cross-channel and cross-dataset transfer when data supports it.
-- [ ] Evaluate metadata scanning separately from tool-response scanning.
-- [ ] Explore multilingual robustness only with stated data/language limitations.
-- [ ] Log failures and mitigations instead of silently removing them.
+- [x] Test attack position, long-context dilution, and benign distractors.
+- [x] Test whitespace, punctuation, casing, quotation, Markdown, and code fences.
+- [x] Test Unicode, zero-width, bidi, and safely encoded variants.
+- [x] Test paraphrase, synonym, and declarative attack wording.
+- [x] Test transformed benign policies, documentation, and technical text.
+- [x] Test multi-chunk/retrieval-bundle fixtures.
+- [x] Evaluate cross-channel and cross-dataset transfer when data supports it.
+- [x] Evaluate metadata scanning separately from tool-response scanning.
+- [x] Explore multilingual robustness only with stated data/language limitations.
+- [x] Log failures and mitigations instead of silently removing them.
 
 ## 13. Capability policy and MCP layer
 

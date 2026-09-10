@@ -145,3 +145,59 @@ def test_scorer_ranks_vocab_reuse_attack_above_its_benign_twin(
 def test_scorer_name_and_features_track_the_source_flag() -> None:
     assert SemanticScorer(use_source_features=True).name == "semantic"
     assert SemanticScorer(use_source_features=False).name == "semantic-no-source"
+
+
+# ---------------------------------------------------------- multi-chunk bundle
+from llmsentinel.models import RulesScorer  # noqa: E402
+from llmsentinel.semantic import (  # noqa: E402
+    BundleChunk,
+    load_multichunk_cases,
+    review_reasons,
+    score_bundle,
+)
+
+_THRESHOLDS = {"fpr=0.01": 0.875, "fpr=0.001": 0.95}
+BUNDLES = {b.case_id: b for b in load_multichunk_cases()}
+
+
+def _bundle_result(case_id: str):
+    case = BUNDLES[case_id]
+    chunks = [BundleChunk(text=text, source=source) for source, text in case.chunks]
+    return case, score_bundle(chunks, RulesScorer(), host_task=case.host_task, thresholds=_THRESHOLDS)
+
+
+def test_bundle_preserves_order_and_source() -> None:
+    case, result = _bundle_result("benign_bundle")
+    assert [f.order for f in result.findings] == list(range(len(case.chunks)))
+    assert [f.source for f in result.findings] == [s for s, _ in case.chunks]
+
+
+def test_benign_bundle_is_quiet_and_needs_no_review() -> None:
+    _case, result = _bundle_result("benign_bundle")
+    assert result.max_chunk_risk < 0.5
+    assert result.assembled_risk < 0.5
+    assert not result.needs_review
+
+
+def test_split_payload_assembles_and_triggers_review() -> None:
+    """No single chunk reaches the elevated threshold, but the ordered
+    concatenation crosses it — the assembly the per-chunk pass would miss."""
+
+    case, result = _bundle_result("split_payload_bundle")
+    assert case.expect_assembly
+    assert result.max_chunk_risk < _THRESHOLDS["fpr=0.01"]
+    assert result.assembled_risk >= _THRESHOLDS["fpr=0.01"]
+    assert result.needs_review
+
+
+def test_review_reasons_fire_on_degraded_and_disagreement() -> None:
+    assert review_reasons(0.2, _THRESHOLDS, degraded=True)
+    assert review_reasons(0.2, _THRESHOLDS, rule_score=0.9, model_score=0.1)
+    # Confident, consistent, non-degraded, no assembly gain -> no review.
+    assert review_reasons(0.99, _THRESHOLDS, rule_score=0.97, model_score=0.95) == []
+
+
+def test_review_reasons_fire_on_borderline_risk() -> None:
+    # Just below the elevated threshold: a small perturbation flips the decision.
+    assert review_reasons(0.80, _THRESHOLDS)
+    assert review_reasons(0.10, _THRESHOLDS) == []

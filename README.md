@@ -13,7 +13,7 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 > complements least privilege, human approval and server-side authorisation; it
 > does not replace them.
 
-## Status — through Week 3 (+ section-11 extensions)
+## Status — V2 checklist sections 1–14 complete
 
 | Area | State |
 |---|---|
@@ -29,8 +29,9 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Capability policy (Week 3) | done — [docs/capability_policy.md](docs/capability_policy.md) |
 | Offline Streamlit demo (Week 3) | done — [docs/week3_exit_review.md](docs/week3_exit_review.md) |
 | Per-dataset metrics, attack-position robustness | done |
-| Semantic / context-aware layer (experimental) | done — see below |
-| Full robustness sweep, error analysis, report figures | Week 4, not started |
+| Semantic / context-aware layer + multi-chunk & abstain (experimental) | done — see below |
+| Robustness sweep, cross-channel transfer, metadata scanning (§12) | done — [docs/robustness.md](docs/robustness.md) |
+| Error analysis, report figures, landing page (§15–16) | not started |
 
 ### Corpus and results status
 
@@ -128,6 +129,12 @@ Do provenance features help or hurt cross-source transfer:
 .venv/Scripts/python.exe scripts/provenance_transfer.py
 ```
 
+Robustness sweep (perturbations, cross-channel transfer, metadata vs response):
+
+```bash
+.venv/Scripts/python.exe scripts/robustness_suite.py
+```
+
 Scan a document, and gate a proposed tool action against the policy:
 
 ```bash
@@ -195,6 +202,12 @@ identity). A similarity backend is pluggable — a deterministic lexical proxy b
 default, or a neural sentence embedder with the `semantic` extra and
 `LLMSENTINEL_EMBEDDER=st`.
 
+It also scores **retrieval bundles** (`semantic.bundle`): each chunk is scored
+with its source and order preserved, plus the ordered concatenation, so a payload
+split across chunks that no chunk reaches the threshold alone is caught when the
+assembled view crosses it — and routed to **review** (`semantic.review`), the
+abstain path for uncertain or conflicting evidence.
+
 It is reported **alongside** the frozen systems, never folded into the headline
 hybrid. Honest findings are logged in [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md):
 as a standalone detector it is weaker than the lexical and rule baselines, but
@@ -216,14 +229,15 @@ src/llmsentinel/
   data/            loaders, dedup, grouped splits, leakage audit, corpus card
   evaluation/      metrics (incl. per-channel/per-dataset) and the harness
   models/          scorer interface, baselines, transformer, fusion
-  semantic/        experimental context-aware layer (representations, features, scorer)
+  semantic/        experimental context-aware layer (representations, features, scorer, multi-chunk bundle, abstain)
+  robustness/      meaning-preserving perturbations and the robustness suite
   policy/          deterministic capability gate over proposed tool actions
   demo/            offline Streamlit page, retriever, scenario pipeline
-scripts/           transformer training, rule-family & position ablation, semantic evals
-tests/             schema, normalisation, rules, metrics, policy, demo, semantic
+scripts/           transformer training, rule-family/position/robustness ablations, semantic evals
+tests/             schema, normalisation, rules, metrics, policy, demo, semantic, robustness
 data/seed/         authored corpus source (payloads, hosts, hard negatives)
-data/semantic/     hand-written contrastive cases for the semantic layer
-docs/              threat model, annotation guideline, corpus card, experiment log
+data/semantic/     hand-written contrastive + multi-chunk cases for the semantic layer
+docs/              threat model, annotation guideline, corpus card, robustness, experiment log
 ```
 
 ## Design decisions worth knowing
