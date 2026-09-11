@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 470" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <style>
+    .box{rx:8;ry:8;stroke-width:1.5;}
+    .t{font-size:13px;fill:#1f2328;}
+    .th{font-size:13px;font-weight:600;fill:#1f2328;}
+    .sub{font-size:10.5px;fill:#57606a;}
+    .lbl{font-size:11px;fill:#57606a;}
+    .arrow{stroke:#57606a;stroke-width:1.6;fill:none;marker-end:url(#a);}
+  </style>
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#57606a"/>
+    </marker>
+  </defs>
+
+  <text x="20" y="28" class="th" font-size="16">LLMSentinel — indirect prompt-injection guard</text>
+  <text x="20" y="46" class="sub">detector advises · deterministic policy decides · nothing is executed</text>
+
+  <!-- Untrusted sources -->
+  <rect x="20" y="70" width="180" height="118" rx="8" ry="8" fill="#fdecec" stroke="#e45756" stroke-width="1.5"/>
+  <text x="30" y="90" class="th">Untrusted context</text>
+  <text x="30" y="108" class="sub">(untrusted by provenance)</text>
+  <text x="34" y="132" class="t">• RAG document</text>
+  <text x="34" y="152" class="t">• Tool response (JSON)</text>
+  <text x="34" y="172" class="t">• Tool manifest / metadata</text>
+
+  <!-- Trusted -->
+  <rect x="20" y="210" width="180" height="70" rx="8" ry="8" fill="#eaf3ea" stroke="#2da44e" stroke-width="1.5"/>
+  <text x="30" y="232" class="th">Trusted</text>
+  <text x="34" y="252" class="t">• User task (host task)</text>
+  <text x="34" y="270" class="t">• System policy</text>
+
+  <!-- Normalize -->
+  <rect x="245" y="90" width="180" height="118" rx="8" ry="8" fill="#eef3f8" stroke="#4c78a8" stroke-width="1.5"/>
+  <text x="255" y="110" class="th">Normalise</text>
+  <text x="259" y="132" class="t">• Unicode NFKC</text>
+  <text x="259" y="150" class="t">• zero-width / homoglyph</text>
+  <text x="259" y="168" class="t">• HTML / base64 decode</text>
+  <text x="259" y="186" class="t">• offsets + evidence</text>
+
+  <!-- Detectors -->
+  <rect x="470" y="70" width="200" height="160" rx="8" ry="8" fill="#eef3f8" stroke="#4c78a8" stroke-width="1.5"/>
+  <text x="480" y="90" class="th">Detect (advisory)</text>
+  <text x="484" y="112" class="t">• Rule engine (7 families)</text>
+  <text x="484" y="132" class="t">• Transformer (distilroberta)</text>
+  <text x="484" y="152" class="t">• Fusion (rules + model)</text>
+  <text x="484" y="176" class="sub">→ Verdict: risk, band,</text>
+  <text x="484" y="192" class="sub">   flagged spans, reasons,</text>
+  <text x="484" y="208" class="sub">   provenance</text>
+
+  <!-- Policy -->
+  <rect x="715" y="90" width="205" height="150" rx="8" ry="8" fill="#fbf3e6" stroke="#bf8700" stroke-width="1.5"/>
+  <text x="725" y="110" class="th">Capability policy</text>
+  <text x="729" y="132" class="sub">(action class × risk band)</text>
+  <text x="729" y="156" class="t">allow · isolate ·</text>
+  <text x="729" y="176" class="t">confirm · block</text>
+  <text x="729" y="200" class="sub">deterministic table;</text>
+  <text x="729" y="216" class="sub">fail-safe escalation;</text>
+  <text x="729" y="232" class="sub">nothing executes</text>
+
+  <!-- Outcome -->
+  <rect x="715" y="270" width="205" height="70" rx="8" ry="8" fill="#eaf3ea" stroke="#2da44e" stroke-width="1.5"/>
+  <text x="725" y="292" class="th">Outcome</text>
+  <text x="729" y="312" class="t">answer allowed / span</text>
+  <text x="729" y="330" class="t">isolated / action gated</text>
+
+  <!-- Proposed action -->
+  <rect x="470" y="270" width="200" height="70" rx="8" ry="8" fill="#f2eef8" stroke="#8250df" stroke-width="1.5"/>
+  <text x="480" y="292" class="th">Proposed tool action</text>
+  <text x="484" y="312" class="sub">e.g. send_email, delete_file</text>
+  <text x="484" y="330" class="sub">(from the agent, as data)</text>
+
+  <!-- arrows -->
+  <path class="arrow" d="M200,129 L243,129"/>
+  <path class="arrow" d="M200,245 C225,245 230,150 243,150"/>
+  <path class="arrow" d="M425,150 L468,150"/>
+  <path class="arrow" d="M670,150 L713,150"/>
+  <path class="arrow" d="M570,270 L570,232 M570,232 L668,232" />
+  <path class="arrow" d="M817,240 L817,268"/>
+
+  <text x="20" y="400" class="lbl">Evaluation: AUPRC · TPR@FPR (realised-FPR flagged) · hard-negative FPR · per-channel / per-dataset / per-attack · leakage-free grouped splits · test scored once.</text>
+  <text x="20" y="420" class="lbl">Robustness: surface / Unicode / rewrite perturbations · cross-channel transfer · multi-chunk assembly · abstain / review (experimental).</text>
+  <text x="20" y="440" class="lbl">Data: BIPIA + InjecAgent + authored corpus (CC0). Safe by design: reserved .invalid destinations, placeholder secrets, no live services.</text>
+  <text x="20" y="460" class="lbl">Research prototype — defence in depth, not a guarantee.</text>
+</svg>

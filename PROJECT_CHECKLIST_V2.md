@@ -237,15 +237,22 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 15. Analysis, report, and presentation
 
-- [ ] Sample false positives from hard negatives and false negatives by attack type/channel.
-- [ ] Categorise errors: quote, code, policy, documentation, paraphrase, dilution, obfuscation, declarative wording, semantic conflict, other.
-- [ ] Write one mitigation/future-work note for each major error category.
-- [ ] Generate corpus, source/licence, comparison, per-channel, per-attack, ablation, robustness, latency/model-size tables.
-- [ ] Generate PR curve and calibration plot where relevant.
-- [ ] Generate architecture figure and demo screenshots.
-- [ ] Write method, corpus/labelling/split, threat model, evaluation, results, limitations, and safety sections.
-- [ ] Verify every result against experiment log and every citation/dataset licence against source material.
-- [ ] Prepare a concise demo script and ensure every member can explain evidence and limitations.
+> Status: analysis + figures + report drafted (`docs/report.md`,
+> `docs/error_analysis.md`, `artifacts/figures/`). Figures/results regenerate via
+> `scripts/make_figures.py` and `llmsentinel evaluate --test`. Three items are
+> deliberately left open (demo screenshots, a formal literature-citation pass,
+> and a rehearsed 3-minute demo script) — they need the live UI captured and a
+> related-work write-up, tracked for the presentation pass.
+
+- [x] Sample false positives from hard negatives and false negatives by attack type/channel. *(scripts/error_analysis.py, rules-only + hybrid)*
+- [x] Categorise errors: quote, code, policy, documentation, paraphrase, dilution, obfuscation, declarative wording, semantic conflict, other. *(docs/error_analysis.md)*
+- [x] Write one mitigation/future-work note for each major error category.
+- [x] Generate corpus, source/licence, comparison, per-channel, per-attack, ablation, robustness, latency/model-size tables. *(comparison/per-channel/per-attack in results JSON; ablation in rule_family_eval; robustness in docs/robustness.md; corpus + source/licence in corpus_card; latency currently n/a and model size in describe())*
+- [x] Generate PR curve and calibration plot where relevant. *(artifacts/figures/pr_curve.png, calibration.png)*
+- [ ] Generate architecture figure and demo screenshots. *(architecture.svg done; live demo screenshots still to capture — transcript stands in for now)*
+- [x] Write method, corpus/labelling/split, threat model, evaluation, results, limitations, and safety sections. *(docs/report.md)*
+- [ ] Verify every result against experiment log and every citation/dataset licence against source material. *(results verified vs EXPERIMENTS.md and dataset licences recorded; a formal literature-citation/related-work pass is still pending)*
+- [ ] Prepare a concise demo script and ensure every member can explain evidence and limitations. *(3-minute demo script pending; solo project)*
 
 ## 16. Optional product framing
 

@@ -828,18 +828,20 @@ identity (previously grouped by family alone), and the corpus digest is now
 content-based. Re-ran `llmsentinel evaluate --test` once (recorded in
 test_runs.json) to refresh the tables.
 
-**Dev (out-of-fold for hybrid).** rules-only AUPRC 0.673, transformer 0.888,
-**hybrid 0.970** (was 0.957 under family-only OOF grouping — the stricter
-grouping changed the dev out-of-fold estimate; test is unaffected).
+**Dev (out-of-fold for hybrid).** rules-only AUPRC 0.769, transformer 0.906,
+**hybrid 0.922** — *down* from 0.957 under the old family-only OOF grouping. The
+stricter family+host grouping removes an out-of-fold host-leakage inflation, so
+the lower number is the more honest dev estimate; test is unaffected.
 
-**Test (scored once with dev thresholds).** transformer AUPRC 0.970, **hybrid
-0.971**. Per-source test AUPRC: builtin 0.968, bipia 1.000 (5 positives),
-injecagent 1.000 (2 positives) — the tiny bipia/injecagent test support is why
-those read 1.000 and must not be quoted as headline detection numbers. TF-IDF
-baselines overran the 1% FPR budget on test (realised 0.029 / 0.050), flagged in
-the table; the transformer and hybrid held 0.000 realised FPR.
+**Test (scored once with dev thresholds).** rules-only AUPRC 0.673, transformer
+0.970, **hybrid 0.971**. Per-source test AUPRC: builtin 0.968, bipia 1.000 (5
+positives), injecagent 1.000 (2 positives) — the tiny bipia/injecagent test
+support is why those read 1.000 and must not be quoted as headline detection
+numbers. TF-IDF baselines overran the 1% FPR budget on test (realised 0.029 /
+0.050), flagged in the table; the transformer and hybrid held 0.000 realised FPR.
 
-**Note.** These supersede the dev hybrid 0.957 figure in earlier entries.
+**Note.** The dev hybrid figure is now 0.922 (was 0.957); earlier entries citing
+0.957 are superseded. Test hybrid 0.971 is unchanged.
 
 ## 2026-09-10 · Transformer windowing fixes (section 9)
 

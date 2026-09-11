@@ -31,7 +31,8 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Per-dataset metrics, attack-position robustness | done |
 | Semantic / context-aware layer + multi-chunk & abstain (experimental) | done — see below |
 | Robustness sweep, cross-channel transfer, metadata scanning (§12) | done — [docs/robustness.md](docs/robustness.md) |
-| Error analysis, report figures, landing page (§15–16) | not started |
+| Analysis, figures, report (§15) | drafted — [docs/report.md](docs/report.md), [docs/error_analysis.md](docs/error_analysis.md), `artifacts/figures/` (demo screenshots + citations pending) |
+| Landing page (§16), analyst workflow (§17+) | not started |
 
 ### Corpus and results status
 
@@ -133,6 +134,18 @@ Robustness sweep (perturbations, cross-channel transfer, metadata vs response):
 
 ```bash
 .venv/Scripts/python.exe scripts/robustness_suite.py
+```
+
+Regenerate the report figures (PR curve, calibration, comparison, per-channel):
+
+```bash
+.venv/Scripts/python.exe scripts/make_figures.py
+```
+
+Retrain on another machine (self-contained; see [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md)):
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\train_and_eval.ps1
 ```
 
 Scan a document, and gate a proposed tool action against the policy:
