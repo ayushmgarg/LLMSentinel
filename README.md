@@ -171,10 +171,15 @@ Tests and lint:
 
 ## Corpus
 
-1669 records (BIPIA + InjecAgent + authored seed) across all three channels,
-train/dev/test = 1286/197/186, every (split, channel) cell populated, leakage
-checks passing. Per-source support is reported by `llmsentinel evaluate` so a
-combined-corpus headline cannot hide that one source carries it.
+1960 records (BIPIA + InjecAgent + authored seed) across all three channels,
+**source-stratified** (digest `c00bf177`) so every source contributes both labels
+to dev and test where it structurally can. Every (split, channel) cell has
+positives; leakage checks pass with zero cross-group drops. **InjecAgent is
+train-only**: it forms a single leakage component (every attacker instruction ×
+every user tool) that cannot be split without payload/host leakage, so held-out
+evaluation is carried by builtin + BIPIA. Per-source support is reported by
+`llmsentinel evaluate`. (Build the previous global-hash split with
+`corpus build --no-stratify-source`.)
 
 An earlier 1803-record build was discarded: a manual audit found benign text
 placed into implausible hosts (an exam rubric inside a tool description) and

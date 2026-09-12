@@ -50,7 +50,9 @@ def _print_warnings(warnings: list[str]) -> None:
 
 # ------------------------------------------------------------------- corpus
 def cmd_corpus_build(args: argparse.Namespace) -> int:
-    result = build_corpus(split_config=SplitConfig(seed=args.seed))
+    result = build_corpus(
+        split_config=SplitConfig(seed=args.seed, stratify_by_source=not args.no_stratify_source)
+    )
     print(result.summary())
     print(f"leakage: {result.leakage.summary()}")
     print(f"corpus:  {relative(result.corpus_path)}")
@@ -410,6 +412,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     build = corpus_sub.add_parser("build", help="build corpus, card and split manifest")
     build.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    build.add_argument(
+        "--no-stratify-source",
+        action="store_true",
+        help="disable per-source stratified splitting (revert to global per-key hash; "
+        "stratification is on by default and fixes the per-source split confound)",
+    )
     build.set_defaults(func=cmd_corpus_build)
 
     check = corpus_sub.add_parser("check", help="re-audit a built corpus for leakage")

@@ -30,8 +30,8 @@ if ($gpu) {
   & $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
 }
 
-Write-Host "== 4/5  Training the transformer (minutes on a GPU, ~1 hr on CPU) ==" -ForegroundColor Cyan
-& $py scripts\train_transformer.py --epochs 3 --device auto
+Write-Host "== 4/5  Training 3 seeds on the stratified corpus (minutes on a GPU) ==" -ForegroundColor Cyan
+& $py scripts\train_seeds.py --seeds 20250909,20250910,20250911 --device auto
 
 Write-Host "== 5/5  Evaluating on test (once) and drawing figures ==" -ForegroundColor Cyan
 & $py -m llmsentinel.cli evaluate --test
@@ -39,7 +39,8 @@ Write-Host "== 5/5  Evaluating on test (once) and drawing figures ==" -Foregroun
 
 Write-Host ""
 Write-Host "DONE. Send these back to Ayush:" -ForegroundColor Green
-Write-Host "  artifacts\models\transformer\   (the trained checkpoint)"
+Write-Host "  artifacts\models\transformer\      (canonical checkpoint, seed 20250909)"
 Write-Host "  artifacts\results\results_dev.json"
 Write-Host "  artifacts\results\results_test.json"
+Write-Host "  artifacts\results\seed_variance.json   (the 3-seed spread)"
 Write-Host "  artifacts\figures\*.png"

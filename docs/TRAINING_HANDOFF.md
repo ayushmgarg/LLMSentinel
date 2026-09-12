@@ -1,19 +1,22 @@
 # Training handoff — run this on a spare machine
 
-This kit retrains LLMSentinel's transformer detector and regenerates the results
-and figures. It runs **entirely from the committed corpus** — no benchmark
-download, no credentials, no network beyond installing Python packages.
+This kit retrains LLMSentinel's transformer detector (across three seeds) and
+regenerates the results and figures. It runs **entirely from the committed
+corpus** — no benchmark download, no credentials, no network beyond installing
+Python packages.
 
 ## What it does
 
-1. Creates a virtual environment and installs dependencies (CPU-only PyTorch).
-2. Trains the `distilroberta-base` detector on the committed corpus
-   (`data/processed/corpus.jsonl`, ~1,669 records).
+1. Creates a virtual environment and installs dependencies (CUDA PyTorch if an
+   NVIDIA GPU is present, else CPU).
+2. Trains the `distilroberta-base` detector on the committed **source-stratified**
+   corpus (`data/processed/corpus.jsonl`, ~1,960 records) for **three seeds**
+   (`20250909/10/11`) and records the dev variance.
 3. Scores the held-out test split **once** and writes the results tables.
 4. Regenerates the report figures.
 
-It is deterministic (fixed seed `20250909`), so a re-run reproduces the same
-checkpoint.
+Each seed is deterministic. Only the first seed's checkpoint is kept (canonical);
+the others are trained only to measure spread.
 
 ## Prerequisites
 
@@ -21,10 +24,11 @@ checkpoint.
 - **~3 GB free disk** (model weights + wheels) and **internet for the first
   install only**.
 - **GPU is used automatically if present.** The script detects an NVIDIA GPU
-  (via `nvidia-smi`), installs the CUDA build of PyTorch, and trains on it —
-  a few minutes on something like an RTX 3060. With no GPU it installs the CPU
-  build and takes ~1 hour. To force one, run the training step yourself with
-  `--device cpu` or `--device cuda`.
+  (via `nvidia-smi`), installs the CUDA build of PyTorch, and trains on it. Three
+  seeds take roughly **10–20 minutes on an RTX 3060**; with no GPU it uses the CPU
+  build and takes a few hours (three ~1-hour runs). To force a device, run the
+  training step yourself with `--device cpu` or `--device cuda`, or train fewer
+  seeds: `python scripts/train_seeds.py --seeds 20250909`.
 
 ## Steps
 
@@ -46,9 +50,10 @@ Let it run to the end. The last lines print exactly what to send back.
 
 Zip and return these (everything the retrain produced):
 
-- `artifacts/models/transformer/` — the trained checkpoint (~300 MB)
+- `artifacts/models/transformer/` — the canonical checkpoint, seed 20250909 (~300 MB)
 - `artifacts/results/results_dev.json`
 - `artifacts/results/results_test.json`
+- `artifacts/results/seed_variance.json` — the 3-seed dev spread
 - `artifacts/figures/*.png`
 
 That's it — no source changes, nothing else.

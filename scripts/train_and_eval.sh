@@ -28,8 +28,8 @@ else
   "$py" -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
 fi
 
-echo "== 4/5  Training the transformer (minutes on a GPU, ~1 hr on CPU) =="
-"$py" scripts/train_transformer.py --epochs 3 --device auto
+echo "== 4/5  Training 3 seeds on the stratified corpus (minutes on a GPU) =="
+"$py" scripts/train_seeds.py --seeds 20250909,20250910,20250911 --device auto
 
 echo "== 5/5  Evaluating on test (once) and drawing figures =="
 "$py" -m llmsentinel.cli evaluate --test
@@ -37,7 +37,8 @@ echo "== 5/5  Evaluating on test (once) and drawing figures =="
 
 echo ""
 echo "DONE. Send these back to Ayush:"
-echo "  artifacts/models/transformer/   (the trained checkpoint)"
+echo "  artifacts/models/transformer/       (canonical checkpoint, seed 20250909)"
 echo "  artifacts/results/results_dev.json"
 echo "  artifacts/results/results_test.json"
+echo "  artifacts/results/seed_variance.json    (the 3-seed spread)"
 echo "  artifacts/figures/*.png"
