@@ -57,7 +57,8 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt -e .
 ```
 
-Optional transformer extra (CPU wheels; everything else runs without it):
+Optional transformer extra. The CPU wheels work everywhere; on an NVIDIA GPU use
+the CUDA index instead (e.g. `.../whl/cu121`) and training auto-uses the GPU:
 
 ```bash
 .venv/Scripts/python.exe -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
@@ -66,6 +67,14 @@ Optional transformer extra (CPU wheels; everything else runs without it):
 Verified on Windows with Python 3.14, torch 2.14.0+cpu, scikit-learn 1.9. spaCy
 is optional: `segment_sentences(..., use_spacy=True)` falls back to the built-in
 splitter when it is absent.
+
+**Trained checkpoint.** The transformer weights are not in git (large binary).
+Download the latest from
+[Releases](https://github.com/ayushmgarg/LLMSentinel/releases) — currently
+`v0.4.0-checkpoints` (span-aware) — and unzip into `artifacts/models/transformer/`.
+Or retrain from the committed corpus: `python scripts/train_transformer.py`
+(minutes on a GPU, ~1 hr CPU), or the self-contained
+[docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md).
 
 ## Commands
 
@@ -252,6 +261,24 @@ data/seed/         authored corpus source (payloads, hosts, hard negatives)
 data/semantic/     hand-written contrastive + multi-chunk cases for the semantic layer
 docs/              threat model, annotation guideline, corpus card, robustness, experiment log
 ```
+
+## Documentation index
+
+| Document | What it covers |
+|---|---|
+| [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · [PROJECT_CHECKLIST_V2.md](PROJECT_CHECKLIST_V2.md) | The plan and the execution checklist (V1 files retained for history) |
+| [docs/report.md](docs/report.md) | Full research report — method, data, results, related work |
+| [docs/EXPERIMENTS.md](docs/EXPERIMENTS.md) | Append-only experiment log; every quoted number traces here |
+| [docs/threat_model.md](docs/threat_model.md) | Frozen threat model and protocol |
+| [docs/corpus_card.md](docs/corpus_card.md) | Corpus composition, sources, licences |
+| [docs/annotation_guideline.md](docs/annotation_guideline.md) · [docs/annotation_study.md](docs/annotation_study.md) | Labelling rules and the double-annotation study |
+| [docs/capability_policy.md](docs/capability_policy.md) | The deterministic action-gating policy |
+| [docs/robustness.md](docs/robustness.md) | Perturbation, transfer, and metadata-scanning probes (§12) |
+| [docs/error_analysis.md](docs/error_analysis.md) | Categorised false positives / negatives with mitigations (§15) |
+| [docs/demo_script.md](docs/demo_script.md) | Three-minute demo walkthrough |
+| [docs/week2_exit_review.md](docs/week2_exit_review.md) · [docs/week3_exit_review.md](docs/week3_exit_review.md) | Exit reviews |
+| [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md) | Self-contained retrain kit for another machine |
+| `artifacts/figures/` | Report figures (regenerate with `scripts/make_figures.py`); `architecture.svg` is the pipeline diagram |
 
 ## Design decisions worth knowing
 
