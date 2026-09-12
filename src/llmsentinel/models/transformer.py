@@ -112,7 +112,11 @@ class TransformerConfig:
     weight_decay: float = 0.01
     warmup_ratio: float = 0.1
     seed: int = DEFAULT_SEED
-    device: str = "cpu"
+    #: "auto" uses CUDA when available and falls back to CPU; "cpu"/"cuda" force
+    #: a device. The resolved device is recorded in describe() so a result says
+    #: what it ran on. Kept "auto" by default so a GPU machine is used without a
+    #: flag -- an earlier "cpu" default wasted a CUDA GPU on the training run.
+    device: str = "auto"
     class_weighted_loss: bool = True
     #: Expand each training record into the same overlapping windows inference
     #: scores.  Disabling it truncates to ``max_length`` instead, which is the
@@ -138,22 +142,36 @@ class TransformerScorer(Scorer):
         self._tokenizer: Any = None
         self._model: Any = None
         self._trained = False
+        self._device: str | None = None
 
     # ------------------------------------------------------------------ setup
+    def _resolve_device(self) -> str:
+        """Turn the configured device into a concrete one: 'auto' -> CUDA if
+        present, else CPU. A forced 'cuda'/'cpu' is honoured as given."""
+
+        torch, _ = _require_torch()
+        want = (self.config.device or "auto").lower()
+        if want in ("auto", ""):
+            return "cuda" if torch.cuda.is_available() else "cpu"
+        return want
+
     def _seed_everything(self) -> None:
         torch, _ = _require_torch()
         random.seed(self.config.seed)
         np.random.seed(self.config.seed)
         torch.manual_seed(self.config.seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(self.config.seed)
 
     def _load_backbone(self, name: str | None = None) -> None:
         _, transformers = _require_torch()
         target = name or self.config.backbone
+        self._device = self._resolve_device()
         self._tokenizer = transformers.AutoTokenizer.from_pretrained(target)
         self._model = transformers.AutoModelForSequenceClassification.from_pretrained(
             target, num_labels=2
         )
-        self._model.to(self.config.device)
+        self._model.to(self._device)
         self.config.backbone = target
 
     # --------------------------------------------------------------- training
@@ -194,7 +212,7 @@ class TransformerScorer(Scorer):
             anneal_strategy="linear",
         )
         loss_fn = torch.nn.CrossEntropyLoss(
-            weight=torch.tensor(weights, dtype=torch.float, device=self.config.device)
+            weight=torch.tensor(weights, dtype=torch.float, device=self._device)
             if self.config.class_weighted_loss
             else None
         )
@@ -210,7 +228,7 @@ class TransformerScorer(Scorer):
         self._model.train()
         for _epoch in range(self.config.epochs):
             for batch in loader:
-                batch = {key: value.to(self.config.device) for key, value in batch.items()}
+                batch = {key: value.to(self._device) for key, value in batch.items()}
                 targets = batch.pop("labels")
 
                 optimiser.zero_grad(set_to_none=True)
@@ -265,7 +283,7 @@ class TransformerScorer(Scorer):
                     max_length=self.config.max_length,
                     padding=True,
                     return_tensors="pt",
-                ).to(self.config.device)
+                ).to(self._device)
                 probabilities = torch.softmax(self._model(**encoded).logits, dim=-1)[:, 1]
                 # Max over windows: one malicious sentence must not be averaged
                 # away by the clean remainder of a long document.
@@ -343,6 +361,7 @@ class TransformerScorer(Scorer):
         return {
             **super().describe(),
             **self.config.to_dict(),
+            "resolved_device": self._device or "not-loaded",
             "parameters": parameters,
             "trained": self._trained,
         }

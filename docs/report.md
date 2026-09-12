@@ -14,9 +14,10 @@ documents, tool responses, MCP tool manifests) with provenance preserved, and
 (2) gates the agent's proposed action through a deterministic capability policy.
 The detector is advisory and probabilistic; the policy is deterministic and
 auditable, so a missed detection degrades to a confirmation prompt rather than a
-breach. On a corpus combining BIPIA, InjecAgent and authored data, the hybrid
-detector reaches **0.971 AUPRC on held-out test**; we report the result with its
-confounds (source/channel imbalance) stated rather than hidden.
+breach. On a corpus combining BIPIA, InjecAgent and authored data, the detector
+reaches **0.95–0.96 AUPRC on held-out test** (transformer 0.958, hybrid 0.950,
+with span-aware window labelling); we report the result with its confounds
+(source/channel imbalance) stated rather than hidden.
 
 ## 1. Introduction
 
@@ -30,6 +31,26 @@ confounds (source/channel imbalance) stated rather than hidden.
   failures.
 - **Scope.** Detection and demo-only policy decisions. No live services, no real
   secrets, no execution. Defence in depth, not a guarantee.
+
+## 1a. Related work
+
+- **Indirect prompt injection** was characterised by Greshake et al. [1], who
+  showed real LLM-integrated applications can be compromised by instructions
+  planted in retrieved content. Direct prompt-injection techniques were catalogued
+  earlier by Perez and Ribeiro [2]. OWASP lists prompt injection as LLM01 [6].
+- **Benchmarks.** We evaluate on **BIPIA** [3], a benchmark for indirect
+  injection on LLMs, and **InjecAgent** [4], which targets tool-integrated agents;
+  our contribution is not a new benchmark but a detector-plus-policy layer over
+  these, with provenance preserved and the tool-manifest channel (**MCP** [5])
+  added.
+- **Positioning.** Prior detectors largely score a single text stream. We (a)
+  keep channel/JSON-path provenance through detection, (b) add a deterministic
+  capability-gating policy so a missed detection degrades to a confirmation rather
+  than an action, and (c) evaluate with leakage-free grouped splits and a
+  once-only test protocol, reporting confounds explicitly.
+
+*Citations are drafted; arXiv IDs, authors and venues must be verified against
+the source material before any submission (checklist §15).*
 
 ## 2. Threat model
 
@@ -104,13 +125,16 @@ Held-out **test** (186 records, 47 injection), current run — see Fig.
 | tfidf-word | 0.769 | 0.675 | 0.362 | 0.000 / 0.055 |
 | tfidf-word+char | 0.730 | 0.725 | 0.468 | 0.000 / 0.127 |
 | rules-only | 0.769 | 0.673 | 0.191 | 0.000 |
-| transformer | 0.906 | **0.970** | 0.830 | 0.000 |
-| hybrid | 0.922 | **0.971** | 0.532 | 0.000 |
+| transformer | 0.936 | **0.958** | 0.745 | 0.000 |
+| hybrid | 0.926 | **0.950** | 0.532 | 0.000 |
+
+*Transformer/hybrid rows are the span-aware-labelled checkpoint (`seed 20250909`,
+retrained 2026-09-12). Baselines and rules are deterministic and unchanged.*
 
 - The transformer and hybrid dominate the baselines and the rule engine on test.
-- **Dev hybrid (0.922) is an out-of-fold estimate** under family+host grouping;
-  it is lower than the earlier family-only figure (0.957) because that grouping
-  leaked hosts across folds. Test is unaffected.
+- **Dev hybrid (0.926) is an out-of-fold estimate** under family+host grouping,
+  which unions payload family and host so neither leaks across folds; an earlier
+  family-only grouping reported an inflated 0.957.
 - Per-channel test AUPRC in Fig. `per_channel.png`; the reliability diagram
   (`calibration.png`) is descriptive only.
 
@@ -178,3 +202,22 @@ python scripts/make_figures.py
 python scripts/error_analysis.py --system hybrid
 python scripts/robustness_suite.py
 ```
+
+## References
+
+*To verify (IDs/authors/venues) before submission.*
+
+1. K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, M. Fritz.
+   "Not What You've Signed Up For: Compromising Real-World LLM-Integrated
+   Applications with Indirect Prompt Injection." arXiv:2302.12173, 2023.
+2. F. Perez, I. Ribeiro. "Ignore Previous Prompt: Attack Techniques for Language
+   Models." arXiv:2211.09527, 2022.
+3. J. Yi et al. "Benchmarking and Defending Against Indirect Prompt Injection
+   Attacks on Large Language Models" (BIPIA). arXiv:2312.14197, 2023.
+4. Q. Zhan et al. "InjecAgent: Benchmarking Indirect Prompt Injections in
+   Tool-Integrated Large Language Model Agents." arXiv:2403.02691, 2024.
+5. Anthropic. "Model Context Protocol (MCP)." Specification, 2024.
+   https://modelcontextprotocol.io
+6. OWASP. "Top 10 for Large Language Model Applications — LLM01: Prompt
+   Injection." 2023–2025.
+

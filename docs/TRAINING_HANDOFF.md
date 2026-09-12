@@ -20,8 +20,11 @@ checkpoint.
 - **Python 3.10–3.13** (3.14 also works). Check with `python --version`.
 - **~3 GB free disk** (model weights + wheels) and **internet for the first
   install only**.
-- **~1 hour** on a typical laptop CPU. No GPU needed. A GPU is not required and
-  not used by default.
+- **GPU is used automatically if present.** The script detects an NVIDIA GPU
+  (via `nvidia-smi`), installs the CUDA build of PyTorch, and trains on it —
+  a few minutes on something like an RTX 3060. With no GPU it installs the CPU
+  build and takes ~1 hour. To force one, run the training step yourself with
+  `--device cpu` or `--device cuda`.
 
 ## Steps
 

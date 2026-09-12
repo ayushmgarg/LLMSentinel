@@ -19,11 +19,19 @@ Write-Host "== 2/5  Installing core dependencies ==" -ForegroundColor Cyan
 & $py -m pip install --upgrade pip
 & $py -m pip install -r requirements.txt -e .
 
-Write-Host "== 3/5  Installing transformer extra (CPU wheels) ==" -ForegroundColor Cyan
-& $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+Write-Host "== 3/5  Installing transformer extra ==" -ForegroundColor Cyan
+$gpu = $false
+try { nvidia-smi *> $null; if ($LASTEXITCODE -eq 0) { $gpu = $true } } catch {}
+if ($gpu) {
+  Write-Host "   NVIDIA GPU detected -> installing CUDA build (cu121)" -ForegroundColor Green
+  & $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cu121
+} else {
+  Write-Host "   No NVIDIA GPU found -> installing CPU build" -ForegroundColor Yellow
+  & $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+}
 
-Write-Host "== 4/5  Training the transformer (~1 hr on CPU; go get a coffee) ==" -ForegroundColor Cyan
-& $py scripts\train_transformer.py --epochs 3
+Write-Host "== 4/5  Training the transformer (minutes on a GPU, ~1 hr on CPU) ==" -ForegroundColor Cyan
+& $py scripts\train_transformer.py --epochs 3 --device auto
 
 Write-Host "== 5/5  Evaluating on test (once) and drawing figures ==" -ForegroundColor Cyan
 & $py -m llmsentinel.cli evaluate --test

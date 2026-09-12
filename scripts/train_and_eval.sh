@@ -19,11 +19,17 @@ echo "== 2/5  Installing core dependencies =="
 "$py" -m pip install --upgrade pip
 "$py" -m pip install -r requirements.txt -e .
 
-echo "== 3/5  Installing transformer extra (CPU wheels) =="
-"$py" -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+echo "== 3/5  Installing transformer extra =="
+if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1; then
+  echo "   NVIDIA GPU detected -> installing CUDA build (cu121)"
+  "$py" -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cu121
+else
+  echo "   No NVIDIA GPU found -> installing CPU build"
+  "$py" -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+fi
 
-echo "== 4/5  Training the transformer (~1 hr on CPU) =="
-"$py" scripts/train_transformer.py --epochs 3
+echo "== 4/5  Training the transformer (minutes on a GPU, ~1 hr on CPU) =="
+"$py" scripts/train_transformer.py --epochs 3 --device auto
 
 echo "== 5/5  Evaluating on test (once) and drawing figures =="
 "$py" -m llmsentinel.cli evaluate --test

@@ -862,3 +862,29 @@ Three section-9 gaps closed in code:
 - **Highest-risk window preserved.** `score_details` returns, per record, the
   argmax window index and its text alongside the risk — the evidence the V2
   checkbox asks for, previously discarded by the max-over-windows reduction.
+
+## 2026-09-12 · Span-aware retrain (canonical checkpoint)
+
+**What.** Retrained the transformer from the committed corpus with span-aware
+window labelling (default now), on a separate machine via the handoff kit
+(`scripts/train_and_eval.*`). This checkpoint replaces the pre-span-aware one as
+canonical; the previous checkpoint, results and figures are preserved under
+`artifacts/models/transformer_pre_retrain/`, `artifacts/results/pre_retrain_2026-09-11/`
+and `artifacts/figures/pre_retrain_2026-09-11/`.
+
+**Config.** `distilroberta-base`, seed 20250909, 3 epochs, max_length 256,
+stride 128, max 8 windows, class-weighted loss, `span_aware_labels=true`.
+
+**Dev (out-of-fold for hybrid).** rules-only 0.769, transformer **0.936** (was
+0.906 pre-span-aware), hybrid **0.926** (was 0.922).
+
+**Test (scored once, dev thresholds).** rules-only 0.673, transformer **0.958**
+(was 0.970), hybrid **0.950** (was 0.971). Span-aware labelling raises dev and
+trades a little test AUPRC for cleaner window supervision; both are legitimate
+and the span-aware model is the one whose training matches its inference.
+
+**Compute note (a mistake to fix).** The run was CPU-only despite the machine
+having an RTX 3060, because the kit pinned CPU PyTorch wheels and
+`TransformerConfig.device` defaulted to `"cpu"`. The GPU would have cut training
+from ~1 hr to a few minutes. Fixed forward: device now auto-detects CUDA and the
+kit offers a GPU install path (see the 2026-09-12 device-support change).

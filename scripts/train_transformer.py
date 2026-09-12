@@ -24,6 +24,11 @@ def main() -> None:
     parser.add_argument("--max-length", type=int, default=256)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--backbone", default=None)
+    parser.add_argument(
+        "--device",
+        default="auto",
+        help="'auto' (CUDA if available, else CPU), or force 'cpu' / 'cuda'",
+    )
     parser.add_argument("--out", default=None, help="checkpoint directory")
     parser.add_argument(
         "--truncate-training",
@@ -38,6 +43,7 @@ def main() -> None:
         seed=args.seed,
         max_length=args.max_length,
         batch_size=args.batch_size,
+        device=args.device,
     )
     if args.backbone:
         config.backbone = args.backbone
@@ -47,6 +53,7 @@ def main() -> None:
     began = time.perf_counter()
     scorer.fit(splits["train"])
     minutes = (time.perf_counter() - began) / 60.0
+    print(f"device: {scorer.describe()['resolved_device']} (requested {args.device})")
 
     path = scorer.save(args.out)
     dev = splits["dev"]

@@ -237,22 +237,23 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 
 ## 15. Analysis, report, and presentation
 
-> Status: analysis + figures + report drafted (`docs/report.md`,
-> `docs/error_analysis.md`, `artifacts/figures/`). Figures/results regenerate via
-> `scripts/make_figures.py` and `llmsentinel evaluate --test`. Three items are
-> deliberately left open (demo screenshots, a formal literature-citation pass,
-> and a rehearsed 3-minute demo script) — they need the live UI captured and a
-> related-work write-up, tracked for the presentation pass.
+> Status: analysis + figures + report + demo script done (`docs/report.md`,
+> `docs/error_analysis.md`, `docs/demo_script.md`, `artifacts/figures/`).
+> Figures/results regenerate via `scripts/make_figures.py` and
+> `llmsentinel evaluate --test`, and now reflect the span-aware retrain checkpoint.
+> Two items remain for the submission pass: committed demo-screenshot PNGs (the
+> live demo is verified, capture is manual) and a final verification of the
+> drafted literature citations' IDs/venues.
 
 - [x] Sample false positives from hard negatives and false negatives by attack type/channel. *(scripts/error_analysis.py, rules-only + hybrid)*
 - [x] Categorise errors: quote, code, policy, documentation, paraphrase, dilution, obfuscation, declarative wording, semantic conflict, other. *(docs/error_analysis.md)*
 - [x] Write one mitigation/future-work note for each major error category.
 - [x] Generate corpus, source/licence, comparison, per-channel, per-attack, ablation, robustness, latency/model-size tables. *(comparison/per-channel/per-attack in results JSON; ablation in rule_family_eval; robustness in docs/robustness.md; corpus + source/licence in corpus_card; latency currently n/a and model size in describe())*
 - [x] Generate PR curve and calibration plot where relevant. *(artifacts/figures/pr_curve.png, calibration.png)*
-- [ ] Generate architecture figure and demo screenshots. *(architecture.svg done; live demo screenshots still to capture — transcript stands in for now)*
+- [ ] Generate architecture figure and demo screenshots. *(architecture.svg done; live demo verified via browser — poisoned RAG shows 0.937 ELEVATED with the injected span highlighted — committed PNG screenshots still to capture manually with docs/demo_script.md)*
 - [x] Write method, corpus/labelling/split, threat model, evaluation, results, limitations, and safety sections. *(docs/report.md)*
-- [ ] Verify every result against experiment log and every citation/dataset licence against source material. *(results verified vs EXPERIMENTS.md and dataset licences recorded; a formal literature-citation/related-work pass is still pending)*
-- [ ] Prepare a concise demo script and ensure every member can explain evidence and limitations. *(3-minute demo script pending; solo project)*
+- [ ] Verify every result against experiment log and every citation/dataset licence against source material. *(results verified vs EXPERIMENTS.md; dataset licences recorded; related work + references drafted in docs/report.md — arXiv IDs/venues still need a final verification pass)*
+- [x] Prepare a concise demo script and ensure every member can explain evidence and limitations. *(docs/demo_script.md; solo project)*
 
 ## 16. Optional product framing
 
