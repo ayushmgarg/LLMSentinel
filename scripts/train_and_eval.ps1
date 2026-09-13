@@ -22,13 +22,16 @@ Write-Host "== 2/5  Installing core dependencies ==" -ForegroundColor Cyan
 Write-Host "== 3/5  Installing transformer extra ==" -ForegroundColor Cyan
 $gpu = $false
 try { nvidia-smi *> $null; if ($LASTEXITCODE -eq 0) { $gpu = $true } } catch {}
+# torch first, from the PyTorch index (its --index-url replaces PyPI, so it must
+# be its own step); then transformers/datasets from PyPI.
 if ($gpu) {
   Write-Host "   NVIDIA GPU detected -> installing CUDA build (cu121)" -ForegroundColor Green
-  & $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cu121
+  & $py -m pip install "torch>=2.2" --index-url https://download.pytorch.org/whl/cu121
 } else {
   Write-Host "   No NVIDIA GPU found -> installing CPU build" -ForegroundColor Yellow
-  & $py -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+  & $py -m pip install "torch>=2.2" --index-url https://download.pytorch.org/whl/cpu
 }
+& $py -m pip install "transformers>=4.40" "datasets>=2.19"
 
 Write-Host "== 4/5  Training 3 seeds on the stratified corpus (minutes on a GPU) ==" -ForegroundColor Cyan
 & $py scripts\train_seeds.py --seeds 20250909,20250910,20250911 --device auto

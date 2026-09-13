@@ -9,7 +9,7 @@ itself so it cannot drift away from the data.
 from __future__ import annotations
 
 from collections.abc import Sequence
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -72,7 +72,7 @@ def render_corpus_card(
         )
 
     lines.extend([
-        f"- Generated (UTC): `{datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}`",
+        f"- Generated (UTC): `{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}`",
         f"- Corpus digest (`data_version`): `{manifest.corpus_digest}`",
         f"- Split seed: `{manifest.seed}`",
         f"- Records: **{total}** ({positives} injection, {benign} benign)",

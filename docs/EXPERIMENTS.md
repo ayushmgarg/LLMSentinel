@@ -963,3 +963,25 @@ answered.
 **Digest note.** `0311c325` is the file/`evaluate` digest (records carry
 normalised text); the split manifest records `c00bf177`, its pre-normalisation
 value. Same corpus.
+
+## 2026-09-13 · Handoff-kit fixes (found on a clean Python 3.10 + GPU run)
+
+Two bugs surfaced when the kit was run fresh on another machine; both fixed:
+
+1. **Install order.** The kit installed `requirements-transformer.txt` with
+   `--index-url <pytorch>`, but that flag *replaces* PyPI, so transformers/datasets
+   could not resolve. Fixed: install `torch` alone from the PyTorch index (cu121 or
+   cpu), then transformers/datasets from PyPI. README and the requirements header
+   updated to the same two-step.
+2. **Python 3.10 compatibility.** `corpus_card.py` used `from datetime import UTC`
+   (3.11+); the project targets `>=3.10`. Fixed to `timezone.utc`.
+
+After the fixes the full pipeline ran clean on an RTX 3060 (cu121, torch 2.5.1),
+3 seeds in ~8 min. Results unchanged (test AUPRC 0.984).
+
+**Benign warning (not a bug).** transformers prints "will result in indexing
+errors" for sequences up to ~590 tokens. This comes from the full-text tokenise in
+`_window_plan` used only to *slice* windows; the model is fed ≤256-token windows,
+and with 8 windows × stride 128 a ~590-token document is fully covered, so no
+content is dropped. A `max_length`-512 sweep is a possible future tweak, not a
+correctness issue.

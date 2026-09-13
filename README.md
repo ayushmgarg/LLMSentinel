@@ -58,11 +58,13 @@ python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt -e .
 ```
 
-Optional transformer extra. The CPU wheels work everywhere; on an NVIDIA GPU use
-the CUDA index instead (e.g. `.../whl/cu121`) and training auto-uses the GPU:
+Optional transformer extra. Install **torch first** from the PyTorch index (its
+`--index-url` replaces PyPI, so it must be its own step), then the rest from PyPI.
+Use `cu121` instead of `cpu` on an NVIDIA GPU — training then auto-uses it:
 
 ```bash
-.venv/Scripts/python.exe -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+.venv/Scripts/python.exe -m pip install "torch>=2.2" --index-url https://download.pytorch.org/whl/cpu
+.venv/Scripts/python.exe -m pip install "transformers>=4.40" "datasets>=2.19"
 ```
 
 Verified on Windows with Python 3.14, torch 2.14.0+cpu, scikit-learn 1.9. spaCy
