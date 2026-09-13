@@ -265,6 +265,29 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 - [ ] State that least privilege, approval, and server-side authorisation remain necessary.
 - [ ] Do not claim customers, certifications, pricing, benchmark leadership, production readiness, or guaranteed security.
 
+### 16a. Harder / out-of-distribution evaluation (optional, spare-time credibility)
+
+Optional. The headline is ~0.98 AUPRC on our own corpus; these items stress that
+number so it survives a sceptical reviewer. The goal is a *harder, more honest*
+evaluation, not more gradient steps — a drop under distribution shift is itself a
+result worth reporting.
+
+- [ ] Define an out-of-distribution protocol: train on one source, evaluate on a
+      different one (e.g. BIPIA-only → held out on InjecAgent-style / a fresh
+      benchmark) with no group, host, or payload overlap.
+- [ ] Inspect a fresh held-out benchmark (e.g. AgentDojo) — task format, licence,
+      and whether tool/response text is safely extractable — before using it.
+- [ ] Un-cap BIPIA (train on a much larger slice than the ~350/350 cap) and
+      rebuild the corpus; record the new size and digest.
+- [ ] Thicken the `tool_metadata` channel so dev/test have measurable positive
+      support (currently ~5 test positives), not just an indicative number.
+- [ ] Retrain (multi-seed, GPU) on the harder corpus and re-run the once-only test
+      protocol; do not tune on the OOD set.
+- [ ] Report OOD AUPRC / TPR@FPR next to the in-distribution numbers, and state
+      plainly whether performance holds or drops — the drop is the finding.
+- [ ] Keep this clearly separate from the in-distribution results and never quote
+      an OOD number as if it were in-distribution (or vice versa).
+
 ## 17. Analyst workflow extensions
 
 - [ ] Design local scan-history storage with verdict, policy, provenance, timestamp, and version data.
