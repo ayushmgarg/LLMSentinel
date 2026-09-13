@@ -926,3 +926,40 @@ corpus, scores each on dev, and writes mean ± std to
 `artifacts/results/seed_variance.json`; the first seed is the canonical
 checkpoint. Added to the handoff kit so the three-seed sweep and the test scoring
 happen in one GPU run (~10–20 min on an RTX 3060). Results pending that run.
+
+## 2026-09-13 · Canonical results — stratified corpus, span-aware, 3 seeds (GPU)
+
+**What.** The handoff kit's 3-seed run on the source-stratified corpus (digest
+`0311c325`, 1960 records), on an RTX 3060 (`device=cuda`, ~2.5 min/seed). These
+are the current canonical model numbers; the pre-stratify checkpoint/results/
+figures are archived under `*_v0.4_prestratify` / `pre_multiseed_2026-09-13/`.
+
+**Seed variance (dev, seeds 20250909/10/11).** transformer AUPRC 0.951 ± 0.011
+(0.937–0.964), AUROC 0.965 ± 0.010, TPR@1%FPR 0.758 ± 0.052. Single-seed critique
+answered.
+
+**Canonical (seed 20250909).**
+| split | rules | tfidf-word | transformer | hybrid |
+|---|---|---|---|---|
+| dev AUPRC | 0.683 | 0.684 | **0.964** | 0.873 |
+| test AUPRC | 0.574 | 0.657 | **0.984** | 0.981 |
+| test TPR@1%FPR | 0.200 | 0.280 | **0.920** | 0.240 |
+
+**Findings.**
+- The **transformer is the headline detector**: test AUPRC 0.984, TPR@1%FPR 0.920,
+  hard-neg FPR 0.000. Per-source test: BIPIA 1.000 (60 positives — real support
+  now, not the old 2-3), builtin 0.920. Per-channel: rag 0.998, tool_response
+  0.960, tool_metadata 0.683 (5 positives, thin).
+- **Fusion no longer helps and its operating point is unstable.** Hybrid matches
+  the transformer on test AUPRC (0.981) but its dev-selected 1%-FPR threshold
+  transfers badly (test TPR@1%FPR 0.240 vs 0.920), and its grouped-OOF dev
+  estimate (0.873) is below the transformer. On the stratified corpus the rule
+  features add noise to the fused score; the transformer alone is reported as the
+  headline, the hybrid kept only as a comparison. (On the pre-stratify corpus the
+  hybrid was on par; the honest position now is transformer-only.)
+- rules-only drops to 0.574 test AUPRC — it leaned on the authored builtin data
+  (builtin 0.782 vs BIPIA 0.551), which the stratified split exposes.
+
+**Digest note.** `0311c325` is the file/`evaluate` digest (records carry
+normalised text); the split manifest records `c00bf177`, its pre-normalisation
+value. Same corpus.

@@ -13,7 +13,7 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 > complements least privilege, human approval and server-side authorisation; it
 > does not replace them.
 
-## Status — V2 checklist sections 1–14 complete
+## Status — V2 checklist sections 1–15 complete
 
 | Area | State |
 |---|---|
@@ -22,8 +22,8 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Rule engine — 7 families, spans, traces, fusion features, failure telemetry | done |
 | Metrics — AUPRC, TPR@FPR with realised FPR and budget flags, hard-negative FPR, per-channel, per-attack per operating point, latency, bootstrap | done |
 | Baselines — majority, keyword, TF-IDF word, TF-IDF word+char | done |
-| Transformer detector (`distilroberta-base`, CPU) | done |
-| Calibrated fusion, out-of-fold on dev, and the `Verdict` object | done |
+| Transformer detector (`distilroberta-base`, GPU/CPU, span-aware windows) | done — **test AUPRC 0.984**, dev 0.951 ± 0.011 (3 seeds) |
+| Fusion (out-of-fold on dev) + the `Verdict` object | done — see report; transformer alone is the headline detector |
 | Evaluation harness + CLI + test suite | done |
 | Week 2 exit review | done — [docs/week2_exit_review.md](docs/week2_exit_review.md) |
 | Capability policy (Week 3) | done — [docs/capability_policy.md](docs/capability_policy.md) |
@@ -31,21 +31,22 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Per-dataset metrics, attack-position robustness | done |
 | Semantic / context-aware layer + multi-chunk & abstain (experimental) | done — see below |
 | Robustness sweep, cross-channel transfer, metadata scanning (§12) | done — [docs/robustness.md](docs/robustness.md) |
-| Analysis, figures, report (§15) | drafted — [docs/report.md](docs/report.md), [docs/error_analysis.md](docs/error_analysis.md), `artifacts/figures/` (demo screenshots + citations pending) |
+| Analysis, figures, report (§15) | done — [docs/report.md](docs/report.md), [docs/error_analysis.md](docs/error_analysis.md), [docs/demo_script.md](docs/demo_script.md), `artifacts/figures/` (final numbers; demo screenshots + citation-ID verification are the only pre-submission leftovers) |
 | Landing page (§16), analyst workflow (§17+) | not started |
 
 ### Corpus and results status
 
-The corpus now combines the authored seed data with **real records from BIPIA
-and InjecAgent** (both MIT, cloned locally under `data/raw/`, never
-redistributed): 1669 records across all three channels, leakage-checked. MCPTox
-is not integrated — no verifiable release was located; the `tool_metadata`
-channel is seed-only, which the corpus card flags.
+The corpus combines the authored seed data with **real records from BIPIA and
+InjecAgent** (both MIT, cloned locally under `data/raw/`, never redistributed):
+**1960 records, source-stratified** (digest `0311c325`), leakage-checked. MCPTox
+is not integrated — no verifiable release was located; the `tool_metadata` channel
+is thin, which the corpus card flags.
 
-Model results are computed on this combined corpus; earlier tables marked with
-the `bcc271db` digest are from the synthetic-only corpus and are labelled
-superseded. Current numbers — including per-source breakdowns, attack-position
-robustness, and the experimental semantic layer — are in `docs/EXPERIMENTS.md`.
+Headline: **transformer test AUPRC 0.984** (dev 0.951 ± 0.011 over three seeds);
+the transformer is the recommended detector (fusion matches its AUPRC but its
+operating point transfers poorly). Full numbers, per-source/per-channel
+breakdowns, seed variance and error analysis are in
+[docs/report.md](docs/report.md) and `docs/EXPERIMENTS.md`.
 
 ## Setup
 
@@ -71,10 +72,10 @@ splitter when it is absent.
 **Trained checkpoint.** The transformer weights are not in git (large binary).
 Download the latest from
 [Releases](https://github.com/ayushmgarg/LLMSentinel/releases) — currently
-`v0.4.0-checkpoints` (span-aware) — and unzip into `artifacts/models/transformer/`.
-Or retrain from the committed corpus: `python scripts/train_transformer.py`
-(minutes on a GPU, ~1 hr CPU), or the self-contained
-[docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md).
+`v0.5.0-checkpoints` (stratified, span-aware) — and unzip into
+`artifacts/models/transformer/`. Or retrain from the committed corpus:
+`python scripts/train_seeds.py` (minutes on a GPU, ~1 hr/seed on CPU), or the
+self-contained [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md).
 
 ## Commands
 
@@ -172,7 +173,7 @@ Tests and lint:
 ## Corpus
 
 1960 records (BIPIA + InjecAgent + authored seed) across all three channels,
-**source-stratified** (digest `c00bf177`) so every source contributes both labels
+**source-stratified** (digest `0311c325`) so every source contributes both labels
 to dev and test where it structurally can. Every (split, channel) cell has
 positives; leakage checks pass with zero cross-group drops. **InjecAgent is
 train-only**: it forms a single leakage component (every attacker instruction ×
