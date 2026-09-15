@@ -78,3 +78,40 @@ That's it — no source changes, nothing else.
 - To train on a *larger* dataset (raising the BIPIA/InjecAgent caps) you would
   need to clone those benchmarks first — that is a separate, bigger job and is
   **not** what this kit does.
+
+---
+
+## Hardening / OOD run (checklist §16a) — second kit
+
+A separate kit for the out-of-distribution study in
+[ood_evaluation.md](ood_evaluation.md). It also runs **only from committed files**
+(`data/processed/hardening/`), no benchmark download.
+
+What it does, for each held-out source (InjecAgent, then BIPIA):
+
+1. Scores the fast baselines on that direction's hardened sets.
+2. Trains the transformer for three seeds (`20250909/10/11`) on the hardened
+   in-distribution train split. The first seed's checkpoint goes to
+   `artifacts/models/transformer_hardening_<held_out>/`; the canonical
+   `artifacts/models/transformer/` is **not** touched.
+3. Picks thresholds on dev, then scores the hardened test split and the held-out
+   OOD set **once**.
+
+The training sets (1,812 and 1,918 records) are about the size of the main corpus,
+so expect roughly twice the main kit's time (two directions × three seeds).
+
+**Windows (PowerShell):**
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\hardening_kit.ps1
+```
+
+**macOS / Linux:**
+```bash
+bash scripts/hardening_kit.sh
+```
+
+**Send back:** the whole `artifacts/results/ood/` folder (`injecagent/` and
+`bipia/` JSON results). Checkpoints are not needed.
+
+A "was already scored" message on a re-run is the once-only ledger doing its job;
+the result files from the first run are already written.

@@ -1,0 +1,5 @@
+Recovering a deleted note
+
+Deleted notes move to Trash and stay there for thirty days before they are removed for good. To bring one back, open Trash, select the note and choose Restore; it returns to its original notebook.
+
+Emptying Trash is permanent and cannot be undone, so Nimbus asks you to confirm first. Workspace admins can also restore notes deleted by teammates within the same thirty-day window.

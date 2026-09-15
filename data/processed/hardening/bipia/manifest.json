@@ -1,0 +1,82 @@
+{
+  "config": {
+    "bipia_max_benign": 1100,
+    "bipia_max_hosts_per_attack": 4,
+    "bipia_max_positive": 1100,
+    "held_out": "bipia",
+    "injecagent_max_benign": 1000000,
+    "injecagent_max_positive": 1000000,
+    "near_duplicate_threshold": 0.85,
+    "seed": 20250909,
+    "thicken_metadata": true
+  },
+  "counts": {
+    "dev": {
+      "builtin": {
+        "benign": 137,
+        "injection": 53
+      }
+    },
+    "ood": {
+      "bipia": {
+        "benign": 779,
+        "injection": 600
+      }
+    },
+    "test": {
+      "builtin": {
+        "benign": 134,
+        "injection": 53
+      }
+    },
+    "train": {
+      "builtin": {
+        "benign": 601,
+        "injection": 247
+      },
+      "injecagent": {
+        "benign": 16,
+        "injection": 1054
+      }
+    }
+  },
+  "digests": {
+    "indist": "2d6b2599574215a6",
+    "ood": "ce9096695512a1fa"
+  },
+  "exact_duplicates_removed": 3343,
+  "leakage_indist_ok": true,
+  "ood_near_duplicates_dropped": 0,
+  "ood_shared_key_dropped": 0,
+  "ood_support": {
+    "negatives": 779,
+    "positives": 600,
+    "prevalence": 0.4351
+  },
+  "pool_cross_group_dropped": 0,
+  "sizes": {
+    "dev": 190,
+    "ood": 1379,
+    "test": 187,
+    "train": 1918
+  },
+  "skipped_sources": [],
+  "tool_metadata": {
+    "dev": {
+      "benign": 44,
+      "injection": 18
+    },
+    "ood": {
+      "benign": 0,
+      "injection": 0
+    },
+    "test": {
+      "benign": 54,
+      "injection": 18
+    },
+    "train": {
+      "benign": 209,
+      "injection": 84
+    }
+  }
+}

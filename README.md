@@ -32,7 +32,10 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Semantic / context-aware layer + multi-chunk & abstain (experimental) | done — see below |
 | Robustness sweep, cross-channel transfer, metadata scanning (§12) | done — [docs/robustness.md](docs/robustness.md) |
 | Analysis, figures, report (§15) | done — [docs/report.md](docs/report.md), [docs/error_analysis.md](docs/error_analysis.md), [docs/demo_script.md](docs/demo_script.md), `artifacts/figures/` (final numbers; demo screenshots + citation-ID verification are the only pre-submission leftovers) |
-| Landing page (§16), analyst workflow (§17+) | not started |
+| LLMSentinel Studio: live with/without-Sentinel console, replaces the Streamlit page | done — [studio/README.md](studio/README.md) |
+| Product framing (§16) | done — Studio landing page (research prototype, users, capabilities, limits) |
+| Harder / out-of-distribution evaluation (§16a) | protocol, hardened data, baselines done — [docs/ood_evaluation.md](docs/ood_evaluation.md); transformer OOD run pending (GPU kit) |
+| Analyst workflow (§17+) | not started |
 
 ### Corpus and results status
 
@@ -198,7 +201,25 @@ BIPIA, InjecAgent and MCPTox loaders activate automatically when their releases
 are placed under `data/raw/<name>/`; when absent, the build proceeds and records
 the omission.
 
-## Demo (Week 3)
+## LLMSentinel Studio (live demo)
+
+The main demo. One question, one model, one retrieved context, answered twice:
+as retrieved, and after LLMSentinel inspected and isolated it. Both answers are
+shown side by side with objective compromise indicators and the capability
+policy's decision on every tool request.
+
+```bash
+python -m pip install -e ".[studio]"
+python -m studio.server            # http://127.0.0.1:8700
+```
+
+Works offline with a built-in simulator (not an LLM), or with a free local model
+through Ollama (`ollama pull qwen2.5:1.5b`) or LM Studio. Details, model advice
+and how to read results honestly: [studio/README.md](studio/README.md).
+
+## Legacy Streamlit demo (Week 3)
+
+Kept for reference; superseded by the Studio above.
 
 Offline, credential-free. Rules-only detector so it starts instantly from a
 clean checkout.
@@ -268,6 +289,8 @@ tests/             schema, normalisation, rules, metrics, policy, demo, semantic
 data/seed/         authored corpus source (payloads, hosts, hard negatives)
 data/semantic/     hand-written contrastive + multi-chunk cases for the semantic layer
 docs/              threat model, annotation guideline, corpus card, robustness, experiment log
+studio/            LLMSentinel Studio: server/ (Starlette API), web/ (static UI), samples/, tests/
+data/seed/hardening/  opt-in tool_metadata seed for the §16a hardening sets
 ```
 
 ## Documentation index
@@ -285,7 +308,9 @@ docs/              threat model, annotation guideline, corpus card, robustness, 
 | [docs/error_analysis.md](docs/error_analysis.md) | Categorised false positives / negatives with mitigations (§15) |
 | [docs/demo_script.md](docs/demo_script.md) | Three-minute demo walkthrough |
 | [docs/week2_exit_review.md](docs/week2_exit_review.md) · [docs/week3_exit_review.md](docs/week3_exit_review.md) | Exit reviews |
-| [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md) | Self-contained retrain kit for another machine |
+| [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md) | Self-contained retrain kit for another machine (plus the §16a hardening kit) |
+| [docs/ood_evaluation.md](docs/ood_evaluation.md) | §16a out-of-distribution protocol, hardened data, results |
+| [studio/README.md](studio/README.md) | LLMSentinel Studio: running it, choosing a model, reading results |
 | `artifacts/figures/` | Report figures (regenerate with `scripts/make_figures.py`); `architecture.svg` is the pipeline diagram |
 
 ## Design decisions worth knowing

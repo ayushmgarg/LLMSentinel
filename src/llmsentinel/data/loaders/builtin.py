@@ -111,10 +111,19 @@ class BuiltinSeedLoader(Loader):
     )
 
     def __init__(
-        self, root: Path | None = None, config: BuiltinConfig | None = None
+        self,
+        root: Path | None = None,
+        config: BuiltinConfig | None = None,
+        *,
+        extra_seed_dirs: Sequence[Path] = (),
     ) -> None:
         super().__init__(root or SEED_DIR)
         self.config = config or BuiltinConfig()
+        #: Opt-in extra seed directories (e.g. ``data/seed/hardening``) holding
+        #: ``payloads.yaml`` / ``hosts.yaml`` / ``benign.yaml``. The canonical
+        #: build passes none, so the frozen corpus is byte-identical; only the
+        #: hardening / out-of-distribution experiment passes one explicitly.
+        self.extra_seed_dirs = tuple(Path(p) for p in extra_seed_dirs)
         self._data: dict[str, Any] = {}
 
     # ------------------------------------------------------------ availability
@@ -144,6 +153,9 @@ class BuiltinSeedLoader(Loader):
             extra = self._load_yaml("host_documents_extra.yaml")
             for key in ("rag_documents", "tool_responses", "tool_manifests"):
                 merged[key] = list(merged.get(key, [])) + list(extra.get(key, []))
+        for extra in self._extra_files("hosts.yaml"):
+            for key in ("rag_documents", "tool_responses", "tool_manifests"):
+                merged[key] = list(merged.get(key, [])) + list(extra.get(key, []))
         seen: set[str] = set()
         for key in ("rag_documents", "tool_responses", "tool_manifests"):
             unique = []
@@ -154,6 +166,21 @@ class BuiltinSeedLoader(Loader):
                 unique.append(document)
             merged[key] = unique
         return merged
+
+    def _extra_files(self, name: str) -> list[dict[str, Any]]:
+        """``name`` loaded from every opt-in extra seed directory that has it."""
+
+        found: list[dict[str, Any]] = []
+        for directory in self.extra_seed_dirs:
+            path = directory / name
+            if not path.is_file():
+                continue
+            key = str(path.resolve())
+            if key not in self._data:
+                with path.open("r", encoding="utf-8") as handle:
+                    self._data[key] = yaml.safe_load(handle) or {}
+            found.append(self._data[key])
+        return found
 
     def _load_yaml(self, name: str) -> dict[str, Any]:
         if name not in self._data:
@@ -250,6 +277,41 @@ class BuiltinSeedLoader(Loader):
                 is_hard_negative=True,
                 extra={"variant": "standalone_hard_negative", "category": item.get("category", "")},
             )
+
+        # Opt-in extras. Ids are namespaced with ``x`` so they can never collide
+        # with a canonical record id or grouping key.
+        for extra in self._extra_files("benign.yaml"):
+            for item in extra.get("items", []):
+                yield self._record(
+                    local_key=f"benign/x/{item['id']}",
+                    text=str(item["text"]).strip(),
+                    label=Label.BENIGN,
+                    channel=Channel.coerce(item.get("channel", "rag_document")),
+                    group_id=f"benign:x:{item['id']}",
+                    host_group=f"benign:x:{item['id']}",
+                    source_document_id=item["id"],
+                    json_path=item.get("json_path"),
+                    license=extra.get("license", "CC0-1.0"),
+                    extra={"variant": "standalone_benign", "seed_set": "extra"},
+                )
+            for item in extra.get("hard_negatives", []):
+                yield self._record(
+                    local_key=f"hardneg/x/{item['id']}",
+                    text=" ".join(str(item["text"]).split()),
+                    label=Label.BENIGN,
+                    channel=Channel.coerce(item.get("channel", "rag_document")),
+                    group_id=f"hardneg:x:{item['id']}",
+                    host_group=f"hardneg:x:{item['id']}",
+                    source_document_id=item["id"],
+                    json_path=item.get("json_path"),
+                    license=extra.get("license", "CC0-1.0"),
+                    is_hard_negative=True,
+                    extra={
+                        "variant": "standalone_hard_negative",
+                        "category": item.get("category", ""),
+                        "seed_set": "extra",
+                    },
+                )
 
     # ------------------------------------------------------------ composed set
     def _composed_records(self) -> Iterator[CorpusRecord]:
@@ -439,6 +501,43 @@ class BuiltinSeedLoader(Loader):
                 is_hard_negative=True,
                 channels=channels,
             )
+
+        for extra in self._extra_files("payloads.yaml"):
+            for family in extra.get("families", []):
+                channels = tuple(family.get("channels", ("rag_document",)))
+                for index, variant in enumerate(family.get("variants", [])):
+                    yield InsertionSpec(
+                        content_id=f"x/{family['family']}#{index}",
+                        family=f"family:x:{family['family']}",
+                        text=str(variant).strip(),
+                        label=Label.INJECTION,
+                        attack_type=AttackType.coerce(family["attack_type"]),
+                        encode=family.get("encode"),
+                        channels=channels,
+                    )
+
+        for extra in self._extra_files("benign.yaml"):
+            for item in extra.get("metadata_distractors", []):
+                yield InsertionSpec(
+                    content_id=f"mdx/x/{item['id']}",
+                    family=f"distractor:x:{item['id']}",
+                    text=str(item["text"]).strip(),
+                    label=Label.BENIGN,
+                    channels=("tool_metadata",),
+                )
+            for item in extra.get("hard_negatives", []):
+                channel = str(item.get("channel", "rag_document"))
+                channels = (
+                    (channel,) if channel != "rag_document" else ("rag_document", "tool_response")
+                )
+                yield InsertionSpec(
+                    content_id=f"hn/x/{item['id']}",
+                    family=f"hardneg:x:{item['id']}",
+                    text=" ".join(str(item["text"]).split()),
+                    label=Label.BENIGN,
+                    is_hard_negative=True,
+                    channels=channels,
+                )
 
     def _hosts(self) -> dict[str, list[dict[str, Any]]]:
         raw = self._host_data()

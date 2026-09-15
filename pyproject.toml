@@ -40,6 +40,12 @@ figures = [
     "matplotlib>=3.8",
     "pandas>=2.2",
 ]
+# LLMSentinel Studio (studio/), the local web console. Minimums are the tested versions.
+studio = [
+    "starlette>=1.6",
+    "uvicorn>=0.52",
+    "httpx>=0.28",
+]
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
@@ -57,7 +63,9 @@ where = ["src"]
 llmsentinel = ["py.typed"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "studio/tests"]
+# The Studio lives beside the package (studio/), so the repo root must be importable.
+pythonpath = ["."]
 addopts = "-q --strict-markers"
 markers = [
     "slow: tests that train models or touch large data",
@@ -66,7 +74,8 @@ markers = [
 
 [tool.ruff]
 line-length = 100
-src = ["src", "tests"]
+# "." makes the top-level studio/ package first-party for import sorting.
+src = [".", "src", "tests"]
 target-version = "py310"
 
 [tool.ruff.lint]
@@ -83,3 +92,5 @@ ignore = [
 "tests/*" = ["N802", "C408"]
 # A space-separated stopword string reads better than a 60-element list literal.
 "src/llmsentinel/semantic/representations.py" = ["SIM905"]
+"studio/server/providers.py" = ["SIM905"]
+"studio/tests/*" = ["N802", "C408"]

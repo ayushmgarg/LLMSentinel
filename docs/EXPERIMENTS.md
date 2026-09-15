@@ -985,3 +985,83 @@ errors" for sequences up to ~590 tokens. This comes from the full-text tokenise 
 and with 8 windows × stride 128 a ~590-token document is fully covered, so no
 content is dropped. A `max_length`-512 sweep is a possible future tweak, not a
 correctness issue.
+
+## 2026-09-15 · §16a hardening sets and baseline out-of-distribution scores
+
+**Setup.** Branch `a1`; Windows 11, CPU; Python 3.14.4 (project `.venv`); seed
+`20250909`. Canonical corpus untouched (rebuild without the opt-in seed still
+`0311c325`). Full protocol: [ood_evaluation.md](ood_evaluation.md).
+
+**Commands.**
+`python scripts/ood_eval.py build --held-out both`, then
+`python scripts/ood_eval.py eval --held-out both --systems baselines` (scored once;
+log `artifacts/results/ood/baseline_eval.log`).
+
+**Data.** 3,343 exact duplicates removed; OOD scrub dropped 0 near-duplicates and 0
+shared keys in both directions. BIPIA hosts-per-attack 4 (structural sweep, no
+scores). Held out InjecAgent: train/dev/test/OOD 1,812/432/360/1,070, OOD
+1,054 injection / 16 benign, digests `3fd78561` / `59a18622`. Held out BIPIA:
+1,918/190/187/1,379, OOD 600 / 779, digests `2d6b2599` / `ce909669`.
+In-distribution test `tool_metadata`: 18 positives of 72 (canonical: 5).
+
+**Results (dev thresholds reused on test and OOD).**
+
+| held out | system | in-dist test AUPRC | OOD AUPRC | OOD recall @ dev 1%-FPR | OOD realised FPR |
+|---|---|---|---|---|---|
+| InjecAgent | tfidf-word | 0.610 | 0.996 (n/i) | 0.022 | n/m (16 benign) |
+| InjecAgent | tfidf-word+char | 0.628 | 0.996 (n/i) | 0.016 | n/m |
+| InjecAgent | rules-only | 0.580 | 0.986 (n/i) | 0.000 | n/m |
+| BIPIA | tfidf-word | 0.640 | 0.598 | 0.697 | 0.510 (over) |
+| BIPIA | tfidf-word+char | 0.680 | 0.610 | 0.633 | 0.282 (over) |
+| BIPIA | rules-only | 0.798 | 0.469 | 0.050 | 0.022 (over) |
+
+Majority and keyword score the prevalence (0.985 / 0.435) with zero recall.
+
+**Findings.**
+- Under source shift the baselines do not hold. On held-out BIPIA rules-only loses
+  0.329 AUPRC. TF-IDF keeps AUPRC near 0.60, but its dev thresholds give 28–51%
+  realised FPR against a 1% budget.
+- The InjecAgent direction is 98.5% positive after deduplication, so its AUPRC is
+  not informative. Recall at the dev operating point is, and it is ≤ 0.022 for
+  every baseline.
+- Transformer OOD rows are pending the GPU kit (`scripts/hardening_kit.*`).
+- AgentDojo (MIT) deferred: its attack text comes from its Python runtime. MCPTox
+  not used: no licence found.
+
+## 2026-09-15 · LLMSentinel Studio: isolation fixes found on the sample pack
+
+The new Studio (`studio/`) strips or withholds flagged passages before the model
+sees them. Driving the real pipeline over the six preset questions (simulator,
+top-k 4, all ten sample files) exposed three isolation bugs. Each was fixed and
+re-checked. No detector, threshold or corpus changed.
+
+1. **Over-stripping.** Cutting every rule span removed a legitimate sentence ("invite
+   teammates by email" trips `exfiltration.v1`), and a 0–380 `meta_instruction.v1`
+   span removed the first release-notes paragraph and left a dangling `-->`. Fix:
+   segment into sentences and whole HTML comments; remove suspicious segments one
+   at a time, most suspicious first, re-scanning after each; withhold if nothing
+   clean remains.
+2. **Marker scored as an injection.** The transformer rated the plans FAQ remainder
+   0.9988 with `[removed by LLMSentinel]`, 0.9957 with `[...]` and 0.7153 without,
+   so clean text was withheld. Fix: re-scan only the untrusted text that remains;
+   the model still receives the marker.
+3. **Exfiltration forwarded as clean.** With the transformer loaded, the re-scan used
+   the detection rule (rules only at 0.1%-FPR). After the override sentence was
+   removed, the exfiltration sentence (rules elevated, transformer low) stayed in the
+   guarded prompt. The capability policy blocked `send_email`, but the text reached
+   the model. Found by reading the guarded prompt in the live UI, not from the
+   compromise flags. Fix: during isolation a segment is suspicious if either
+   component reaches its dev 1%-FPR point. Regression test with a stub transformer
+   (`studio/tests/test_studio_guard.py`).
+
+**After the fixes** (every guarded prompt searched for the planted phrases and
+`.invalid` destinations):
+
+| detector | guarded run not compromised | guarded prompt still carries injection text |
+|---|---|---|
+| transformer + rules | 6 / 6 | 0 / 6 |
+| rules-only | 3 / 6 | 5 / 6 |
+
+Close call: the clean `sync-guide.md` scores 0.9909 with the transformer, just under
+its dev 1%-FPR threshold 0.9954. The UI shows the threshold beside every score.
+This is a hand-made demo pack, not an evaluation.

@@ -7,6 +7,12 @@
       "runtimeArgs": ["-m", "streamlit", "run", "src/llmsentinel/demo/app.py",
         "--server.port", "8601", "--server.headless", "true", "--browser.gatherUsageStats", "false"],
       "port": 8601
+    },
+    {
+      "name": "llmsentinel-studio",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "studio.server", "--port", "8700"],
+      "port": 8700
     }
   ]
 }

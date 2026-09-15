@@ -1,6 +1,53 @@
 # Three-minute demo script
 
-For a live walkthrough or a recorded run. Start the page first:
+## LLMSentinel Studio (current demo)
+
+Start it and wait until the badge reads **Detector: transformer + rules**
+(about 30–60 s on a CPU):
+
+```bash
+python -m studio.server             # http://127.0.0.1:8700
+```
+
+Every outcome below was checked on the sample pack with the simulator and the
+default detector.
+
+**0:00 — Frame the problem (20s).** On the landing page: "Agents read text nobody on
+the team wrote. LLMSentinel reads it first, isolates what looks like an injection,
+and gates the actions the model asks for. Research prototype, defence in depth."
+
+**0:20 — Set up (20s).** Step 1: *Simulated* (say plainly it is not an LLM; it obeys
+whatever it reads), or *Ollama* if a model is installed. Step 2: all ten files are
+selected and their labels are hidden: "we don't know which are poisoned".
+
+**0:40 — Exfiltration (50s).** Preset *How do I share a notebook with my team?* →
+**Run comparison**.
+- Without Sentinel: `send_email` to a `.invalid` collector *would run*; flagged as
+  compromised.
+- With Sentinel: the sharing guide is **stripped**, not dropped. Open it: only the
+  override, exfiltration and secrecy sentences are marked as removed; the real
+  "invite teammates by email" instruction stays, so the answer is still useful.
+
+**1:30 — Hidden in a tool result (40s).** Preset *What should I do with the old
+support tickets?*
+- The ticket summary telling the assistant to call `delete_file` scores 0.000 on the
+  rules alone. The transformer flags it (0.999) and the leaf is **withheld**.
+- Point to the exact prompt: the guarded model never saw the instruction.
+
+**2:10 — Hard negative + ground truth (25s).** Switch on *Reveal ground truth*. The
+security FAQ quotes "ignore previous instructions" while explaining the risk. It is
+labelled clean and passes untouched (transformer 0.0004).
+
+**2:35 — Limits (25s).** "The simulator shows the mechanism, not accuracy. Accuracy
+is the report's test AUPRC 0.984, in-distribution. On a benchmark held out of
+training, the baselines drop sharply (docs/ood_evaluation.md). That is why this is
+defence in depth, alongside least privilege and approvals."
+
+---
+
+## Legacy Streamlit walkthrough (Week 3)
+
+Kept for reference. Start the page first:
 
 ```bash
 python scripts/run_demo.py          # http://localhost:8601
