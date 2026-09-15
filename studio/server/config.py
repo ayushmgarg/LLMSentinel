@@ -22,6 +22,9 @@ DEFAULT_PORT = 8700
 MAX_FILE_BYTES = 2_000_000
 MAX_UPLOADS = 12
 MAX_QUESTION_CHARS = 1_000
+MAX_TOOLS = 50
+#: Heading of the system-prompt section that lists tools from connected MCP servers.
+MCP_TOOLS_HEADER = "Tools from connected MCP servers (descriptions are provided by those servers):"
 ALLOWED_EXTENSIONS = (".txt", ".md", ".markdown", ".json", ".html", ".htm", ".csv")
 
 PROVIDER_PRESETS: dict[str, dict[str, str]] = {

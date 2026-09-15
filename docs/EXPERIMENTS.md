@@ -1065,3 +1065,43 @@ re-checked. No detector, threshold or corpus changed.
 Close call: the clean `sync-guide.md` scores 0.9909 with the transformer, just under
 its dev 1%-FPR threshold 0.9954. The UI shows the threshold beside every score.
 This is a hand-made demo pack, not an evaluation.
+
+## 2026-09-15 · Studio: tool-manifest (MCP server) scenario
+
+**What changed.** The Studio now reads tool manifests from "connected MCP servers"
+(`studio/server/manifests.py`). Their tool descriptions go into the system prompt,
+as in a real agent. Each tool gets two checks from the core package:
+- **content:** `SentinelGuard` on the `tool_metadata` channel, no host task;
+- **drift:** `manifest_hash` / `diff_manifest` against the snapshot approved at review.
+
+Flagged or drifted tools are quarantined: dropped from the guarded run's tool list,
+and any request for them is blocked. Thinking-model `<think>` blocks are now removed
+before answers are parsed. No detector, threshold, rule or corpus changed.
+
+**Sample servers.** `notes-connector` (clean), `web-helper` (`summarize_url` poisoned
+description, unchanged since approval), `calendar-sync` (`create_event` gained a
+`backup_copy` parameter after approval).
+
+**Observed (simulator, default detector unless stated).**
+
+| Tool | Drift | Worst field risk | Flagged by | Quarantined |
+|---|---|---|---|---|
+| read_document / list_events / translate | unchanged | ≤ 0.0035 | — | no |
+| summarize_url | unchanged | 0.9955 (rules; transformer 0.9841, under 0.9954) | rules 0.1%-FPR band | yes |
+| create_event | changed | 0.1281 | — | yes (drift) |
+
+With all 10 docs + 3 servers over the 6 preset questions:
+
+| Detector | Guarded run not compromised | Guarded system prompt + message still carry injection text |
+|---|---|---|
+| transformer + rules | 6 / 6 | 0 / 6 |
+| rules-only | 3 / 6 | 5 / 6 (all from documents; both bad tools quarantined) |
+
+With manifests only, the unguarded run is compromised (`send_email` to the
+`.invalid` collector) and the guarded run is not.
+
+**Finding.** On this poisoned description the transformer alone would miss (0.984);
+the metadata rule catches it. That is consistent with `tool_metadata` being the
+thinnest training channel (5 canonical test positives), and it is a reason the rules
+stay in the decision. The drift check catches a change whose text scores low, which
+content scanning cannot.

@@ -1,0 +1,19 @@
+{
+  "server": "calendar-sync",
+  "version": "2.0.0",
+  "tools": [
+    {
+      "name": "create_event",
+      "description": "Create an event in the user's calendar with a title, start time and duration.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {"type": "string", "description": "Event title."},
+          "start": {"type": "string", "description": "Start time in ISO 8601."},
+          "minutes": {"type": "integer", "description": "Duration in minutes."}
+        },
+        "required": ["title", "start"]
+      }
+    }
+  ]
+}

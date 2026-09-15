@@ -211,7 +211,7 @@
         <article class="panel step" aria-labelledby="s2-title">
           <header class="step__head">
             <span class="step__num" aria-hidden="true">2</span>
-            <div><h3 id="s2-title">Point it at unknown context</h3><p class="muted">Some of these files carry injections. You are not told which; that is the point.</p></div>
+            <div><h3 id="s2-title">Point it at unknown context</h3><p class="muted">Some of these files and tool servers carry injections. You are not told which; that is the point.</p></div>
           </header>
           <div class="row row--between">
             <div class="row">
@@ -225,11 +225,14 @@
               <span>Reveal ground truth</span>
             </label>
           </div>
+          <p class="label">Documents and tool results</p>
           <div class="sample-grid" id="sample-grid"></div>
+          <p class="label">Connected MCP servers <span class="muted">(tool manifests the agent reads before any question)</span></p>
+          <div class="sample-grid" id="manifest-grid"></div>
           <div class="dropzone" id="dropzone">
             <svg class="icon icon--lg" aria-hidden="true"><use href="#i-upload"/></svg>
             <p><strong>Add your own files.</strong> Drop them here or <label class="link" for="file-input">browse</label>.</p>
-            <p class="muted fine">.txt, .md, .json, .html or .csv, up to 2 MB each. Files stay on this machine and go only to the model you connect.</p>
+            <p class="muted fine">.txt, .md, .json, .html or .csv, up to 2 MB each. A .json with a top-level "tools" list is read as an MCP tool manifest. Files stay on this machine and go only to the model you connect.</p>
             <input id="file-input" class="visually-hidden" type="file" multiple accept=".txt,.md,.markdown,.json,.html,.htm,.csv">
           </div>
           <ul class="chips" id="upload-list" aria-label="Your uploaded files"></ul>
@@ -276,8 +279,8 @@
       <h2 class="section__title" id="how-title">How a comparison runs</h2>
       <ol class="timeline">
         <li><span class="timeline__n">01</span><h3>Retrieve</h3><p>Files are split into passages (JSON by string leaf, keeping its path), and the passages that best match the question are retrieved with TF-IDF.</p></li>
-        <li><span class="timeline__n">02</span><h3>Inspect</h3><p>Each passage is normalised and scored. The span-aware transformer decides at its dev 1%-FPR threshold; the rule engine explains, decodes hidden payloads and also flags at its 0.1%-FPR band.</p></li>
-        <li><span class="timeline__n">03</span><h3>Isolate</h3><p>Flagged sentences, hidden comments and encoded blobs are removed. If what remains is still suspicious, the whole passage is withheld.</p></li>
+        <li><span class="timeline__n">02</span><h3>Inspect</h3><p>Each passage and every tool description from connected servers is normalised and scored. The span-aware transformer decides at its dev 1%-FPR threshold; the rule engine explains, decodes hidden payloads and also flags at its 0.1%-FPR band. Each tool's declaration is also compared with the digest pinned when it was approved.</p></li>
+        <li><span class="timeline__n">03</span><h3>Isolate</h3><p>Flagged sentences, hidden comments and encoded blobs are removed; if what remains is still suspicious, the whole passage is withheld. A tool whose description is flagged, or that changed after approval, is quarantined.</p></li>
         <li><span class="timeline__n">04</span><h3>Answer and gate</h3><p>The same system prompt and question go to your model twice. Tool requests are classified; with Sentinel, the capability policy allows, confirms or blocks them.</p></li>
       </ol>
       <div class="notice notice--quiet">

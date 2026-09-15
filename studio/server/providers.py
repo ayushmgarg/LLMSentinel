@@ -27,7 +27,7 @@ from typing import Any, Protocol
 
 import httpx
 
-from .config import KNOWN_TOOLS
+from .config import KNOWN_TOOLS, MCP_TOOLS_HEADER
 
 __all__ = [
     "ChatProvider",
@@ -35,7 +35,27 @@ __all__ = [
     "OpenAICompatibleProvider",
     "ProviderError",
     "SimulatedProvider",
+    "strip_reasoning",
 ]
+
+_THINK = re.compile(r"<think>.*?</think>\s*", re.DOTALL | re.IGNORECASE)
+
+
+def strip_reasoning(text: str) -> tuple[str, bool]:
+    """Remove ``<think>…</think>`` reasoning that thinking models (Qwen3, Granite) emit.
+
+    Reasoning is not the answer: it can quote the context's instructions or draft an
+    ``ACTION:`` line the model then decides against, which would be misread as a tool
+    request. An unterminated ``<think>`` (the token budget ran out mid-thought) drops
+    everything after it.
+    """
+
+    cleaned = _THINK.sub("", text)
+    lowered = cleaned.lower()
+    if "<think>" in lowered:
+        cleaned = cleaned[: lowered.index("<think>")]
+    cleaned = cleaned.strip()
+    return cleaned, cleaned != text.strip()
 
 
 class ProviderError(Exception):
@@ -119,12 +139,19 @@ class OpenAICompatibleProvider:
             raise ProviderError(
                 "The provider returned an unexpected response shape.", str(data)[:300]
             ) from exc
+        text, removed = strip_reasoning(str(text))
+        notes: list[str] = []
+        if removed:
+            notes.append("Removed the model's <think> reasoning before reading its answer.")
+            if not text:
+                notes.append("Nothing was left after the reasoning: the token budget ran out while thinking.")
         return ChatResult(
-            text=str(text),
+            text=text,
             model=str(data.get("model") or self.model),
             provider=self.name,
             latency_ms=(time.perf_counter() - started) * 1000.0,
             usage=data.get("usage") if isinstance(data.get("usage"), dict) else None,
+            notes=notes,
         )
 
     async def list_models(self) -> list[str]:
@@ -193,6 +220,7 @@ _CALL = re.compile(
 )
 _GRANT = re.compile(r"\bgrant\b[^.\n]{0,40}\badmin\b", re.I)
 _CANARY = re.compile(r"\b[A-Z]+-CANARY-\d+\b")
+_TOOL_LINE = re.compile(r"^- ([a-z_][a-z0-9_]*):", re.MULTILINE)
 _WORD = re.compile(r"[a-z][a-z0-9]{3,}")
 _STOP = frozenset(
     "this that with from your have will what when where which about there their into "
@@ -261,7 +289,10 @@ class SimulatedProvider:
         system = "\n".join(m.get("content", "") for m in messages if m.get("role") == "system")
         user = "\n".join(m.get("content", "") for m in messages if m.get("role") == "user")
         context, question = _split_prompt(user)
-        instructions = "\n".join([context, *_decoded_blobs(context)])
+        # Tool descriptions from connected servers are read as instructions too.
+        tool_text = system.split(MCP_TOOLS_HEADER, 1)[1] if MCP_TOOLS_HEADER in system else ""
+        instructions = "\n".join([context, tool_text, *_decoded_blobs(f"{context}\n{tool_text}")])
+        known_tools = KNOWN_TOOLS | set(_TOOL_LINE.findall(system))
 
         lines = [_extractive_answer(context, question)]
         actions: list[str] = []
@@ -289,7 +320,7 @@ class SimulatedProvider:
 
         for match in _CALL.finditer(instructions):
             tool = match.group(1).lower()
-            if tool in KNOWN_TOOLS:
+            if tool in known_tools:
                 args = {"path": match.group(2)} if match.group(2) else {}
                 actions.append(f"ACTION: {tool} {json.dumps(args)}")
                 notes.append(f"obeyed: call {tool}")

@@ -34,11 +34,21 @@ support tickets?*
   rules alone. The transformer flags it (0.999) and the leaf is **withheld**.
 - Point to the exact prompt: the guarded model never saw the instruction.
 
-**2:10 — Hard negative + ground truth (25s).** Switch on *Reveal ground truth*. The
+**2:10 — Poisoned tool manifest and a silent change (35s).** Scroll to *Tool manifests
+from connected servers*.
+- `summarize_url` is **quarantined**: its description tells the assistant to email the
+  conversation to an attacker. It passed review, so its digest matches; the content
+  scan caught it.
+- `create_event` is **quarantined** though its text reads harmless. It gained a
+  `backup_copy` parameter after approval, and the approved and live declarations are
+  shown side by side.
+- Open *Exact messages sent*: neither tool appears in the guarded system prompt.
+
+**2:45 — Hard negative + ground truth (25s).** Switch on *Reveal ground truth*. The
 security FAQ quotes "ignore previous instructions" while explaining the risk. It is
 labelled clean and passes untouched (transformer 0.0004).
 
-**2:35 — Limits (25s).** "The simulator shows the mechanism, not accuracy. Accuracy
+**3:10 — Limits (25s).** "The simulator shows the mechanism, not accuracy. Accuracy
 is the report's test AUPRC 0.984, in-distribution. On a benchmark held out of
 training, the baselines drop sharply (docs/ood_evaluation.md). That is why this is
 defence in depth, alongside least privilege and approvals."

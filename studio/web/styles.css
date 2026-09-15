@@ -458,6 +458,7 @@ mark.flag { color: #ffe4e8; background: rgba(244, 63, 94, 0.3); border-bottom: 2
   padding: 10px 12px; border-radius: 10px; background: #070b16; border: 1px solid var(--border); max-height: 320px; overflow: auto;
 }
 .code--removed { border-color: var(--danger-border); color: #fecdd3; text-decoration: line-through; text-decoration-color: rgba(251, 113, 133, 0.6); }
+.code--changed { border-color: var(--warning-border); }
 
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .side { position: relative; border-radius: var(--radius-lg); background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; }

@@ -11,8 +11,10 @@ const state = {
   presets: {},
   questions: [],
   samples: [],
+  manifests: [],
   revealed: false,
   selected: new Set(),
+  selectedManifests: new Set(),
   uploads: [],
   maxUploads: 12,
   providerEdits: {},
@@ -280,7 +282,9 @@ async function testConnection() {
 async function loadSamples() {
   const data = await api(`/api/samples${state.revealed ? "?reveal=1" : ""}`);
   state.samples = data.items || [];
+  state.manifests = data.manifests || [];
   renderSamples();
+  renderManifests();
 }
 
 function sampleTag(item) {
@@ -289,42 +293,68 @@ function sampleTag(item) {
   return tag("clean", "success", "i-check");
 }
 
+function selectableCard({ id, set, iconName, name, meta, preview, tagNode }) {
+  const descId = `desc-${id}`;
+  const checkbox = el("input", {
+    className: "visually-hidden",
+    attrs: { type: "checkbox", value: id, checked: set.has(id), "aria-describedby": descId },
+  });
+  const card = el("label", { className: `doc-card${set.has(id) ? " is-selected" : ""}` }, [
+    checkbox,
+    el("span", { className: "doc-card__check" }, [icon("i-check")]),
+    el("span", { className: "doc-card__icon" }, [icon(iconName)]),
+    el("span", { className: "doc-card__body" }, [
+      el("span", { className: "doc-card__name", text: name }),
+      el("span", { className: "doc-card__meta", text: meta }),
+      el("span", { className: "doc-card__preview", text: preview, attrs: { id: descId, title: preview } }),
+    ]),
+    tagNode,
+  ]);
+  checkbox.addEventListener("change", () => {
+    if (checkbox.checked) set.add(id);
+    else set.delete(id);
+    card.classList.toggle("is-selected", checkbox.checked);
+    updateCount();
+  });
+  return card;
+}
+
 function renderSamples() {
-  const grid = $("#sample-grid");
-  grid.replaceChildren(...state.samples.map((item) => {
-    const checkbox = el("input", {
-      className: "visually-hidden",
-      attrs: { type: "checkbox", value: item.doc_id, checked: state.selected.has(item.doc_id), "aria-describedby": `desc-${item.doc_id}` },
-    });
-    const card = el("label", { className: `doc-card${state.selected.has(item.doc_id) ? " is-selected" : ""}` }, [
-      checkbox,
-      el("span", { className: "doc-card__check" }, [icon("i-check")]),
-      el("span", { className: "doc-card__icon" }, [icon(KIND_ICON[item.kind] || "i-file")]),
-      el("span", { className: "doc-card__body" }, [
-        el("span", { className: "doc-card__name", text: item.name }),
-        el("span", { className: "doc-card__meta", text: `${item.kind} · ${item.chars.toLocaleString()} chars` }),
-        el("span", {
-          className: state.revealed && item.note ? "doc-card__preview" : "doc-card__preview",
-          text: state.revealed && item.note ? item.note : item.preview,
-          attrs: { id: `desc-${item.doc_id}`, title: state.revealed && item.note ? item.note : item.preview },
-        }),
-      ]),
-      sampleTag(item),
-    ]);
-    checkbox.addEventListener("change", () => {
-      if (checkbox.checked) state.selected.add(item.doc_id);
-      else state.selected.delete(item.doc_id);
-      card.classList.toggle("is-selected", checkbox.checked);
-      updateCount();
-    });
-    return card;
-  }));
+  $("#sample-grid").replaceChildren(...state.samples.map((item) => selectableCard({
+    id: item.doc_id,
+    set: state.selected,
+    iconName: KIND_ICON[item.kind] || "i-file",
+    name: item.name,
+    meta: `${item.kind} · ${item.chars.toLocaleString()} chars`,
+    preview: state.revealed && item.note ? item.note : item.preview,
+    tagNode: sampleTag(item),
+  })));
+  updateCount();
+}
+
+function manifestTag(item) {
+  if (!state.revealed) return tag("unknown", "neutral", null, "tag--unknown");
+  if (item.label === "poisoned") return tag("poisoned metadata", "danger", "i-alert");
+  if (item.label === "drifted") return tag("changed after approval", "warning", "i-alert");
+  return tag("clean", "success", "i-check");
+}
+
+function renderManifests() {
+  $("#manifest-grid").replaceChildren(...state.manifests.map((item) => selectableCard({
+    id: item.manifest_id,
+    set: state.selectedManifests,
+    iconName: "i-layers",
+    name: item.name,
+    meta: `${item.server} · ${plural(item.tools.length, "tool")} · ${item.pinned ? "approved snapshot pinned" : "not pinned"}`,
+    preview: state.revealed && item.note ? item.note : item.tools.join(", "),
+    tagNode: manifestTag(item),
+  })));
   updateCount();
 }
 
 function updateCount() {
-  const docs = state.selected.size + state.uploads.length;
-  $("#context-count").textContent = `${plural(docs, "document")} in context`;
+  const files = state.selected.size + state.uploads.length;
+  $("#context-count").textContent = `${plural(files, "file")} · ${plural(state.selectedManifests.size, "tool server")}`;
 }
 
 function extensionOf(name) {
@@ -427,9 +457,10 @@ function renderBanner(result) {
     `${summary.flagged} flagged`,
     `${summary.stripped} stripped`,
     `${summary.withheld} withheld`,
+    summary.tools ? `${summary.quarantined} of ${plural(summary.tools, "tool")} quarantined` : null,
     `Sentinel ${formatMs(result.sentinel.latency_ms)}`,
     result.detector.detector,
-  ];
+  ].filter(Boolean);
   return el("div", { className: `banner banner--${summary.tone}`, attrs: { role: "status" } }, [
     icon(TONE_ICON[summary.tone] || "i-info", "icon icon--lg"),
     el("div", {}, [
@@ -530,6 +561,86 @@ function renderChunk(chunk, labels, detector) {
   return { item, head, panel };
 }
 
+const DRIFT_TEXT = {
+  unchanged: ["matches approved digest", "success"],
+  changed: ["changed after approval", "danger"],
+  added: ["not in approved snapshot", "danger"],
+  unpinned: ["not pinned", "neutral"],
+};
+
+function renderToolRow(tool, index, detector) {
+  const panelId = `tool-${index}`;
+  const [driftText, driftTone] = DRIFT_TEXT[tool.drift] || [tool.drift, "neutral"];
+  const head = el("button", { className: "chunk__head", attrs: { type: "button", "aria-expanded": "false", "aria-controls": panelId } }, [
+    el("span", { className: "chunk__rank", text: `T${index + 1}` }),
+    el("span", { className: "chunk__source" }, [
+      el("span", { className: "chunk__name", text: tool.tool }),
+      el("span", { className: "chunk__path", text: `${tool.server} · ${tool.source}` }),
+    ]),
+    tag(driftText, driftTone, null, "tag--xs"),
+    el("span", { className: "chunk__risk" }, [meter(tool.risk, tool.band), el("span", { className: "mono", text: pct(tool.risk) })]),
+    tag(tool.band, `band-${tool.band}`, null, "tag--xs"),
+    tool.quarantined ? tag("quarantined", "danger", "i-shield") : tag("trusted", "success", "i-check"),
+    el("span", { className: "chunk__chev" }, [icon("i-chevron")]),
+  ]);
+
+  const main = el("div", { className: "chunk__main" });
+  for (const field of tool.fields) {
+    main.append(
+      el("p", { className: "label", text: `${field.path} · risk ${pct(field.risk)}${field.flagged ? " · flagged" : ""}` }),
+      highlighted(field.text, field.flagged ? field.spans : []),
+    );
+  }
+  if (!tool.fields.length) main.append(el("p", { className: "muted fine", text: "No description fields to scan." }));
+  if (tool.approved_declaration) {
+    main.append(
+      el("p", { className: "label", text: "Approved declaration (pinned at review)" }),
+      el("pre", { className: "code", text: tool.approved_declaration }),
+      el("p", { className: "label", text: "Live declaration" }),
+      el("pre", { className: "code code--changed", text: tool.live_declaration }),
+    );
+  }
+  main.append(el("p", { className: "label", text: "Why" }), el("ul", { className: "reasons" }, tool.reasons.map((r) => el("li", { text: r }))));
+
+  const side = el("div", { className: "chunk__side" }, [
+    kv("Decision", tool.quarantined ? "quarantined" : "trusted"),
+    kv("Drift", driftText),
+    kv("Policy class", `${tool.category.replace(/_/g, " ")}${tool.unknown_tool ? " (fallback)" : ""}`),
+    kv("Worst field risk", pct(tool.risk)),
+    kv("Flags at", thresholdText(detector)),
+    kv("Live digest", tool.live_digest),
+    kv("Approved digest", tool.approved_digest || "none pinned"),
+  ]);
+
+  const panel = el("div", { className: "chunk__panel", attrs: { id: panelId, hidden: true } }, [el("div", { className: "chunk__grid" }, [main, side])]);
+  head.addEventListener("click", () => {
+    const open = head.getAttribute("aria-expanded") === "true";
+    head.setAttribute("aria-expanded", open ? "false" : "true");
+    panel.hidden = open;
+  });
+  const item = el("li", { className: `chunk${tool.quarantined ? " chunk--flagged" : ""}` }, [head, panel]);
+  return { item, head, panel };
+}
+
+function renderManifestPanel(result) {
+  const { tools, servers } = result.manifests;
+  const rendered = tools.map((tool, i) => ({ tool, ...renderToolRow(tool, i, result.detector) }));
+  const first = rendered.find((r) => r.tool.quarantined);
+  if (first) {
+    first.head.setAttribute("aria-expanded", "true");
+    first.panel.hidden = false;
+  }
+  const removed = servers.filter((s) => s.removed.length).map((s) => `${s.server}: ${s.removed.join(", ")} removed since approval`);
+  return el("section", { className: "panel inspection", attrs: { "aria-label": "Tool manifest scan" } }, [
+    el("div", { className: "inspection__head" }, [
+      el("h4", {}, [icon("i-layers"), "Tool manifests from connected servers"]),
+      el("p", { className: "muted", text: "A tool is quarantined when a description field is flagged or its declaration no longer matches the approved snapshot. Quarantined tools are left out of the guarded run." }),
+    ]),
+    removed.length ? el("p", { className: "muted fine", text: removed.join(" · ") }) : null,
+    el("ul", { className: "chunks" }, rendered.map((r) => r.item)),
+  ]);
+}
+
 function renderInspection(result) {
   const labels = {};
   if (state.revealed) {
@@ -605,16 +716,16 @@ function renderSide(side, guarded) {
   }
   const actions = renderActions(side.actions, guarded);
   if (actions) body.append(actions);
-  if (side.simulated && side.notes && side.notes.length) {
+  if (side.notes && side.notes.length) {
     body.append(el("div", {}, [
-      el("p", { className: "label", text: "Simulator log (what it obeyed)" }),
+      el("p", { className: "label", text: side.simulated ? "Simulator log (what it obeyed)" : "Provider notes" }),
       el("ul", { className: "reasons" }, side.notes.map((n) => el("li", { text: n }))),
     ]));
   }
   body.append(
     el("details", { className: "prompt" }, [
-      el("summary", {}, [icon("i-eye"), `Exact prompt sent (${side.prompt_chars.toLocaleString()} chars)`]),
-      el("pre", { className: "code", text: side.prompt }),
+      el("summary", {}, [icon("i-eye"), `Exact messages sent (${(side.system_prompt.length + side.prompt_chars).toLocaleString()} chars)`]),
+      el("pre", { className: "code", text: `SYSTEM\n${side.system_prompt}\n\nUSER\n${side.prompt}` }),
     ]),
     el("p", { className: "side__meta", text: `${side.provider} · ${side.model} · ${formatMs(side.latency_ms)}` }),
   );
@@ -630,11 +741,12 @@ function renderSide(side, guarded) {
 
 function renderResults(result) {
   $("#results-empty").hidden = true;
-  $("#results-body").replaceChildren(
+  $("#results-body").replaceChildren(...[
     renderBanner(result),
     el("div", { className: "compare" }, [renderSide(result.unguarded, false), renderSide(result.guarded, true)]),
-    renderInspection(result),
-  );
+    result.manifests && result.manifests.tools.length ? renderManifestPanel(result) : null,
+    result.sentinel.chunks.length ? renderInspection(result) : null,
+  ].filter(Boolean));
 }
 
 async function runComparison() {
@@ -645,8 +757,8 @@ async function runComparison() {
     $("#question").focus();
     return;
   }
-  if (!state.selected.size && !state.uploads.length) {
-    toast("No context selected", "Select at least one document or upload a file.", "danger");
+  if (!state.selected.size && !state.uploads.length && !state.selectedManifests.size) {
+    toast("No context selected", "Select at least one document or tool server, or upload a file.", "danger");
     return;
   }
   setRunning(true);
@@ -656,6 +768,7 @@ async function runComparison() {
     const result = await api("/api/compare", {
       question,
       sample_ids: [...state.selected],
+      manifest_ids: [...state.selectedManifests],
       uploads: state.uploads,
       provider: providerConfig(),
       top_k: Number($("#top-k").value),
@@ -679,11 +792,15 @@ async function init() {
   $("#test-connection").addEventListener("click", testConnection);
   $("#select-all").addEventListener("click", () => {
     state.samples.forEach((s) => state.selected.add(s.doc_id));
+    state.manifests.forEach((m) => state.selectedManifests.add(m.manifest_id));
     renderSamples();
+    renderManifests();
   });
   $("#clear-all").addEventListener("click", () => {
     state.selected.clear();
+    state.selectedManifests.clear();
     renderSamples();
+    renderManifests();
   });
   $("#reveal-toggle").addEventListener("change", async (event) => {
     state.revealed = event.target.checked;
@@ -709,8 +826,11 @@ async function init() {
     state.maxUploads = (health.limits && health.limits.max_uploads) || state.maxUploads;
     state.samples = samples.items || [];
     state.samples.forEach((s) => state.selected.add(s.doc_id));
+    state.manifests = samples.manifests || [];
+    state.manifests.forEach((m) => state.selectedManifests.add(m.manifest_id));
     renderDetector(health.detector);
     renderSamples();
+    renderManifests();
     renderPresets();
     applyProvider(currentProvider());
   } catch (error) {

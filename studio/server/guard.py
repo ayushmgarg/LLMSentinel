@@ -267,7 +267,9 @@ class SentinelGuard:
             decided_by = "transformer"
         return flagged, band, model_band, model_risk, decided_by
 
-    def assess(self, retrieved: list[tuple[Chunk, float]], host_task: str = "") -> list[ChunkAssessment]:
+    def assess(
+        self, retrieved: list[tuple[Chunk, float]], host_task: str = "", *, isolate: bool = True
+    ) -> list[ChunkAssessment]:
         units = [self._unit(c.text, c.channel, c.json_path, host_task) for c, _ in retrieved]
         details = self._model([(c.text, c.channel, c.json_path, u) for (c, _), u in zip(retrieved, units, strict=True)])
         out: list[ChunkAssessment] = []
@@ -302,7 +304,10 @@ class SentinelGuard:
                 decoded=decoded,
                 top_window=getattr(detail, "top_window_text", None),
             )
-            self._isolate(assessment, ranges, host_task)
+            if isolate:
+                self._isolate(assessment, ranges, host_task)
+            else:  # scored only (tool metadata is quarantined per tool, not stripped)
+                assessment.sanitized_text = chunk.text
             out.append(assessment)
         return out
 

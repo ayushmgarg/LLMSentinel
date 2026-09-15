@@ -23,6 +23,7 @@ from .agent import run_comparison
 from .config import MAX_QUESTION_CHARS, MAX_UPLOADS, PROVIDER_PRESETS, WEB_DIR, StudioSettings
 from .context import Chunk, ContextError, document_from_upload, load_samples
 from .guard import SentinelGuard
+from .manifests import is_manifest_json, load_manifest_samples, manifest_from_upload
 from .providers import OpenAICompatibleProvider, ProviderError, SimulatedProvider
 
 __all__ = ["CSP", "create_app", "make_provider"]
@@ -93,6 +94,7 @@ def _bad(message: str, hint: str = "", status: int = 400) -> JSONResponse:
 def create_app(settings: StudioSettings | None = None) -> Any:
     settings = settings or StudioSettings()
     samples, questions, pack = load_samples()
+    manifest_samples = load_manifest_samples()
     state: dict[str, Any] = {}
     lock = asyncio.Lock()
 
@@ -155,7 +157,20 @@ def create_app(settings: StudioSettings | None = None) -> Any:
             if reveal:
                 item.update({"label": info.label, "attack": info.attack, "note": info.note})
             items.append(item)
-        return JSONResponse({"items": items, "revealed": reveal})
+        servers = []
+        for sample in manifest_samples.values():
+            manifest = sample.manifest
+            server: dict[str, Any] = {
+                "manifest_id": manifest.manifest_id,
+                "name": manifest.name,
+                "server": manifest.server,
+                "tools": [str(tool["name"]) for tool in manifest.tools],
+                "pinned": manifest.approved is not None,
+            }
+            if reveal:
+                server.update({"label": sample.label, "attack": sample.attack, "note": sample.note})
+            servers.append(server)
+        return JSONResponse({"items": items, "manifests": servers, "revealed": reveal})
 
     async def get_sample(request: Request) -> JSONResponse:
         info = samples.get(request.path_params["doc_id"])
@@ -181,23 +196,34 @@ def create_app(settings: StudioSettings | None = None) -> Any:
             return _bad(f"Questions are limited to {MAX_QUESTION_CHARS} characters.")
 
         documents = []
+        manifests = []
         canaries: list[str] = []
         for sample_id in body.get("sample_ids") or []:
             info = samples.get(str(sample_id))
             if info is not None:
                 documents.append(info.doc)
                 canaries.extend(info.canaries)
+        for manifest_id in body.get("manifest_ids") or []:
+            sample = manifest_samples.get(str(manifest_id))
+            if sample is not None:
+                manifests.append(sample.manifest)
         uploads = body.get("uploads") or []
         if not isinstance(uploads, list) or len(uploads) > MAX_UPLOADS:
             return _bad(f"Upload at most {MAX_UPLOADS} files.")
         try:
             for upload in uploads:
-                if isinstance(upload, dict):
-                    documents.append(document_from_upload(str(upload.get("name") or "upload.txt"), str(upload.get("content") or "")))
+                if not isinstance(upload, dict):
+                    continue
+                name, content = str(upload.get("name") or "upload.txt"), str(upload.get("content") or "")
+                # A JSON file with a top-level "tools" list is an MCP tool manifest.
+                if name.lower().endswith(".json") and is_manifest_json(content):
+                    manifests.append(manifest_from_upload(name, content))
+                else:
+                    documents.append(document_from_upload(name, content))
         except ContextError as exc:
             return _bad(str(exc))
-        if not documents:
-            return _bad("Select at least one context document or upload a file.")
+        if not documents and not manifests:
+            return _bad("Select at least one document or tool manifest, or upload a file.")
 
         try:
             provider = make_provider(body.get("provider") or {}, settings)
@@ -218,6 +244,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 settings=settings,
                 top_k=top_k,
                 canaries=canaries,
+                manifests=manifests,
             )
         except ContextError as exc:
             return _bad(str(exc))
