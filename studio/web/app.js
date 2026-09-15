@@ -9,6 +9,8 @@ const $ = (selector, root = document) => root.querySelector(selector);
 
 const state = {
   presets: {},
+  profiles: { default: {}, models: {} },
+  defaultMaxTokens: 400,
   questions: [],
   samples: [],
   manifests: [],
@@ -224,6 +226,35 @@ function applyProvider(kind) {
   $("#model-list").replaceChildren();
   setConnection("", "");
   renderHelp(kind);
+  applyProfile();
+}
+
+/* Same lookup as the server: exact name, then without ":latest", else the default. */
+function profileFor(model) {
+  const models = state.profiles.models || {};
+  const name = model.trim();
+  for (const candidate of [name, name.replace(/:latest$/, "")]) {
+    if (models[candidate]) return { ...state.profiles.default, ...models[candidate], matched: candidate };
+  }
+  return { ...state.profiles.default, matched: null };
+}
+
+function applyProfile() {
+  const note = $("#model-profile");
+  const maxTokens = $("#max-tokens");
+  if (currentProvider() === "simulated") {
+    maxTokens.disabled = true;
+    note.textContent = "";
+    return;
+  }
+  maxTokens.disabled = false;
+  const model = $("#model").value;
+  const profile = profileFor(model);
+  maxTokens.value = String(profile.max_tokens || state.defaultMaxTokens);
+  if (profile.top_k) $("#top-k").value = String(profile.top_k);
+  if (!model.trim()) note.textContent = "";
+  else if (profile.matched) note.textContent = `Profile ${profile.matched}: ${profile.note || "saved settings applied."}`;
+  else note.textContent = "No saved profile for this model: defaults applied. Add one in studio/model_profiles.yaml.";
 }
 
 function rememberEdit() {
@@ -267,6 +298,7 @@ async function testConnection() {
       model.value = models[0];
       rememberEdit();
     }
+    applyProfile();
     setConnection(result.simulated ? "Simulator ready" : `Connected · ${plural(models.length, "model")}`, "ok");
     if (!result.simulated && !models.length) {
       toast("Connected, but no models found", "Download one first, e.g. `ollama pull qwen2.5:1.5b`.", "danger");
@@ -772,6 +804,7 @@ async function runComparison() {
       uploads: state.uploads,
       provider: providerConfig(),
       top_k: Number($("#top-k").value),
+      max_tokens: Number($("#max-tokens").value) || undefined,
     });
     renderResults(result);
     $("#results").focus({ preventScroll: true });
@@ -789,6 +822,7 @@ async function init() {
   document.querySelectorAll('input[name="provider"]').forEach((radio) => radio.addEventListener("change", () => applyProvider(radio.value)));
   $("#base-url").addEventListener("input", rememberEdit);
   $("#model").addEventListener("input", rememberEdit);
+  $("#model").addEventListener("change", applyProfile);
   $("#test-connection").addEventListener("click", testConnection);
   $("#select-all").addEventListener("click", () => {
     state.samples.forEach((s) => state.selected.add(s.doc_id));
@@ -822,6 +856,8 @@ async function init() {
   try {
     const [health, samples] = await Promise.all([api("/api/health"), api("/api/samples")]);
     state.presets = health.presets || {};
+    state.profiles = health.model_profiles || state.profiles;
+    state.defaultMaxTokens = health.default_max_tokens || state.defaultMaxTokens;
     state.questions = health.questions || [];
     state.maxUploads = (health.limits && health.limits.max_uploads) || state.maxUploads;
     state.samples = samples.items || [];

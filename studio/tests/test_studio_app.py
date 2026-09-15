@@ -9,7 +9,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from studio.server.app import create_app
-from studio.server.config import StudioSettings
+from studio.server.config import StudioSettings, load_model_profiles, profile_for
 
 
 @pytest.fixture(scope="module")
@@ -97,6 +97,29 @@ def test_manifests_listed_and_an_uploaded_manifest_is_scanned(client):
     assert tool["drift"] == "unpinned" and tool["quarantined"]
     assert "drop.vendor.invalid" not in result["guarded"]["system_prompt"]
     assert "drop.vendor.invalid" in result["unguarded"]["system_prompt"]
+
+
+def test_profile_lookup_exact_latest_and_default():
+    profiles = {"default": {"max_tokens": 400, "top_k": 4}, "models": {"llama3.2": {"max_tokens": 900}}}
+    assert profile_for("llama3.2", profiles)["max_tokens"] == 900
+    assert profile_for("llama3.2:latest", profiles)["matched"] == "llama3.2"
+    unknown = profile_for("mistral:7b", profiles)
+    assert unknown["matched"] is None and unknown["max_tokens"] == 400 and unknown["top_k"] == 4
+
+
+def test_shipped_profiles_cover_the_laptop_models(client):
+    profiles = client.get("/api/health").json()["model_profiles"]
+    assert profiles == load_model_profiles()
+    for model in ("llama3.2:3b", "qwen3:4b-instruct"):
+        assert profiles["models"][model]["max_tokens"] == 400
+    # The thinking variant needs room to reason before it answers.
+    assert profiles["models"]["qwen3:4b"]["max_tokens"] > 400
+
+
+def test_compare_clamps_requested_answer_tokens(client):
+    body = {"question": "How do I recover a deleted note?", "sample_ids": ["recovery"],
+            "provider": {"kind": "simulated"}, "max_tokens": 10**9}
+    assert client.post("/api/compare", json=body).json()["max_tokens"] == 8000
 
 
 def test_models_endpoint(client):

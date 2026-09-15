@@ -195,6 +195,7 @@
               <label for="model">Model</label>
               <input id="model" list="model-list" placeholder="qwen2.5:1.5b" autocomplete="off" spellcheck="false">
               <datalist id="model-list"></datalist>
+              <p class="fine muted" id="model-profile" aria-live="polite"></p>
             </div>
             <div class="field" id="api-key-field" hidden>
               <label for="api-key">API key <span class="muted">(this tab only, never saved)</span></label>
@@ -249,11 +250,17 @@
           </div>
           <div class="presets" id="preset-list" role="group" aria-label="Example questions"></div>
           <div class="row row--between run-row">
-            <div class="field field--inline">
-              <label for="top-k">Passages</label>
-              <select id="top-k">
-                <option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option>
-              </select>
+            <div class="row">
+              <div class="field field--inline">
+                <label for="top-k">Passages</label>
+                <select id="top-k">
+                  <option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option>
+                </select>
+              </div>
+              <div class="field field--inline">
+                <label for="max-tokens">Max answer tokens</label>
+                <input id="max-tokens" type="number" min="16" max="8000" step="50" value="400">
+              </div>
             </div>
             <button class="btn btn--primary btn--lg" id="run" type="button">
               <span class="spinner spinner--dark" aria-hidden="true"></span>

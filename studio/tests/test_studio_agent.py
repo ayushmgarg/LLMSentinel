@@ -17,7 +17,7 @@ from studio.server.agent import (
 )
 from studio.server.config import StudioSettings
 from studio.server.guard import SentinelGuard
-from studio.server.providers import SimulatedProvider
+from studio.server.providers import ChatResult, SimulatedProvider
 
 SETTINGS = StudioSettings(use_transformer=False)
 
@@ -75,6 +75,33 @@ def test_same_system_prompt_for_both_runs(guard, pack):
     result = compare(guard, pack, "How do I recover a deleted note?")
     assert SYSTEM_CANARY in result["system_prompt"]
     assert result["unguarded"]["prompt"].startswith("CONTEXT:") and result["guarded"]["prompt"].startswith("CONTEXT:")
+
+
+class _RecordsTokens:
+    name = "recorder"
+    model = "recorder"
+    simulated = True
+
+    def __init__(self) -> None:
+        self.max_tokens: list[int] = []
+
+    async def list_models(self):
+        return [self.model]
+
+    async def chat(self, messages, *, max_tokens, temperature):
+        self.max_tokens.append(max_tokens)
+        return ChatResult(text="ok", model=self.model, provider=self.name, latency_ms=1.0)
+
+
+def test_answer_token_cap_reaches_both_model_calls(guard, pack):
+    recorder = _RecordsTokens()
+    docs, _ = pack
+    result = asyncio.run(
+        run_comparison(question="How do I recover a deleted note?", documents=docs, provider=recorder,
+                       guard=guard, settings=SETTINGS, max_tokens=1234)
+    )
+    assert recorder.max_tokens == [1234, 1234]
+    assert result["max_tokens"] == 1234
 
 
 def test_policy_blocks_destructive_tool_even_when_detector_misses(guard, pack):

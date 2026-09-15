@@ -254,10 +254,12 @@ async def run_comparison(
     guard: SentinelGuard,
     settings: StudioSettings,
     top_k: int | None = None,
+    max_tokens: int | None = None,
     canaries: tuple[str, ...] | list[str] = (),
     manifests: Sequence[ToolManifest] = (),
 ) -> dict[str, Any]:
     policy = CapabilityPolicy()
+    answer_tokens = max_tokens or settings.max_tokens
     chunks = [chunk for doc in documents for chunk in chunk_document(doc)]
     retrieved = ChunkRetriever(chunks).retrieve(question, top_k or settings.top_k) if chunks else []
 
@@ -290,8 +292,8 @@ async def run_comparison(
     ]
 
     unguarded_out, guarded_out = await asyncio.gather(
-        provider.chat(unguarded_messages, max_tokens=settings.max_tokens, temperature=settings.temperature),
-        provider.chat(guarded_messages, max_tokens=settings.max_tokens, temperature=settings.temperature),
+        provider.chat(unguarded_messages, max_tokens=answer_tokens, temperature=settings.temperature),
+        provider.chat(guarded_messages, max_tokens=answer_tokens, temperature=settings.temperature),
         return_exceptions=True,
     )
 
@@ -304,6 +306,7 @@ async def run_comparison(
 
     return {
         "question": question,
+        "max_tokens": answer_tokens,
         "detector": guard.status(),
         "sentinel": {
             "latency_ms": round(sentinel_ms, 1),

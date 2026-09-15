@@ -20,7 +20,17 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .agent import run_comparison
-from .config import MAX_QUESTION_CHARS, MAX_UPLOADS, PROVIDER_PRESETS, WEB_DIR, StudioSettings
+from .config import (
+    MAX_ANSWER_TOKENS,
+    MAX_QUESTION_CHARS,
+    MAX_UPLOADS,
+    MIN_ANSWER_TOKENS,
+    PROVIDER_PRESETS,
+    WEB_DIR,
+    StudioSettings,
+    load_model_profiles,
+    profile_for,
+)
 from .context import Chunk, ContextError, document_from_upload, load_samples
 from .guard import SentinelGuard
 from .manifests import is_manifest_json, load_manifest_samples, manifest_from_upload
@@ -95,6 +105,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
     settings = settings or StudioSettings()
     samples, questions, pack = load_samples()
     manifest_samples = load_manifest_samples()
+    profiles = load_model_profiles()
     state: dict[str, Any] = {}
     lock = asyncio.Lock()
 
@@ -137,6 +148,8 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 "status": "ok",
                 "detector": detector_status(),
                 "presets": PROVIDER_PRESETS,
+                "model_profiles": profiles,
+                "default_max_tokens": settings.max_tokens,
                 "questions": questions,
                 "pack": pack,
                 "limits": {"max_uploads": MAX_UPLOADS, "max_question_chars": MAX_QUESTION_CHARS},
@@ -225,14 +238,22 @@ def create_app(settings: StudioSettings | None = None) -> Any:
         if not documents and not manifests:
             return _bad("Select at least one document or tool manifest, or upload a file.")
 
+        provider_config = body.get("provider") or {}
         try:
-            provider = make_provider(body.get("provider") or {}, settings)
+            provider = make_provider(provider_config, settings)
         except ProviderError as exc:
             return _bad(exc.message, exc.hint)
+        # Precedence: value sent by the UI, then the model's profile, then the server default.
+        profile = profile_for(str(getattr(provider, "model", "") or ""), profiles)
         try:
-            top_k = min(8, max(1, int(body.get("top_k") or settings.top_k)))
+            top_k = min(8, max(1, int(body.get("top_k") or profile.get("top_k") or settings.top_k)))
         except (TypeError, ValueError):
             top_k = settings.top_k
+        try:
+            requested = int(body.get("max_tokens") or profile.get("max_tokens") or settings.max_tokens)
+            max_tokens = min(MAX_ANSWER_TOKENS, max(MIN_ANSWER_TOKENS, requested))
+        except (TypeError, ValueError):
+            max_tokens = settings.max_tokens
 
         sentinel = await guard()
         try:
@@ -243,6 +264,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 guard=sentinel,
                 settings=settings,
                 top_k=top_k,
+                max_tokens=max_tokens,
                 canaries=canaries,
                 manifests=manifests,
             )

@@ -9,12 +9,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
+
+import yaml
 
 from llmsentinel.paths import MODELS_DIR, RESULTS_DIR
 
 STUDIO_DIR = Path(__file__).resolve().parents[1]
 WEB_DIR = STUDIO_DIR / "web"
 SAMPLES_DIR = STUDIO_DIR / "samples"
+MODEL_PROFILES_PATH = STUDIO_DIR / "model_profiles.yaml"
+MIN_ANSWER_TOKENS = 16
+MAX_ANSWER_TOKENS = 8_000
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT = 8700
@@ -60,6 +66,30 @@ TOOL_CATALOG: tuple[tuple[str, str], ...] = (
     ("grant_admin", "Grant the admin role to an account."),
 )
 KNOWN_TOOLS = frozenset(name for name, _ in TOOL_CATALOG)
+
+
+def load_model_profiles(path: Path = MODEL_PROFILES_PATH) -> dict[str, Any]:
+    """Per-model settings from ``model_profiles.yaml`` (empty when the file is absent)."""
+
+    if not Path(path).is_file():
+        return {"default": {}, "models": {}}
+    raw = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    models = raw.get("models") or {}
+    return {
+        "default": dict(raw.get("default") or {}),
+        "models": {str(name): dict(values or {}) for name, values in models.items()},
+    }
+
+
+def profile_for(model: str, profiles: dict[str, Any]) -> dict[str, Any]:
+    """The profile for ``model``: exact name, then without ``:latest``, else ``default``."""
+
+    models = profiles.get("models", {})
+    name = model.strip()
+    for candidate in (name, name.removesuffix(":latest")):
+        if candidate in models:
+            return {**profiles.get("default", {}), **models[candidate], "matched": candidate}
+    return {**profiles.get("default", {}), "matched": None}
 
 
 @dataclass(slots=True)

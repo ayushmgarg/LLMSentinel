@@ -23,7 +23,7 @@ python -m studio.server
 ```
 
 Open <http://127.0.0.1:8700>. Options: `--port 8700`, `--rules-only` (skip loading
-the transformer). The server binds to localhost only.
+the transformer), `--max-tokens N` (answer cap for models without a profile). The server binds to localhost only.
 
 The first load of the transformer checkpoint (`artifacts/models/transformer`) takes
 about 30–60 s on a CPU; it loads in the background and the header badge changes
@@ -69,6 +69,29 @@ The Studio reads only a model's final answer. It removes `<think>…</think>` bl
 ignores Ollama's separate `reasoning` field, and adds a provider note when the token
 limit was reached (empty answer, or answer cut off). The request timeout is 600 s
 because CPU inference is slow.
+
+### Model profiles (`studio/model_profiles.yaml`)
+
+Per-model settings live in a YAML file, so tuning a model needs no code change:
+
+* `max_tokens` caps each answer the model writes (not the context it reads). The cap
+  keeps CPU runs bounded and stops small models looping. Thinking models need far
+  more, because their reasoning counts against it.
+* `top_k` is the number of retrieved passages; fewer passages mean a shorter prompt.
+* `note` is shown under the model field.
+
+Shipped profiles: `llama3.2:3b` and `qwen3:4b-instruct` (400 tokens, 2 passages, set
+for a 4-core CPU laptop), and `qwen3:4b` (thinking: 2,000 tokens, meant for a GPU).
+Unknown models use `default`.
+
+Precedence, highest first:
+1. the values in the UI (*Max answer tokens*, *Passages*), which are filled from the
+   profile when you pick a model and can be overridden;
+2. the model's profile;
+3. `--max-tokens` on the command line;
+4. the built-in default (400).
+
+The server clamps the cap to 16–8,000.
 
 ## Reading results honestly
 
