@@ -134,17 +134,27 @@ class OpenAICompatibleProvider:
         started = time.perf_counter()
         data = await self._request("POST", "/chat/completions", payload)
         try:
-            text = data["choices"][0]["message"].get("content") or ""
+            choice = data["choices"][0]
+            message = choice["message"]
+            text = message.get("content") or ""
         except (KeyError, IndexError, TypeError, AttributeError) as exc:
             raise ProviderError(
                 "The provider returned an unexpected response shape.", str(data)[:300]
             ) from exc
         text, removed = strip_reasoning(str(text))
+        # Ollama returns a thinking model's reasoning in a separate ``reasoning`` field
+        # (other servers use ``reasoning_content``) and leaves ``content`` empty when
+        # the token budget runs out mid-thought (finish_reason "length").
+        reasoned = removed or bool(message.get("reasoning") or message.get("reasoning_content"))
         notes: list[str] = []
-        if removed:
-            notes.append("Removed the model's <think> reasoning before reading its answer.")
-            if not text:
-                notes.append("Nothing was left after the reasoning: the token budget ran out while thinking.")
+        if reasoned:
+            notes.append("The model reasoned before answering; only its final answer is read.")
+        if choice.get("finish_reason") == "length":
+            notes.append(
+                "The token limit was reached while the model was still thinking, so it gave no answer."
+                if not text
+                else "The answer reached the token limit and may be cut off."
+            )
         return ChatResult(
             text=text,
             model=str(data.get("model") or self.model),

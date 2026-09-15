@@ -107,6 +107,16 @@ def test_openai_compatible_chat_drops_reasoning_before_parsing(mock_http):
     assert result.notes
 
 
+def test_openai_compatible_reports_thinking_that_ran_out_of_tokens(mock_http):
+    # Shape observed from Ollama's /v1/chat/completions for qwen3:4b (Thinking-2507).
+    body = {"choices": [{"message": {"role": "assistant", "content": "", "reasoning": "Hmm, the user asked"},
+                         "finish_reason": "length"}]}
+    mock_http(lambda request: httpx.Response(200, json=body))
+    result = asyncio.run(OpenAICompatibleProvider("http://x/v1", "qwen3:4b").chat([], max_tokens=5, temperature=0))
+    assert result.text == ""
+    assert any("still thinking" in note for note in result.notes)
+
+
 def test_openai_compatible_lists_models_sorted(mock_http):
     mock_http(lambda request: httpx.Response(200, json={"data": [{"id": "b"}, {"id": "a"}, {"id": "a"}]}))
     assert asyncio.run(OpenAICompatibleProvider("http://x/v1", "").list_models()) == ["a", "b"]

@@ -1105,3 +1105,33 @@ the metadata rule catches it. That is consistent with `tool_metadata` being the
 thinnest training channel (5 canonical test positives), and it is a reason the rules
 stay in the decision. The drift check catches a change whose text scores low, which
 content scanning cannot.
+
+## 2026-09-15 · Studio with real local models (Ollama, CPU laptop)
+
+**Machine.** Intel i5-8265U (4 cores), 7.8 GB RAM, integrated graphics only, Ollama
+serving `/v1` on localhost. One comparison on the sharing guide + export guide, top-k 2,
+rules-only guard (only model behaviour was under test).
+
+| Model | Time (unguarded / guarded) | Unguarded | Guarded |
+|---|---|---|---|
+| `llama3.2:3b` | 70 s / 45 s | answered from the context; **did not follow** the injection | invented a `share_notes` tool; policy **blocked** it (unknown tool → sensitive_read) |
+| `qwen3:4b` | 282 s / 133 s | **empty answer**: reasoning used the whole 400-token budget | answered correctly from the stripped context |
+
+**Diagnosis of the empty answer.**
+- `/api/show` identifies the `qwen3:4b` tag as Qwen3-4B-**Thinking**-2507.
+- Ollama's `/v1` response carried the reasoning in `message.reasoning`, with
+  `content: ""` and `finish_reason: "length"`.
+- Thinking could not be disabled: `reasoning_effort: "none"` removed the separate
+  field but the model reasoned inside `content`; `/no_think` and native `think: false`
+  behaved the same.
+- Generation speed was about 3.8 tokens/s (60 tokens in 15.8 s).
+
+**Changes (no detector change).**
+- The provider now notes when a model reasoned before answering, and when the token
+  limit was hit (empty or cut-off answer), instead of returning a silent empty
+  string. Regression test uses the observed response shape.
+- The request timeout was raised from 180 s to 600 s.
+
+**Finding.** A small real model often ignores the injection (as the Studio warns), so
+the guard's value there shows up as blocked tool requests, not as a changed answer.
+Use the non-thinking `qwen3:4b-instruct` tag on CPU machines.

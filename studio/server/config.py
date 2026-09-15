@@ -68,6 +68,7 @@ class StudioSettings:
     checkpoint: Path = field(default_factory=lambda: MODELS_DIR / "transformer")
     results_path: Path = field(default_factory=lambda: RESULTS_DIR / "results_dev.json")
     top_k: int = 4
-    request_timeout_s: float = 180.0
+    # CPU inference is slow: one qwen3:4b (thinking) answer took 282 s on a 4-core laptop.
+    request_timeout_s: float = 600.0
     max_tokens: int = 400
     temperature: float = 0.2

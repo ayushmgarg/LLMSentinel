@@ -56,10 +56,19 @@ A local model has no rate or token limits and no key. Recommended:
 
 Then press **Test connection** in step 1; it lists the installed models.
 
-Thinking models (Qwen3, Granite 4.2) wrap reasoning in `<think>…</think>`. The Studio
-removes it before reading the answer, so a tool call the model only considered is not
-treated as a request. If a thinking model uses its whole token budget on reasoning,
-the answer comes back empty and a provider note says so.
+**Avoid thinking models on a CPU.** Measured on a 4-core i5-8265U laptop with 7.8 GB
+RAM and no GPU (2026-09-15):
+
+| Model (Ollama tag) | What it is | Observed |
+|---|---|---|
+| `llama3.2:3b` | instruct | one comparison (both runs) in about 70 s; answers normally |
+| `qwen3:4b` | **Qwen3-4B-Thinking-2507** (`ollama show`: finetune *Thinking*) | about 3.8 tokens/s; one answer took 282 s and came back empty because reasoning used the 400-token budget. `think: false`, `reasoning_effort: "none"` and `/no_think` did not stop it reasoning |
+| `qwen3:4b-instruct` | Qwen3-4B-Instruct-2507, same 2.5 GB, no thinking mode | use this instead of `qwen3:4b` (not yet measured here) |
+
+The Studio reads only a model's final answer. It removes `<think>…</think>` blocks,
+ignores Ollama's separate `reasoning` field, and adds a provider note when the token
+limit was reached (empty answer, or answer cut off). The request timeout is 600 s
+because CPU inference is slow.
 
 ## Reading results honestly
 
