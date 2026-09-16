@@ -26,6 +26,9 @@ dist/
 # Demo server log
 artifacts/results/streamlit.log
 
+# Local analyst history (machine state: scans, reviews, alerts)
+artifacts/analyst/
+
 # Local score-test-once ledgers (machine state, not shared evidence)
 artifacts/results/test_runs.json
 artifacts/results/ood/test_runs.json

@@ -9,8 +9,10 @@ never as HTML -- the documents being inspected are hostile by assumption.
 from __future__ import annotations
 
 import asyncio
+import json
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from dataclasses import replace
 from typing import Any
 
 from starlette.applications import Starlette
@@ -18,6 +20,8 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
+
+from llmsentinel.analyst import LABELS, STATS_KEYS, ScanFilter, ScanStore, promote_to_fixture
 
 from .agent import run_comparison
 from .config import (
@@ -102,6 +106,31 @@ def _bad(message: str, hint: str = "", status: int = 400) -> JSONResponse:
     return JSONResponse({"error": message, "hint": hint}, status_code=status)
 
 
+_FILTER_KEYS = ("kind", "channel", "tool", "server", "source", "source_domain", "family", "action_class", "decision", "band", "since")
+
+
+def _scan_filter(request: Request) -> ScanFilter:
+    params = request.query_params
+    values: dict[str, Any] = {key: params.get(key) or None for key in _FILTER_KEYS}
+    for key in ("flagged", "reviewed"):
+        value = params.get(key)
+        values[key] = None if value in (None, "", "any") else value in ("1", "yes", "true")
+    return ScanFilter(**values)
+
+
+def _limit(request: Request, default: int = 100) -> int:
+    try:
+        return max(1, min(500, int(request.query_params.get("limit") or default)))
+    except ValueError:
+        return default
+
+
+def _summary_row(record: Any) -> dict[str, Any]:
+    data = record.to_dict()
+    data.pop("text", None)  # lists carry the excerpt; the full text is served per scan
+    return data
+
+
 def create_app(settings: StudioSettings | None = None) -> Any:
     settings = settings or StudioSettings()
     samples, questions, pack = load_samples()
@@ -109,6 +138,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
     profiles = load_model_profiles()
     state: dict[str, Any] = {}
     lock = asyncio.Lock()
+    store = ScanStore(settings.history_path) if settings.record_history else None
 
     async def guard() -> SentinelGuard:
         async with lock:
@@ -155,6 +185,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 "questions": questions,
                 "pack": pack,
                 "limits": {"max_uploads": MAX_UPLOADS, "max_question_chars": MAX_QUESTION_CHARS},
+                "history": {"enabled": store is not None, "labels": list(LABELS), "stats_keys": sorted(STATS_KEYS)},
             }
         )
 
@@ -240,6 +271,20 @@ def create_app(settings: StudioSettings | None = None) -> Any:
         if not documents and not manifests:
             return _bad("Select at least one document or tool manifest, or upload a file.")
 
+        # Uploaded manifests carry no approved snapshot of their own. When an analyst has
+        # approved that server, its pins are the snapshot, so drift is detected; either
+        # way, the store raises alerts for unapproved or changed tools.
+        manifest_alerts = []
+        if store is not None:
+            for index, manifest in enumerate(manifests):
+                if manifest.origin != "upload":
+                    continue
+                pins = store.current_pins(manifest.server)
+                if pins:
+                    approved = tuple(pin["declaration"] for pin in pins.values() if pin["declaration"])
+                    manifests[index] = replace(manifest, approved=approved)
+                manifest_alerts += [alert.to_dict() for alert in store.check_manifest(manifest.server, list(manifest.tools))]
+
         provider_config = body.get("provider") or {}
         try:
             provider = make_provider(provider_config, settings)
@@ -269,10 +314,125 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 max_tokens=max_tokens,
                 canaries=canaries,
                 manifests=manifests,
+                store=store,
             )
         except ContextError as exc:
             return _bad(str(exc))
+        result["history"]["alerts"] = manifest_alerts
         return JSONResponse(result)
+
+    # ------------------------------------------------------------ analyst
+    def _history_off() -> JSONResponse:
+        return _bad("History is disabled for this session.", "Start the Studio without --no-history.", status=404)
+
+    async def analyst_summary(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        return JSONResponse({**store.summary(), "path": str(store.path.name)})
+
+    async def analyst_scans(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        filters = _scan_filter(request)
+        records = store.list(filters, limit=_limit(request))
+        return JSONResponse({"items": [_summary_row(r) for r in records], "total": store.count(filters)})
+
+    async def analyst_queue(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        return JSONResponse({"items": [_summary_row(r) for r in store.queue(_scan_filter(request), limit=_limit(request))]})
+
+    async def analyst_scan(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        scan_id = request.path_params["scan_id"]
+        record = store.get(scan_id)
+        if record is None:
+            return _bad("Scan not found.", status=404)
+        return JSONResponse(
+            {
+                "scan": record.to_dict(),
+                "overrides": [item.to_dict() for item in store.overrides(scan_id)],
+                "effective_label": store.effective_label(scan_id),
+                "detector_label": "injection" if record.flagged else "benign",
+            }
+        )
+
+    async def analyst_override(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        body = await _json(request)
+        try:
+            item = store.override(
+                request.path_params["scan_id"],
+                label=str(body.get("label") or ""),
+                reviewer=str(body.get("reviewer") or ""),
+                rationale=str(body.get("rationale") or ""),
+            )
+        except KeyError:
+            return _bad("Scan not found.", status=404)
+        except ValueError as exc:
+            return _bad(str(exc))
+        return JSONResponse({"override": item.to_dict(), "effective_label": store.effective_label(item.scan_id)})
+
+    async def analyst_promote(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        body = await _json(request)
+        try:
+            fixture = promote_to_fixture(store, request.path_params["scan_id"], promoted_by=str(body.get("by") or ""))
+        except KeyError:
+            return _bad("Scan not found.", status=404)
+        except ValueError as exc:
+            return _bad(str(exc))
+        return JSONResponse({"fixture": {k: fixture[k] for k in ("id", "label", "rule_score", "sanitisation")}})
+
+    async def analyst_stats(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        by = request.query_params.get("by") or "family"
+        try:
+            rows = store.stats(by, _scan_filter(request), limit=_limit(request, 50))
+        except ValueError as exc:
+            return _bad(str(exc))
+        return JSONResponse({"by": by, "rows": rows})
+
+    async def analyst_alerts(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        alerts = store.open_alerts(request.query_params.get("server") or None)
+        return JSONResponse({"items": [{**a.to_dict(), "description": a.describe()} for a in alerts]})
+
+    async def analyst_ack(request: Request) -> JSONResponse:
+        if store is None:
+            return _history_off()
+        body = await _json(request)
+        try:
+            store.acknowledge(request.path_params["alert_id"], acknowledged_by=str(body.get("by") or ""), note=str(body.get("note") or ""))
+        except KeyError:
+            return _bad("Alert not found.", status=404)
+        except ValueError as exc:
+            return _bad(str(exc))
+        return JSONResponse({"ok": True})
+
+    async def analyst_approve(request: Request) -> JSONResponse:
+        """Pin the tools seen in the latest comparison that included this server."""
+
+        if store is None:
+            return _history_off()
+        server = request.path_params["server"]
+        body = await _json(request)
+        latest = store.list(ScanFilter(kind="manifest", server=server), limit=1)
+        if not latest:
+            return _bad("No manifest scans for this server yet.", "Run a comparison that includes it first.", status=404)
+        batch = latest[0].versions.get("batch")
+        records = [r for r in store.list(ScanFilter(kind="manifest", server=server), limit=500) if r.versions.get("batch") == batch]
+        tools = [json.loads(r.text) for r in records if r.text]
+        try:
+            pinned = store.approve_manifest(server, tools, approved_by=str(body.get("by") or ""))
+        except ValueError as exc:
+            return _bad(str(exc))
+        return JSONResponse({"server": server, "pinned": sorted(pinned)})
 
     async def scan(request: Request) -> JSONResponse:
         body = await _json(request)
@@ -292,6 +452,16 @@ def create_app(settings: StudioSettings | None = None) -> Any:
         Route("/api/models", models, methods=["POST"]),
         Route("/api/compare", compare, methods=["POST"]),
         Route("/api/scan", scan, methods=["POST"]),
+        Route("/api/analyst/summary", analyst_summary),
+        Route("/api/analyst/scans", analyst_scans),
+        Route("/api/analyst/queue", analyst_queue),
+        Route("/api/analyst/scans/{scan_id}", analyst_scan),
+        Route("/api/analyst/scans/{scan_id}/override", analyst_override, methods=["POST"]),
+        Route("/api/analyst/scans/{scan_id}/promote", analyst_promote, methods=["POST"]),
+        Route("/api/analyst/stats", analyst_stats),
+        Route("/api/analyst/alerts", analyst_alerts),
+        Route("/api/analyst/alerts/{alert_id}/ack", analyst_ack, methods=["POST"]),
+        Route("/api/analyst/manifests/{server}/approve", analyst_approve, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(WEB_DIR), html=True), name="web"),
     ]
     return SecurityHeaders(Starlette(routes=routes, lifespan=lifespan))

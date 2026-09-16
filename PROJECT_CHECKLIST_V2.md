@@ -304,14 +304,14 @@ result worth reporting.
 
 ## 17. Analyst workflow extensions
 
-- [ ] Design local scan-history storage with verdict, policy, provenance, timestamp, and version data.
-- [ ] Add filters by channel, source/tool, attack type, action class, and decision.
-- [ ] Add analyst review queue for elevated/uncertain cases.
-- [ ] Add safe verdict override with reviewer rationale while retaining original verdict.
-- [ ] Add aggregation by tool, server, source domain, and attack family.
-- [ ] Add local manifest-change alerts and regression fixtures for discovered safe attack patterns.
-- [ ] Add Python SDK/local proxy interface only after core evaluation is stable.
-- [ ] Document that an SDK/demo proxy is not production enforcement.
+- [x] Design local scan-history storage with verdict, policy, provenance, timestamp, and version data. *(`llmsentinel.analyst.ScanStore`: SQLite, insert-only via triggers, versions per row — [docs/analyst_workflow.md](docs/analyst_workflow.md))*
+- [x] Add filters by channel, source/tool, attack type, action class, and decision. *(plus server, source domain, band, kind, flagged, reviewed, since; CLI `history list`, Studio History tab)*
+- [x] Add analyst review queue for elevated/uncertain cases. *(degraded, borderline, rule/model disagreement, elevated-not-high, unexplained, manifest drift)*
+- [x] Add safe verdict override with reviewer rationale while retaining original verdict. *(append-only overrides, rationale ≥ 15 chars; detector's call never rewritten)*
+- [x] Add aggregation by tool, server, source domain, and attack family. *(families predicted from the rules that fired, documented as predictions)*
+- [x] Add local manifest-change alerts and regression fixtures for discovered safe attack patterns. *(pins/alerts from `manifest_hash`; reviewed cases promoted with sanitisation to `data/regression/discovered.yaml`, replayed by `tests/test_regression_fixtures.py`)*
+- [x] Add Python SDK/local proxy interface only after core evaluation is stable. *(added after §16a closed: `llmsentinel.sdk.Sentinel`, `python -m llmsentinel.proxy`)*
+- [x] Document that an SDK/demo proxy is not production enforcement. *(module docstrings, proxy start-up message, docs/analyst_workflow.md, report §9)*
 
 ## 18. Longer-term research boundary
 

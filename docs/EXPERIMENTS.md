@@ -1277,3 +1277,51 @@ Best OOD baseline on held-out BIPIA: tfidf-word+char 0.581; rules-only 0.469.
   recall is unmeasured.
 
 §16a is complete: retrain and report items ticked.
+
+## 2026-09-17 · §17 analyst workflow, SDK and local proxy (software; no new scores)
+
+**What was built.** `llmsentinel.analyst` (append-only SQLite history, review queue,
+reviewer overrides, aggregation, manifest pins and alerts, sanitised regression-fixture
+promotion), `llmsentinel.sdk.Sentinel`, `llmsentinel.proxy`, `llmsentinel history …` /
+`manifests …` CLI and `scan --record`, and the Studio's Analyst section with
+`/api/analyst/*`. Design and limits: [analyst_workflow.md](analyst_workflow.md). No
+detector, threshold, rule, corpus or result changed; the SDK reads thresholds from
+`results_dev.json` and uses the Studio's decision rule.
+
+**Decisions and why.**
+- **Immutability by triggers, not convention.** SQLite `BEFORE UPDATE/DELETE` triggers
+  refuse changes to scans, overrides, pins, alerts and acknowledgements, so "the
+  original verdict is retained" is enforced by the database. A test attempts both an
+  UPDATE and a DELETE.
+- **Queue triggers reuse the existing definition** (`semantic/review.py`) and add only
+  *elevated-not-high* and *unexplained*. Confident, explained detections are recorded
+  but not queued.
+- **The proxy refuses `stream: true`** instead of passing it through unguarded.
+- **Studio records only guarded tool decisions**; the unguarded run is a
+  counterfactual.
+- **Promotion requires a reviewer label** and sanitises hosts and secret-shaped tokens
+  before anything reaches `data/regression/`.
+
+**Verification.**
+- New tests: `tests/test_analyst.py` (14), `test_sdk.py` (10), `test_proxy.py` (6),
+  `test_analyst_cli.py` (2), `test_regression_fixtures.py`,
+  `studio/tests/test_studio_analyst.py` (3). The full suite passes and ruff is clean.
+  Studio tests use a temporary history, so no test data reaches the real database.
+- Live Studio check (rules-only, sandbox history `artifacts/analyst/sandbox.sqlite3`):
+  1. One comparison over the sample pack recorded 10 scans (3 flagged, 1 queued: a
+     tool declaration changed after approval).
+  2. A reviewer label cleared the queue (1 → 0) and left "detector said: injection"
+     beside it.
+  3. Insights and filtered history rendered.
+  4. An uploaded manifest raised `unapproved`; approve + acknowledge cleared it.
+  5. The next upload with a changed description was quarantined and raised `changed`.
+
+  No browser console errors.
+
+**Bugs caught while building.**
+- An SDK draft recorded decoded payloads with their parent document's text.
+- A test assertion was vacuous (`... or True`).
+- The proxy would have described a `confirm` outcome as "confirmed".
+- The existing Studio test client would have written into the user's real history.
+
+All four were fixed before commit.

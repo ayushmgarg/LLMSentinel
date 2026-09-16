@@ -35,7 +35,8 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | LLMSentinel Studio: live with/without-Sentinel console, replaces the Streamlit page | done — [studio/README.md](studio/README.md) |
 | Product framing (§16) | done — Studio landing page (research prototype, users, capabilities, limits) |
 | Harder / out-of-distribution evaluation (§16a) | done — [docs/ood_evaluation.md](docs/ood_evaluation.md): held-out BIPIA transformer 0.861 → 0.673 AUPRC (above all baselines); dev thresholds do not transfer (OOD recall 0–9%) |
-| Analyst workflow (§17+) | not started |
+| Analyst workflow (§17) | done — [docs/analyst_workflow.md](docs/analyst_workflow.md): append-only scan history, review queue, reviewer overrides, aggregation, manifest-change alerts, regression fixtures, Python SDK, local proxy (not production enforcement) |
+| Research boundary / completion (§18–19) | not started |
 
 ### Corpus and results status
 
@@ -219,6 +220,33 @@ Works offline with a built-in simulator (not an LLM), or with a free local model
 through Ollama (`ollama pull qwen2.5:1.5b`) or LM Studio. Details, model advice
 and how to read results honestly: [studio/README.md](studio/README.md).
 
+## Analyst workflow, SDK and local proxy (§17)
+
+Every Studio comparison, `scan --record`, SDK call and proxy request can be written
+to a local, append-only history. From there:
+- review the uncertain cases;
+- label them without erasing the detector's call;
+- aggregate by tool, server, source domain or attack family;
+- get alerts when a tool server changes after approval;
+- promote reviewed cases to regression fixtures.
+
+```bash
+llmsentinel history queue
+llmsentinel history override <scan_id> --label benign --reviewer ana --rationale "..."
+llmsentinel manifests approve tools.json --server vendor-mcp --by ana
+python -m llmsentinel.proxy --upstream http://localhost:11434/v1 --port 8710
+```
+
+```python
+from llmsentinel.sdk import Sentinel
+sentinel = Sentinel()
+page = sentinel.scan_text(text, source="https://docs.vendor.io/faq")
+decision = sentinel.gate("send_email", context=page)
+```
+
+These are advisory, local tools, **not production enforcement**. See
+[docs/analyst_workflow.md](docs/analyst_workflow.md).
+
 ## Legacy Streamlit demo (Week 3)
 
 Kept for reference; superseded by the Studio above.
@@ -292,6 +320,9 @@ data/seed/         authored corpus source (payloads, hosts, hard negatives)
 data/semantic/     hand-written contrastive + multi-chunk cases for the semantic layer
 docs/              threat model, annotation guideline, corpus card, robustness, experiment log
 studio/            LLMSentinel Studio: server/ (Starlette API), web/ (static UI), samples/, tests/
+src/llmsentinel/analyst/  local analyst history, review queue, alerts, fixtures, CLI (§17)
+src/llmsentinel/sdk.py    Python SDK; src/llmsentinel/proxy.py  local OpenAI-compatible proxy
+data/regression/   regression fixtures promoted from reviewed analyst cases
 data/seed/hardening/  opt-in tool_metadata seed for the §16a hardening sets
 ```
 
@@ -312,6 +343,7 @@ data/seed/hardening/  opt-in tool_metadata seed for the §16a hardening sets
 | [docs/week2_exit_review.md](docs/week2_exit_review.md) · [docs/week3_exit_review.md](docs/week3_exit_review.md) | Exit reviews |
 | [docs/TRAINING_HANDOFF.md](docs/TRAINING_HANDOFF.md) | Self-contained retrain kit for another machine (plus the §16a hardening kit) |
 | [docs/ood_evaluation.md](docs/ood_evaluation.md) | §16a out-of-distribution protocol, hardened data, results |
+| [docs/analyst_workflow.md](docs/analyst_workflow.md) | §17 scan history, review queue, overrides, alerts, fixtures, SDK, proxy |
 | [studio/README.md](studio/README.md) | LLMSentinel Studio: running it, choosing a model, reading results |
 | `artifacts/figures/` | Report figures (regenerate with `scripts/make_figures.py`); `architecture.svg` is the pipeline diagram |
 

@@ -278,7 +278,11 @@ scoring into the aggregate).
 - **Semantic layer** uses a lexical similarity proxy by default; the neural
   backend is optional and unevaluated. Experimental.
 - **Not production enforcement** — no authentication, streaming, tenant
-  isolation, or fail-closed guarantees.
+  isolation, or fail-closed guarantees. The §17 analyst tooling does not change this.
+  The SDK and the local proxy are advisory: code that ignores them bypasses them, and
+  the proxy refuses streaming rather than gating it. The review-queue triggers are
+  heuristics on the dev operating points and have not been evaluated for how well they
+  select cases a reviewer would change (`docs/analyst_workflow.md`).
 
 ## 10. Safety and ethics
 

@@ -885,6 +885,10 @@ async function runComparison() {
     });
     renderResults(result);
     $("#results").focus({ preventScroll: true });
+    if (result.history && result.history.recorded) {
+      toast("Recorded for review", `${result.history.recorded} scan(s) saved, ${result.history.queued} queued for review. See the Analyst section.`, "success");
+      refreshAnalyst();
+    }
   } catch (error) {
     $("#results-body").replaceChildren();
     $("#results-empty").hidden = false;
@@ -894,9 +898,320 @@ async function runComparison() {
   }
 }
 
+/* ----------------------------------------------------------------- analyst */
+const REVIEWER_KEY = "llmsentinel-studio-reviewer";
+const analyst = { enabled: true, view: "queue" };
+
+function reviewerName() {
+  return $("#reviewer-name").value.trim();
+}
+
+function rememberReviewer() {
+  try {
+    localStorage.setItem(REVIEWER_KEY, reviewerName());
+  } catch (error) {
+    /* per-browser convenience only */
+  }
+}
+
+function requireReviewer() {
+  const name = reviewerName();
+  if (!name) {
+    toast("Reviewer name needed", "Type your name in the Reviewer box first; every decision is attributed.", "danger");
+    $("#reviewer-name").focus();
+  }
+  return name;
+}
+
+function query(params) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") search.set(key, value);
+  });
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
+function shortTime(iso) {
+  return iso ? iso.replace("T", " ").replace("+00:00", "Z").slice(0, 20) : "";
+}
+
+async function refreshAnalystSummary() {
+  const box = $("#analyst-summary");
+  try {
+    const data = await api("/api/analyst/summary");
+    analyst.enabled = true;
+    const pills = [
+      ["scans", "scans recorded"], ["flagged", "flagged"], ["queued", "awaiting review"],
+      ["reviewed", "reviewed"], ["open_alerts", "open manifest alerts"],
+    ];
+    box.replaceChildren(...pills.map(([key, label]) => el("div", { className: "summary-pill" }, [el("strong", { text: data[key] }), el("span", { text: label })])));
+  } catch (error) {
+    analyst.enabled = false;
+    box.replaceChildren(el("p", { className: "muted", text: `${error.message} ${error.hint || ""}` }));
+  }
+}
+
+function scanWhere(item) {
+  if (item.kind === "action") return item.action_tool || item.tool || "-";
+  if (item.kind === "manifest") return `${item.server || "?"} / ${item.tool || "?"}`;
+  return [item.source, item.json_path].filter(Boolean).join(" · ") || item.channel || "-";
+}
+
+function scanCall(item) {
+  if (item.kind === "action") return tag(item.decision || "-", OUTCOME_TONE[item.decision] || "neutral", null, "tag--xs");
+  return item.flagged ? tag("flagged", "danger", null, "tag--xs") : tag("passed", "success", null, "tag--xs");
+}
+
+function renderScanTable(items, emptyText) {
+  if (!items.length) return el("p", { className: "muted", text: emptyText });
+  const head = el("tr", {}, ["Scan", "When", "Kind", "Where", "Call", "Risk", "Families", "Review"].map((h) => el("th", { text: h, attrs: { scope: "col" } })));
+  const rows = items.map((item) => {
+    const open = el("button", { className: "row-button", text: item.scan_id.slice(0, 10), attrs: { type: "button", "aria-label": `Open scan ${item.scan_id.slice(0, 10)}` } });
+    open.addEventListener("click", () => openScan(item.scan_id));
+    return el("tr", {}, [
+      el("td", {}, [open]),
+      el("td", { className: "num", text: shortTime(item.created_at) }),
+      el("td", { text: item.kind }),
+      el("td", { className: "excerpt", text: scanWhere(item) }),
+      el("td", {}, [scanCall(item)]),
+      el("td", { className: "num", text: item.kind === "action" ? "-" : pct(item.risk) }),
+      el("td", { text: (item.families || []).join(", ") || "-" }),
+      el("td", { className: "excerpt", text: (item.review_reasons || [])[0] || "-" }),
+    ]);
+  });
+  return el("div", { className: "table-wrap" }, [el("table", { className: "data-table" }, [el("thead", {}, [head]), el("tbody", {}, rows)])]);
+}
+
+async function loadQueue() {
+  const data = await api(`/api/analyst/queue${query({ limit: 100 })}`);
+  $("#analyst-body").replaceChildren(
+    el("p", { className: "fine muted", text: "Uncertain, unexplained or elevated-but-not-high scans nobody has reviewed yet, riskiest first. Confident detections are not queued." }),
+    renderScanTable(data.items, "Nothing awaiting review."),
+  );
+}
+
+function historyFilters() {
+  return {
+    kind: $("#f-kind").value, channel: $("#f-channel").value, family: $("#f-family").value,
+    decision: $("#f-decision").value, action_class: $("#f-class").value, flagged: $("#f-flagged").value,
+    reviewed: $("#f-reviewed").value, tool: $("#f-tool").value.trim(), server: $("#f-server").value.trim(),
+    source: $("#f-source").value.trim(), limit: 200,
+  };
+}
+
+async function loadHistory() {
+  const data = await api(`/api/analyst/scans${query(historyFilters())}`);
+  $("#analyst-body").replaceChildren(
+    el("p", { className: "fine muted", text: `${data.total} matching scan(s); showing the newest ${data.items.length}.` }),
+    renderScanTable(data.items, "No scans match these filters."),
+  );
+}
+
+async function loadInsights() {
+  const by = $("#insights-by").value;
+  const data = await api(`/api/analyst/stats${query({ by })}`);
+  if (!data.rows.length) {
+    $("#analyst-body").replaceChildren(el("p", { className: "muted", text: "No scans recorded yet." }));
+    return;
+  }
+  const head = el("tr", {}, [by.replace(/_/g, " "), "Scans", "Flagged", "Rate", "Mean risk", "Max risk", "Reviewed"].map((h) => el("th", { text: h, attrs: { scope: "col" } })));
+  const rows = data.rows.map((row) => el("tr", {}, [
+    el("td", { className: "excerpt", text: row.key }),
+    el("td", { className: "num", text: row.scans }),
+    el("td", { className: "num", text: row.flagged }),
+    el("td", { className: "num", text: `${(row.flagged_rate * 100).toFixed(0)}%` }),
+    el("td", { className: "num", text: pct(row.mean_risk) }),
+    el("td", { className: "num", text: pct(row.max_risk) }),
+    el("td", { className: "num", text: row.reviewed }),
+  ]));
+  $("#analyst-body").replaceChildren(el("div", { className: "table-wrap" }, [el("table", { className: "data-table" }, [el("thead", {}, [head]), el("tbody", {}, rows)])]));
+}
+
+async function loadAlerts() {
+  const data = await api("/api/analyst/alerts");
+  if (!data.items.length) {
+    $("#analyst-body").replaceChildren(el("p", { className: "muted", text: "No open manifest alerts. Upload a tool manifest (.json with a \"tools\" list) in the console to see one." }));
+    return;
+  }
+  const servers = [...new Set(data.items.map((a) => a.server))];
+  const approveButtons = servers.map((server) => {
+    const button = el("button", { className: "btn btn--small", text: `Approve current ${server} manifest`, attrs: { type: "button" } });
+    button.addEventListener("click", async () => {
+      const by = requireReviewer();
+      if (!by) return;
+      try {
+        const result = await api(`/api/analyst/manifests/${encodeURIComponent(server)}/approve`, { by });
+        toast("Manifest approved", `Pinned ${result.pinned.join(", ")} on ${server}. Later changes will raise alerts.`, "success");
+      } catch (error) {
+        toast(error.message, error.hint || "", "danger");
+      }
+    });
+    return button;
+  });
+  const items = data.items.map((alert) => {
+    const ack = el("button", { className: "btn btn--small btn--ghost", text: "Acknowledge", attrs: { type: "button" } });
+    ack.addEventListener("click", async () => {
+      const by = requireReviewer();
+      if (!by) return;
+      try {
+        await api(`/api/analyst/alerts/${alert.alert_id}/ack`, { by, note: "acknowledged in the Studio" });
+        await refreshAnalyst();
+      } catch (error) {
+        toast(error.message, error.hint || "", "danger");
+      }
+    });
+    return el("li", { className: "alert-item" }, [
+      tag(alert.kind, alert.kind === "unapproved" ? "warning" : "danger", "i-alert", "tag--xs"),
+      el("p", { text: `${alert.description} · ${shortTime(alert.created_at)}` }),
+      ack,
+    ]);
+  });
+  $("#analyst-body").replaceChildren(
+    el("p", { className: "fine muted", text: "Approving pins each tool's name, description and parameter schema as reviewed. Acknowledging closes an alert; it stays in the history." }),
+    el("div", { className: "row" }, approveButtons),
+    el("ul", { className: "alert-list" }, items),
+  );
+}
+
+async function refreshAnalyst() {
+  await refreshAnalystSummary();
+  if (!analyst.enabled) {
+    $("#analyst-body").replaceChildren();
+    return;
+  }
+  $("#history-filters").hidden = analyst.view !== "history";
+  $("#insights-controls").hidden = analyst.view !== "insights";
+  try {
+    if (analyst.view === "queue") await loadQueue();
+    else if (analyst.view === "history") await loadHistory();
+    else if (analyst.view === "insights") await loadInsights();
+    else await loadAlerts();
+  } catch (error) {
+    $("#analyst-body").replaceChildren(el("p", { className: "side__error", text: error.message }));
+  }
+}
+
+async function openScan(scanId) {
+  const panel = $("#analyst-detail");
+  let data;
+  try {
+    data = await api(`/api/analyst/scans/${scanId}`);
+  } catch (error) {
+    toast(error.message, error.hint || "", "danger");
+    return;
+  }
+  const scan = data.scan;
+  const side = el("div", { className: "detail-side" }, [
+    kv("Kind", scan.kind),
+    kv("Detector said", data.detector_label),
+    kv("Effective label", data.effective_label),
+    kv("Risk", scan.kind === "action" ? "-" : pct(scan.risk)),
+    kv("Band", scan.band || "-"),
+    kv("Decided by", scan.decided_by || scan.decision || "-"),
+    kv("Channel", scan.channel || "-"),
+    kv("Source", scan.source || "-"),
+    kv("Tool / server", [scan.tool, scan.server].filter(Boolean).join(" @ ") || "-"),
+    kv("Drift", scan.drift || "-"),
+    kv("Detector", scan.detector || "-"),
+    kv("Recorded", shortTime(scan.created_at)),
+  ]);
+
+  const main = el("div", {}, []);
+  if (scan.text) main.append(el("p", { className: "label", text: scan.kind === "manifest" ? "Declaration as scanned" : "Text as scanned (flagged spans marked)" }), highlighted(scan.text, scan.kind === "content" ? scan.spans : []));
+  if (scan.review_reasons.length) main.append(el("p", { className: "label", text: "Why it is in the review queue" }), el("ul", { className: "reasons" }, scan.review_reasons.map((r) => el("li", { text: r }))));
+  if (scan.rule_trace.length) main.append(el("p", { className: "label", text: "Rule trace" }), el("ul", { className: "reasons" }, scan.rule_trace.map((r) => el("li", { text: r }))));
+  if (scan.decision_reasons.length) main.append(el("p", { className: "label", text: "Policy reasons" }), el("ul", { className: "reasons" }, scan.decision_reasons.map((r) => el("li", { text: r }))));
+
+  const overrides = data.overrides.length
+    ? el("ul", { className: "override-list" }, data.overrides.map((o) => el("li", {}, [
+      el("strong", { text: `${o.reviewer} labelled it ${o.label}` }),
+      el("span", { className: "muted fine", text: shortTime(o.created_at) }),
+      el("span", { text: o.rationale }),
+    ])))
+    : el("p", { className: "muted fine", text: "No reviewer has labelled this scan yet." });
+
+  const labelSelect = el("select", { attrs: { id: "override-label" } }, [el("option", { text: "injection", attrs: { value: "injection" } }), el("option", { text: "benign", attrs: { value: "benign" } })]);
+  labelSelect.value = data.detector_label === "injection" ? "benign" : "injection";
+  const rationale = el("textarea", { attrs: { id: "override-rationale", rows: "3", maxlength: "2000", placeholder: "Why? At least 15 characters; this is the audit trail." } });
+  const save = el("button", { className: "btn btn--small btn--primary", text: "Record label", attrs: { type: "submit" } });
+  const form = el("form", { className: "override-form" }, [
+    el("p", { className: "label", text: "Add a reviewer label (the original verdict is kept)" }),
+    el("div", { className: "field" }, [el("label", { text: "Label", attrs: { for: "override-label" } }), labelSelect]),
+    el("div", { className: "field" }, [el("label", { text: "Rationale", attrs: { for: "override-rationale" } }), rationale]),
+    save,
+  ]);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const reviewer = requireReviewer();
+    if (!reviewer) return;
+    try {
+      await api(`/api/analyst/scans/${scanId}/override`, { label: labelSelect.value, reviewer, rationale: rationale.value });
+      toast("Label recorded", "Saved beside the detector's original call.", "success");
+      await openScan(scanId);
+      await refreshAnalyst();
+    } catch (error) {
+      toast(error.message, error.hint || "", "danger");
+    }
+  });
+
+  const actions = [];
+  if (scan.kind === "content" && data.overrides.length) {
+    const promote = el("button", { className: "btn btn--small", text: "Promote to regression fixture", attrs: { type: "button" } });
+    promote.addEventListener("click", async () => {
+      const by = requireReviewer();
+      if (!by) return;
+      try {
+        const result = await api(`/api/analyst/scans/${scanId}/promote`, { by });
+        const changes = result.fixture.sanitisation.length ? result.fixture.sanitisation.join("; ") : "no changes needed";
+        toast(`Fixture ${result.fixture.id} added`, `Sanitised: ${changes}.`, "success");
+      } catch (error) {
+        toast(error.message, error.hint || "", "danger");
+      }
+    });
+    actions.push(promote);
+  }
+  const close = el("button", { className: "btn btn--small btn--ghost", text: "Close", attrs: { type: "button" } });
+  close.addEventListener("click", () => { panel.hidden = true; });
+  actions.push(close);
+
+  panel.replaceChildren(
+    el("div", { className: "detail-head" }, [
+      el("h3", { text: `Scan ${scanId.slice(0, 12)}`, attrs: { id: "detail-title" } }),
+      el("div", { className: "row" }, actions),
+    ]),
+    el("div", { className: "detail-grid" }, [main, side]),
+    el("div", {}, [el("p", { className: "label", text: "Reviewer labels" }), overrides]),
+    form,
+  );
+  panel.hidden = false;
+  panel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function initAnalyst() {
+  try {
+    $("#reviewer-name").value = localStorage.getItem(REVIEWER_KEY) || "";
+  } catch (error) {
+    /* storage unavailable */
+  }
+  $("#reviewer-name").addEventListener("change", rememberReviewer);
+  $("#analyst-refresh").addEventListener("click", refreshAnalyst);
+  document.querySelectorAll('input[name="analyst-view"]').forEach((radio) => radio.addEventListener("change", () => {
+    analyst.view = radio.value;
+    refreshAnalyst();
+  }));
+  $("#history-filters").addEventListener("submit", (event) => {
+    event.preventDefault();
+    refreshAnalyst();
+  });
+  $("#insights-by").addEventListener("change", refreshAnalyst);
+  refreshAnalyst();
+}
+
 /* -------------------------------------------------------------------- init */
 async function init() {
   initTheme();
+  initAnalyst();
   document.querySelectorAll('input[name="provider"]').forEach((radio) => radio.addEventListener("change", () => applyProvider(radio.value)));
   $("#base-url").addEventListener("input", rememberEdit);
   $("#model").addEventListener("input", rememberEdit);

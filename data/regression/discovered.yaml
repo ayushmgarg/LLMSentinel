@@ -1,0 +1,9 @@
+# Regression fixtures promoted from reviewed analyst cases (append-only).
+# Written by llmsentinel.analyst.fixtures.promote_to_fixture; text is sanitised
+# (reserved .invalid hosts, secrets redacted). Checked by
+# tests/test_regression_fixtures.py.
+#
+# Empty until an analyst promotes a reviewed case:
+#   llmsentinel history override <scan_id> --label injection --reviewer NAME --rationale "..."
+#   llmsentinel history promote <scan_id> --by NAME
+fixtures: []

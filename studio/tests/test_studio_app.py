@@ -13,8 +13,10 @@ from studio.server.config import StudioSettings, load_model_profiles, profile_fo
 
 
 @pytest.fixture(scope="module")
-def client():
-    with TestClient(create_app(StudioSettings(use_transformer=False))) as test_client:
+def client(tmp_path_factory):
+    # A temporary history, so tests never write into the user's analyst database.
+    settings = StudioSettings(use_transformer=False, history_path=tmp_path_factory.mktemp("history") / "h.sqlite3")
+    with TestClient(create_app(settings)) as test_client:
         yield test_client
 
 

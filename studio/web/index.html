@@ -58,6 +58,7 @@
       <nav class="nav__links" aria-label="Primary">
         <a href="#overview">Overview</a>
         <a href="#console">Console</a>
+        <a href="#analyst">Analyst</a>
         <a href="#how">How it works</a>
       </nav>
       <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme"></button>
@@ -284,6 +285,62 @@
         </div>
         <div id="results-body" aria-live="polite"></div>
       </section>
+    </section>
+
+    <section class="container section analyst" id="analyst" aria-labelledby="analyst-title">
+      <div class="console__head">
+        <div>
+          <p class="eyebrow">Analyst workflow</p>
+          <h2 class="section__title" id="analyst-title">Review what the guard decided</h2>
+          <p class="muted fine">Every comparison is recorded locally. The detector's call is never rewritten: a reviewer adds a label with a reason beside it.</p>
+        </div>
+        <div class="row">
+          <div class="field field--inline">
+            <label for="reviewer-name">Reviewer</label>
+            <input id="reviewer-name" autocomplete="off" spellcheck="false" placeholder="your name">
+          </div>
+          <button class="btn btn--ghost" id="analyst-refresh" type="button"><svg class="icon" aria-hidden="true"><use href="#i-route"/></svg>Refresh</button>
+        </div>
+      </div>
+
+      <div class="analyst-summary" id="analyst-summary" role="status" aria-live="polite"></div>
+
+      <div class="segmented analyst-tabs" role="tablist" aria-label="Analyst views">
+        <label class="segmented__opt"><input type="radio" name="analyst-view" value="queue" checked><span>Review queue</span></label>
+        <label class="segmented__opt"><input type="radio" name="analyst-view" value="history"><span>History</span></label>
+        <label class="segmented__opt"><input type="radio" name="analyst-view" value="insights"><span>Insights</span></label>
+        <label class="segmented__opt"><input type="radio" name="analyst-view" value="alerts"><span>Manifest alerts</span></label>
+      </div>
+
+      <div class="panel analyst-panel">
+        <form class="analyst-filters" id="history-filters" hidden>
+          <div class="field"><label for="f-kind">Kind</label><select id="f-kind"><option value="">any</option><option>content</option><option>manifest</option><option>action</option></select></div>
+          <div class="field"><label for="f-channel">Channel</label><select id="f-channel"><option value="">any</option><option value="rag_document">document</option><option value="tool_response">tool result</option><option value="tool_metadata">tool metadata</option></select></div>
+          <div class="field"><label for="f-family">Family</label><select id="f-family"><option value="">any</option><option value="meta_instruction">meta instruction</option><option value="content_manipulation">content manipulation</option><option value="exfiltration">exfiltration</option><option value="action_hijack">action hijack</option><option value="obfuscation">obfuscation</option><option value="metadata_poisoning">metadata poisoning</option><option value="model_only">model only</option></select></div>
+          <div class="field"><label for="f-decision">Decision</label><select id="f-decision"><option value="">any</option><option>allow</option><option>isolate</option><option>confirm</option><option>block</option></select></div>
+          <div class="field"><label for="f-class">Action class</label><select id="f-class"><option value="">any</option><option value="read_only">read only</option><option value="sensitive_read">sensitive read</option><option value="external_send">external send</option><option value="write">write</option><option value="destructive">destructive</option><option value="privilege_escalation">privilege escalation</option></select></div>
+          <div class="field"><label for="f-flagged">Flagged</label><select id="f-flagged"><option value="">any</option><option value="yes">yes</option><option value="no">no</option></select></div>
+          <div class="field"><label for="f-reviewed">Reviewed</label><select id="f-reviewed"><option value="">any</option><option value="yes">yes</option><option value="no">no</option></select></div>
+          <div class="field"><label for="f-tool">Tool</label><input id="f-tool" autocomplete="off" spellcheck="false"></div>
+          <div class="field"><label for="f-server">Server</label><input id="f-server" autocomplete="off" spellcheck="false"></div>
+          <div class="field"><label for="f-source">Source</label><input id="f-source" autocomplete="off" spellcheck="false"></div>
+          <button class="btn btn--small" type="submit">Apply filters</button>
+        </form>
+        <div class="row" id="insights-controls" hidden>
+          <div class="field field--inline">
+            <label for="insights-by">Group by</label>
+            <select id="insights-by">
+              <option value="family">attack family</option><option value="tool">tool</option><option value="server">server</option>
+              <option value="source_domain">source domain</option><option value="source">source</option><option value="channel">channel</option>
+              <option value="action_class">action class</option><option value="decision">decision</option><option value="band">band</option><option value="kind">kind</option>
+            </select>
+          </div>
+          <p class="fine muted">Families are predicted from the rules that fired, not ground truth.</p>
+        </div>
+        <div id="analyst-body" aria-live="polite"></div>
+      </div>
+
+      <article class="panel analyst-detail" id="analyst-detail" hidden aria-labelledby="detail-title"></article>
     </section>
 
     <section class="container section" id="how" aria-labelledby="how-title">

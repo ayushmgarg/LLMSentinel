@@ -139,5 +139,9 @@ class StudioSettings:
     top_k: int = 4
     # CPU inference is slow: one qwen3:4b (thinking) answer took 282 s on a 4-core laptop.
     request_timeout_s: float = 600.0
+    #: Record comparisons in the analyst history (checklist section 17).
+    record_history: bool = True
+    #: History database; ``None`` uses the package default (artifacts/analyst/history.sqlite3).
+    history_path: Path | None = None
     max_tokens: int = 400
     temperature: float = 0.2

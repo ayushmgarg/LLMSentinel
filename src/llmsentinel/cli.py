@@ -6,6 +6,8 @@
     llmsentinel evaluate                run every available system
     llmsentinel export                  write fusion inputs (features, probabilities)
     llmsentinel scan                    score one document, JSON blob or file
+    llmsentinel history ...             analyst history, review queue, overrides, stats
+    llmsentinel manifests ...           MCP manifest approval and change alerts
 
 Every command that produces a number prints the corpus digest it used, so a
 result pasted into the report can be traced back to the data that produced it.
@@ -345,6 +347,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
             verdicts.append(build_verdict(child, engine.analyse(child), thresholds=thresholds))
 
     verdicts.sort(key=lambda verdict: verdict.risk, reverse=True)
+    if args.record:
+        _record_scan(args, text)
     if args.output_json:
         print(json.dumps([verdict.to_dict() for verdict in verdicts], indent=2))
         return 0
@@ -374,6 +378,24 @@ def cmd_scan(args: argparse.Namespace) -> int:
             print(f"    {reason}")
         print("    (advisory detector, deterministic policy; nothing is executed)")
     return 0
+
+
+def _record_scan(args: argparse.Namespace, text: str) -> None:
+    """Record the same rules-only scan in the analyst history, plus the gated action if any."""
+
+    from .analyst import ScanStore
+    from .sdk import Sentinel
+
+    store = ScanStore(args.history) if args.history else ScanStore()
+    sentinel = Sentinel(detector="rules", results_path=args.thresholds, store=store)
+    if args.json:
+        result = sentinel.scan_json(text, tool=args.tool, source=args.source, host_task=args.host_task)
+    else:
+        result = sentinel.scan_text(text, channel=args.channel, source=args.source, host_task=args.host_task)
+    if args.action:
+        sentinel.gate(args.action, context=result)
+    ids = ", ".join(unit.scan_id[:12] for unit in result.units if unit.scan_id)
+    print(f"recorded in {relative(store.path)}: {ids}")
 
 
 def _load_thresholds(path: str | None, system: str) -> dict[str, float]:
@@ -490,8 +512,15 @@ def build_parser() -> argparse.ArgumentParser:
             "scale it was not measured on"
         ),
     )
+    scan.add_argument("--record", action="store_true", help="also record the scan in the analyst history")
+    scan.add_argument("--source", default=None, help="where the text came from (file, URL, tool), for the history")
+    scan.add_argument("--tool", default=None, help="tool that returned the text, for the history")
+    scan.add_argument("--history", default=None, help="history database (default: artifacts/analyst/history.sqlite3)")
     scan.set_defaults(func=cmd_scan)
 
+    from .analyst.cli import register_analyst_commands
+
+    register_analyst_commands(sub)
     return parser
 
 

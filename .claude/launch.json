@@ -15,6 +15,12 @@
       "port": 8700
     },
     {
+      "name": "llmsentinel-studio-sandbox",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "studio.server", "--port", "8702", "--rules-only", "--history", "artifacts/analyst/sandbox.sqlite3"],
+      "port": 8702
+    },
+    {
       "name": "llmsentinel-studio-rules-only",
       "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "studio.server", "--port", "8701", "--rules-only"],

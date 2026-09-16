@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import uvicorn
 
@@ -19,10 +20,16 @@ def main() -> None:
         "--max-tokens", type=int, default=None,
         help="default answer-token cap for models without a profile in studio/model_profiles.yaml",
     )
+    parser.add_argument("--no-history", action="store_true", help="do not record comparisons in the analyst history")
+    parser.add_argument("--history", default=None, help="analyst history database (default: artifacts/analyst/history.sqlite3)")
     args = parser.parse_args()
     if args.host not in ("127.0.0.1", "localhost"):
         print("warning: binding beyond localhost makes the Studio reachable from your network")
-    settings = StudioSettings(use_transformer=not args.rules_only)
+    settings = StudioSettings(
+        use_transformer=not args.rules_only,
+        record_history=not args.no_history,
+        history_path=Path(args.history) if args.history else None,
+    )
     if args.max_tokens:
         settings.max_tokens = max(MIN_ANSWER_TOKENS, min(MAX_ANSWER_TOKENS, args.max_tokens))
     app = create_app(settings)

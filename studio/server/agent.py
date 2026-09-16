@@ -26,12 +26,14 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from llmsentinel.analyst import ScanStore
 from llmsentinel.policy import CapabilityPolicy, ProposedAction
 from llmsentinel.verdict import RiskBand
 
 from .config import MCP_TOOLS_HEADER, TOOL_CATALOG, StudioSettings
 from .context import ChunkRetriever, Document, chunk_document
 from .guard import ChunkAssessment, SentinelGuard, max_band
+from .history import record_comparison
 from .manifests import ToolAssessment, ToolManifest, assess_manifests, render_tool
 from .providers import ChatProvider, ChatResult, ProviderError
 
@@ -267,6 +269,7 @@ async def run_comparison(
     max_tokens: int | None = None,
     canaries: tuple[str, ...] | list[str] = (),
     manifests: Sequence[ToolManifest] = (),
+    store: ScanStore | None = None,
 ) -> dict[str, Any]:
     policy = CapabilityPolicy()
     answer_tokens = max_tokens or settings.max_tokens
@@ -314,8 +317,15 @@ async def run_comparison(
     unguarded = _side(unguarded_out, unguarded_messages, guarded=False, **common)
     guarded = _side(guarded_out, guarded_messages, guarded=True, **common)
 
+    history = (
+        record_comparison(store, guard=guard, question=question, assessments=assessments, tools=tool_results, guarded=guarded)
+        if store is not None
+        else {"recorded": 0, "disabled": True}
+    )
+
     return {
         "question": question,
+        "history": history,
         "max_tokens": answer_tokens,
         "detector": guard.status(),
         "sentinel": {
