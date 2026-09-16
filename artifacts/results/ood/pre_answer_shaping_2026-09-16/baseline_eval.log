@@ -1,0 +1,26 @@
+﻿
+=== held out: injecagent === train=1812 dev=432 test=360 ood=1070 digests={'indist': '3fd7856158466223', 'ood': '59a18622de216194'}
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| majority | 0.400 | 0.314 | 0.985 (n/i) | n/i | 0.000 | 0.0000 |
+| keyword | 0.392 | 0.368 | 0.985 (n/i) | n/i | 0.000 | 0.0000 |
+| tfidf-word | 0.689 | 0.610 | 0.996 (n/i) | n/i | 0.022 | 0.0000 |
+| tfidf-word+char | 0.668 | 0.628 | 0.996 (n/i) | n/i | 0.016 | 0.0000 |
+| rules-only | 0.555 | 0.580 | 0.986 (n/i) | n/i | 0.000 | 0.0000 |
+
+_OOD `ood:injecagent`: 1070 records, 1054 injection / 16 benign (prevalence 98.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+saved artifacts/results/ood/injecagent/ood_baselines.json
+
+=== held out: bipia === train=1918 dev=190 test=187 ood=1379 digests={'indist': '2d6b2599574215a6', 'ood': 'ce9096695512a1fa'}
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| majority | 0.279 | 0.283 | 0.435 | +0.152 | 0.000 | 0.0000 |
+| keyword | 0.269 | 0.409 | 0.435 | +0.026 | 0.000 | 0.0000 |
+| tfidf-word | 0.790 | 0.640 | 0.598 | -0.042 | 0.697 | 0.5096 OVER |
+| tfidf-word+char | 0.848 | 0.680 | 0.610 | -0.070 | 0.633 | 0.2824 OVER |
+| rules-only | 0.776 | 0.798 | 0.469 | -0.329 | 0.050 | 0.0218 OVER |
+
+_OOD `ood:bipia`: 1379 records, 600 injection / 779 benign (prevalence 43.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+saved artifacts/results/ood/bipia/ood_baselines.json

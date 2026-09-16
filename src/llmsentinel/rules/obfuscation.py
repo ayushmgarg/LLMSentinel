@@ -159,11 +159,16 @@ def _concealed_text(item: Evidence, unit: NormalizedUnit) -> str:
         if isinstance(value, str) and value.strip():
             return value
     if item.span is not None:
-        # Fall back to the surrounding raw sentence: zero-width padding hides the
-        # words next to it rather than carrying content itself.
-        start = max(0, item.span.start - 160)
-        end = min(len(unit.raw_text), item.span.end + 160)
-        return unit.raw_text[start:end]
+        # Zero-width padding hides the words *next to* it rather than carrying
+        # content itself, so the surrounding text is what was concealed.  The
+        # window is taken from the **normalised** text: in the raw text the
+        # padding is still interleaved through the words, so no instruction
+        # pattern can match it and the concealment would be scored as if it hid
+        # nothing.
+        start, end = _span_in_normalised(item, unit)
+        window_start = max(0, start - 160)
+        window_end = min(len(unit.normalized_text), end + 160)
+        return unit.normalized_text[window_start:window_end]
     return ""
 
 

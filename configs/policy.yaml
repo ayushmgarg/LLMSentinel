@@ -1,0 +1,108 @@
+# Capability policy: what an agent may do, given how risky its context is.
+#
+# This file is DATA, never code. It names tools and the class of action each
+# performs, and it maps (action class, risk band) to an outcome. Nothing here
+# can invoke anything: the policy engine returns a decision object and the
+# project has no execution path at all.
+#
+# Two properties matter more than the exact numbers below:
+#
+#   1. The mapping is DETERMINISTIC. The same action and the same risk band
+#      always produce the same outcome. The detector's score is advisory input
+#      to the lookup; it never overrides it.
+#   2. Failure is SAFE. An unknown tool, a missing category, or a detector that
+#      failed all resolve towards more restriction, never towards `allow`.
+#
+# Frozen definitions live in docs/threat_model.md section 9.
+
+version: 1
+
+# --------------------------------------------------------------- action classes
+# read_only            reads data already inside the task's scope
+# sensitive_read       reads credentials, private files, conversation history
+# external_send        transmits data outside the trust boundary
+# write                changes state others can observe
+# destructive          irreversible deletion, security-control removal, money movement
+# privilege_escalation raises the agent's own access or grants access to others
+#
+# A tool is classified by its WORST possible effect, not its typical one.
+tools:
+  search_notes: sensitive_read
+  read_file: sensitive_read
+  get_report: read_only
+  kb_search: read_only
+  list_tickets: read_only
+  list_events: read_only
+  repo_search: read_only
+  fetch_page: read_only
+  log_search: read_only
+  run_query: read_only
+  translate: read_only
+  crm_lookup: sensitive_read
+  read_document: sensitive_read
+  send_email: external_send
+  post_webhook: external_send
+  upload_file: external_send
+  create_ticket: write
+  update_record: write
+  set_preferences: write
+  delete_file: destructive
+  file_delete: destructive
+  drop_table: destructive
+  transfer_funds: destructive
+  revoke_access: destructive
+  grant_admin: privilege_escalation
+  grant_role: privilege_escalation
+  add_role: privilege_escalation
+  disable_mfa: privilege_escalation
+  impersonate_user: privilege_escalation
+  create_api_key: privilege_escalation
+
+# Applied when a tool is not listed above. Deliberately not `read_only`: an
+# unknown tool is an unreviewed tool, and the corpus shows attackers naming
+# plausible-sounding tools that do not exist in any manifest.
+unknown_tool_category: sensitive_read
+
+# ------------------------------------------------------------------- decisions
+# Rows are action classes, columns are the risk band of the context that
+# proposed the action. Bands come from thresholds selected on dev; see
+# llmsentinel.verdict.RiskBand.
+#
+# Outcomes:
+#   allow    proceed
+#   isolate  proceed, but strip the flagged text from the model's context
+#   confirm  require explicit human confirmation before acting
+#   block    refuse (demo behaviour; a real deployment would escalate)
+decisions:
+  read_only:
+    low: allow
+    elevated: isolate
+    high: isolate
+  sensitive_read:
+    low: confirm
+    elevated: confirm
+    high: block
+  external_send:
+    low: confirm
+    elevated: block
+    high: block
+  write:
+    low: confirm
+    elevated: confirm
+    high: block
+  destructive:
+    low: block
+    elevated: block
+    high: block
+  privilege_escalation:
+    low: block
+    elevated: block
+    high: block
+
+# When the detector itself is degraded (a rule raised, or normalisation could
+# not complete), the decision is taken one step stricter than the table says.
+# A guard that failed is not evidence of safety.
+escalate_when_degraded: true
+
+# Order used for escalation; each outcome escalates to the next one.
+escalation_order: [allow, isolate, confirm, block]

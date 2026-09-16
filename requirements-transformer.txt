@@ -1,7 +1,11 @@
 # Optional heavy extra: fine-tuned encoder detector.
 # The whole project runs without this file; transformer commands degrade gracefully.
-# CPU-only install:
-#   python -m pip install -r requirements-transformer.txt --index-url https://download.pytorch.org/whl/cpu
+#
+# Install torch FIRST from the PyTorch index (its --index-url replaces PyPI, so a
+# single `-r` install with that index cannot resolve transformers/datasets), then
+# the rest from PyPI. Swap cpu -> cu121 for an NVIDIA GPU:
+#   python -m pip install "torch>=2.2" --index-url https://download.pytorch.org/whl/cpu
+#   python -m pip install "transformers>=4.40" "datasets>=2.19"
 torch>=2.2
 transformers>=4.40
 datasets>=2.19

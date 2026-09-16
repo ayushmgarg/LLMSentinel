@@ -37,6 +37,14 @@ class SplitConfig:
     dev: float = 0.15
     test: float = 0.15
     seed: int = DEFAULT_SEED
+    #: When True, benchmark sources (everything but the builtin seed) are split
+    #: at the level of connected (payload-family + host) components, with the
+    #: components stratified by label within each source. This guarantees every
+    #: source contributes both labels to dev and test -- fixing the confound where
+    #: a source's positives all landed in one split -- and drops no benchmark
+    #: record to a straddled boundary. The builtin seed keeps the per-key hash
+    #: assignment its generator plans against, so it is unaffected.
+    stratify_by_source: bool = False
 
     def __post_init__(self) -> None:
         total = self.train + self.dev + self.test
@@ -137,18 +145,139 @@ def assign_group_splits(keys: Iterable[str], config: SplitConfig) -> dict[str, S
     return {key: split_of_key(key, config) for key in sorted(set(keys))}
 
 
+#: The builtin seed keeps per-key hash assignment (its generator plans against
+#: it); other sources are eligible for component-level source stratification.
+_HASH_SOURCE = "builtin"
+
+
+def _quota_counts(n: int, config: SplitConfig) -> tuple[int, int, int]:
+    """Split a count of items into (train, dev, test), guaranteeing at least one
+    dev and one test item once there are enough to go round."""
+
+    if n <= 0:
+        return 0, 0, 0
+    if n == 1:
+        return 1, 0, 0
+    if n == 2:
+        return 1, 1, 0
+    n_test = max(1, round(n * config.test))
+    n_dev = max(1, round(n * config.dev))
+    while n_test + n_dev >= n:  # leave at least one for train
+        if n_test >= n_dev and n_test > 1:
+            n_test -= 1
+        elif n_dev > 1:
+            n_dev -= 1
+        else:
+            break
+    return n - n_dev - n_test, n_dev, n_test
+
+
+def _stratified_assignment(
+    records: Sequence[CorpusRecord], config: SplitConfig
+) -> dict[str, Split]:
+    """Assign grouping keys to splits, stratifying benchmark sources by
+    label-balanced connected components (see :attr:`SplitConfig.stratify_by_source`)."""
+
+    from collections import defaultdict
+
+    by_source: dict[str, list[CorpusRecord]] = defaultdict(list)
+    for record in records:
+        by_source[record.source_dataset].append(record)
+
+    assignment: dict[str, Split] = {}
+    for source, recs in by_source.items():
+        if source == _HASH_SOURCE:
+            for record in recs:
+                for key in (record.group_id, host_group_of(record)):
+                    assignment[key] = split_of_key(key, config)
+            continue
+
+        # Union payload-family and host keys into components so a kept record
+        # never straddles: both of its keys share a component, hence a split.
+        roots = _component_roots(
+            (record.group_id, host_group_of(record)) for record in recs
+        )
+        members: dict[str, list[CorpusRecord]] = defaultdict(list)
+        for record in recs:
+            members[roots[record.group_id]].append(record)
+
+        # Split components by label, each ordered by a stable per-component hash
+        # so the quota slice is deterministic but uncorrelated with label or size.
+        positive = sorted(
+            (c for c, rs in members.items() if any(r.y for r in rs)),
+            key=lambda c: _component_hash(source, c, config.seed),
+        )
+        benign = sorted(
+            (c for c, rs in members.items() if not any(r.y for r in rs)),
+            key=lambda c: _component_hash(source, c, config.seed),
+        )
+
+        for comp_list in (positive, benign):
+            n_train, n_dev, _n_test = _quota_counts(len(comp_list), config)
+            for index, comp in enumerate(comp_list):
+                if index < n_train:
+                    split = Split.TRAIN
+                elif index < n_train + n_dev:
+                    split = Split.DEV
+                else:
+                    split = Split.TEST
+                for record in members[comp]:
+                    for key in (record.group_id, host_group_of(record)):
+                        assignment[key] = split
+    return assignment
+
+
+def _component_roots(edges: Iterable[tuple[str, str]]) -> dict[str, str]:
+    """Union-find over (key_a, key_b) edges; returns each key's component root."""
+
+    parent: dict[str, str] = {}
+
+    def find(node: str) -> str:
+        parent.setdefault(node, node)
+        root = node
+        while parent[root] != root:
+            root = parent[root]
+        while parent[node] != root:
+            parent[node], node = root, parent[node]
+        return root
+
+    for a, b in edges:
+        parent[find(a)] = find(b)
+    return {key: find(key) for key in parent}
+
+
+def _component_hash(source: str, component: str, seed: int) -> float:
+    digest = hashlib.sha256(f"{seed}|{source}|{component}".encode()).digest()
+    return int.from_bytes(digest[:8], "big") / float(1 << 64)
+
+
 def apply_splits(
     records: Sequence[CorpusRecord], config: SplitConfig | None = None
 ) -> tuple[list[CorpusRecord], SplitManifest]:
     """Assign splits and drop records that straddle two splits."""
 
     config = config or SplitConfig()
+
+    if config.stratify_by_source:
+        assignments = _stratified_assignment(records, config)
+        return _apply_assignment(records, assignments, config)
+
     keys: list[str] = []
     for record in records:
         keys.append(record.group_id)
         keys.append(host_group_of(record))
 
     assignments = assign_group_splits(keys, config)
+    return _apply_assignment(records, assignments, config)
+
+
+def _apply_assignment(
+    records: Sequence[CorpusRecord],
+    assignments: dict[str, Split],
+    config: SplitConfig,
+) -> tuple[list[CorpusRecord], SplitManifest]:
+    """Keep records whose content and host keys share a split; build the manifest."""
+
     manifest = SplitManifest(
         seed=config.seed,
         ratios={"train": config.train, "dev": config.dev, "test": config.test},
@@ -179,9 +308,17 @@ def apply_splits(
 
 
 def corpus_digest(records: Sequence[CorpusRecord]) -> str:
-    """Content hash of a corpus, used as the ``data_version`` in experiment logs."""
+    """Content hash of a corpus, used as the ``data_version`` in experiment logs.
+
+    Hashes the full serialised record -- text, label, channel, attack type,
+    spans, host task, json path, split and id -- not just the id. An earlier
+    version hashed ids alone, so editing a record's text without changing its id
+    left the reported ``data_version`` unchanged; that is the bug this closes.
+    The digest value therefore differs from ids-only digests logged before
+    2026-09-10, which is expected and noted in the experiment log.
+    """
 
     digest = hashlib.sha256()
-    for record_id in sorted(record.record_id for record in records):
-        digest.update(record_id.encode("utf-8"))
+    for line in sorted(record.to_json() for record in records):
+        digest.update(line.encode("utf-8"))
     return digest.hexdigest()[:16]

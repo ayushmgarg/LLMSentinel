@@ -15,12 +15,14 @@ from typing import Final
 
 __all__ = [
     "ACTION_VERBS",
+    "ANSWER_SHAPING_PATTERNS",
     "ASSISTANT_ADDRESS_PATTERNS",
     "CITATION_MARKERS",
     "DESTINATION_PATTERNS",
     "DESTRUCTIVE_PATTERNS",
     "METADATA_PATTERNS",
     "META_INSTRUCTION_PATTERNS",
+    "PERSISTENCE_PATTERNS",
     "SECRECY_PATTERNS",
     "SENSITIVE_OBJECTS",
     "TOOL_INVOCATION_PATTERNS",
@@ -53,7 +55,10 @@ META_INSTRUCTION_PATTERNS: Final[NamedPatterns] = (
     ),
     (
         "ignore_the_instructions",
-        r"\b(ignore|disregard)\b\W+\b(the|any|all)\b\W+"
+        # Up to two modifiers may sit between the determiner and the noun
+        # ("disregard the operator instructions"); without this the pattern
+        # missed a whole payload family on the dev split.
+        r"\b(ignore|disregard)\b\W+\b(the|any|all)\b(?:\W+\w+){0,2}?\W+"
         r"\b(instruction|prompt|rule|guideline|restriction|policy|polic(?:y|ies))\w*\b",
         0.80,
     ),
@@ -96,6 +101,42 @@ META_INSTRUCTION_PATTERNS: Final[NamedPatterns] = (
         r"\b(take[s]?\s+precedence|override[s]?|supersede[s]?|are\s+more\s+important|"
         r"must\s+be\s+(?:followed|obeyed)|highest\s+priority)\b",
         0.88,
+    ),
+)
+
+#: Attempts to change the agent's behaviour *beyond the current turn*, or to
+#: claim an approval that was never given.  Added after dev-split error analysis
+#: showed whole payload families scoring zero (see docs/EXPERIMENTS.md); the
+#: patterns are written for the underlying move -- persisting a rule, asserting
+#: prior authorisation -- rather than for the corpus strings that exposed them.
+PERSISTENCE_PATTERNS: Final[NamedPatterns] = (
+    (
+        "persist_rule",
+        r"\b(?:store|save|remember|add|keep|record)\b(?:\W+\w+){0,6}?\W+"
+        r"\b(?:memory|preferences?|settings?|profile|rules?|instructions?)\b",
+        0.80,
+    ),
+    (
+        "future_conversations",
+        r"\b(?:in|for)\s+(?:every|all|any|each)\s+(?:future|subsequent|later|following)\s+"
+        r"(?:conversation|session|request|turn|interaction)s?\b"
+        r"|\bfrom\s+now\s+on\b(?:\W+\w+){0,6}?\W+\balways\b",
+        0.82,
+    ),
+    (
+        "claimed_preauthorisation",
+        r"\b(?:already|previously|pre-?)\s*(?:approved|authoris|authoriz|confirmed|permitted)\w*\b"
+        r"|\b(?:no|without)\s+(?:further\s+)?(?:confirmation|approval|permission)\s+"
+        r"(?:is\s+)?(?:required|needed|necessary)\b"
+        r"|\bskip\s+(?:the\s+)?(?:confirmation|approval|verification)\b"
+        # Passive phrasing is the natural way to say this inside a tool
+        # description ("the approval step can be skipped"), and the active-voice
+        # forms above missed it entirely on the dev split.
+        r"|\b(?:confirmation|approval|verification|permission)\s+(?:step\s+)?"
+        r"(?:can|may|need\s+not)\s+be\s+(?:skipped|omitted|bypassed|ignored|waived)\b"
+        r"|\b(?:confirmation|approval|verification)\s+(?:is|are)\s+not\s+"
+        r"(?:required|needed|necessary)\b",
+        0.85,
     ),
 )
 
@@ -149,6 +190,46 @@ ASSISTANT_ADDRESS_PATTERNS: Final[NamedPatterns] = (
         "task_reassignment",
         r"\byour\s+(?:only\s+)?(?:task|job|goal|instruction|objective)\s+is\s+(?:now\s+)?to\b",
         0.80,
+    ),
+)
+
+# --------------------------------------------------------- answer shaping
+#: Text that dictates *what the answer must claim* about the document carrying it.
+#: This is content manipulation without any exfiltration or tool call, and it was
+#: under-covered: the corpus taught the transformer blatant contradictions, so a
+#: polished, plausible claim scored far below the operating point (EXPERIMENTS,
+#: 2026-09-16).
+#:
+#: Both patterns are written for the *shape*, not for any sample text, and both
+#: demand more than an imperative, because ordinary policy and style guides are
+#: full of "when answering ..., always state ...":
+#:
+#: * ``answer_scoped_assertion`` needs the instruction to be scoped to the
+#:   document that carries it ("this page", "the following text"), which is what
+#:   makes it assistant-directed rather than a rule for a human writer;
+#: * ``assert_over_source`` needs the claim to be asserted *against* the source
+#:   ("whatever the document says"), which no honest document asks for.
+ANSWER_SHAPING_PATTERNS: Final[NamedPatterns] = (
+    (
+        "answer_scoped_assertion",
+        r"\b(?:when|while|before|whenever)\s+(?:you\s+)?"
+        r"(?:answer|answering|respond|responding|repl(?:y|ying)|summari[sz]e|summari[sz]ing|"
+        r"describ(?:e|ing)|explain(?:ing)?|discuss(?:ing)?|report(?:ing)?)\b"
+        r"[^.\n]{0,70}?\b(?:this|these|the\s+(?:above|following|present))\s+"
+        r"(?:document|text|page|article|passage|file|content|information|data|note|report|section)s?\b"
+        r"[^.\n]{0,70}?\b(?:always|must|should|only|instead|never)\b"
+        r"[^.\n]{0,40}?\b(?:state|say|claim|assert|report|mention|describe|present|tell|insist)\b",
+        0.82,
+    ),
+    (
+        "assert_over_source",
+        r"\b(?:state|say|claim|assert|report|describe|present|answer|respond|"
+        r"tell\s+(?:the\s+)?(?:user|reader|customer))\b"
+        r"[^.\n]{0,90}?\b(?:whatever|regardless\s+of|no\s+matter|even\s+if|irrespective\s+of)\b"
+        r"[^.\n]{0,50}?\b(?:document|text|page|article|passage|source|data|evidence|file|"
+        r"content|context|log|statement|section)s?\b"
+        r"[^.\n]{0,30}?\b(?:says?|states?|shows?|indicates?|contains?|claims?|suggests?|reads?)\b",
+        0.88,
     ),
 )
 

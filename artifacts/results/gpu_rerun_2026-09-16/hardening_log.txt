@@ -1,0 +1,211 @@
+== 1/5  Virtual environment ==
+== 2/5  Core dependencies ==
+Requirement already satisfied: pip in .\.venv\lib\site-packages (26.2.1)
+Obtaining file:///C:/Users/vikas/OneDrive/Desktop/LLMSentinel-a1/LLMSentinel-a1
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: numpy>=1.26 in .\.venv\lib\site-packages (from -r requirements.txt (line 3)) (2.2.6)
+Requirement already satisfied: scikit-learn>=1.4 in .\.venv\lib\site-packages (from -r requirements.txt (line 4)) (1.7.2)
+Requirement already satisfied: scipy>=1.11 in .\.venv\lib\site-packages (from -r requirements.txt (line 5)) (1.15.3)
+Requirement already satisfied: pyyaml>=6.0 in .\.venv\lib\site-packages (from -r requirements.txt (line 6)) (6.0.3)
+Requirement already satisfied: regex>=2024.4.16 in .\.venv\lib\site-packages (from -r requirements.txt (line 7)) (2026.9.10)
+Requirement already satisfied: joblib>=1.3 in .\.venv\lib\site-packages (from -r requirements.txt (line 8)) (1.6.0)
+Requirement already satisfied: streamlit>=1.34 in .\.venv\lib\site-packages (from -r requirements.txt (line 9)) (1.64.0)
+Requirement already satisfied: starlette>=1.6 in .\.venv\lib\site-packages (from -r requirements.txt (line 11)) (1.6.0)
+Requirement already satisfied: uvicorn>=0.52 in .\.venv\lib\site-packages (from -r requirements.txt (line 12)) (0.53.0)
+Requirement already satisfied: httpx>=0.28 in .\.venv\lib\site-packages (from -r requirements.txt (line 13)) (0.28.1)
+Requirement already satisfied: matplotlib>=3.8 in .\.venv\lib\site-packages (from -r requirements.txt (line 14)) (3.10.9)
+Requirement already satisfied: pandas>=2.2 in .\.venv\lib\site-packages (from -r requirements.txt (line 15)) (2.3.3)
+Requirement already satisfied: pytest>=8.0 in .\.venv\lib\site-packages (from -r requirements.txt (line 16)) (9.1.1)
+Requirement already satisfied: ruff>=0.4 in .\.venv\lib\site-packages (from -r requirements.txt (line 17)) (0.16.7)
+Requirement already satisfied: threadpoolctl>=3.1.0 in .\.venv\lib\site-packages (from scikit-learn>=1.4->-r requirements.txt (line 4)) (3.7.0)
+Requirement already satisfied: cloudpickle>=3.0 in .\.venv\lib\site-packages (from joblib>=1.3->-r requirements.txt (line 8)) (3.1.2)
+Requirement already satisfied: altair!=5.4.0,!=5.4.1,<7,>=5.0.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (6.2.2)
+Requirement already satisfied: click<9,>=7.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (8.5.0)
+Requirement already satisfied: packaging>=20 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (26.3)
+Requirement already satisfied: pillow<13,>=7.1.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (12.3.0)
+Requirement already satisfied: pydeck<1,>=0.8.0b4 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (0.9.3)
+Requirement already satisfied: protobuf<8,>=5.26.1 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (7.36.1)
+Requirement already satisfied: pyarrow!=25.0.0,<26,>=7.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (25.0.1)
+Requirement already satisfied: requests<3,>=2.27 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (2.34.2)
+Requirement already satisfied: toml<2,>=0.10.1 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (0.10.2)
+Requirement already satisfied: typing-extensions<5,>=4.10.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (4.16.0)
+Requirement already satisfied: httptools<1,>=0.6.3 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (0.8.0)
+Requirement already satisfied: anyio<5,>=4.0.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (4.15.1)
+Requirement already satisfied: python-multipart<1,>=0.0.10 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (0.0.32)
+Requirement already satisfied: websockets<17,>=12.0.0 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (16.1.1)
+Requirement already satisfied: itsdangerous<3,>=2.1.2 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (2.2.0)
+Requirement already satisfied: watchdog<7,>=2.1.5 in .\.venv\lib\site-packages (from streamlit>=1.34->-r requirements.txt (line 9)) (6.0.0)
+Requirement already satisfied: h11>=0.8 in .\.venv\lib\site-packages (from uvicorn>=0.52->-r requirements.txt (line 12)) (0.16.0)
+Requirement already satisfied: python-dateutil>=2.8.2 in .\.venv\lib\site-packages (from pandas>=2.2->-r requirements.txt (line 15)) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in .\.venv\lib\site-packages (from pandas>=2.2->-r requirements.txt (line 15)) (2026.3.post1)
+Requirement already satisfied: tzdata>=2022.7 in .\.venv\lib\site-packages (from pandas>=2.2->-r requirements.txt (line 15)) (2026.4)
+Requirement already satisfied: jinja2 in .\.venv\lib\site-packages (from altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (3.1.6)
+Requirement already satisfied: jsonschema>=3.0 in .\.venv\lib\site-packages (from altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (4.26.0)
+Requirement already satisfied: narwhals>=2.4.0 in .\.venv\lib\site-packages (from altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (2.26.0)
+Requirement already satisfied: exceptiongroup>=1.0.2 in .\.venv\lib\site-packages (from anyio<5,>=4.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (1.3.1)
+Requirement already satisfied: idna>=2.8 in .\.venv\lib\site-packages (from anyio<5,>=4.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (3.19)
+Requirement already satisfied: charset_normalizer<4,>=2 in .\.venv\lib\site-packages (from requests<3,>=2.27->streamlit>=1.34->-r requirements.txt (line 9)) (3.5.1)
+Requirement already satisfied: urllib3<3,>=1.26 in .\.venv\lib\site-packages (from requests<3,>=2.27->streamlit>=1.34->-r requirements.txt (line 9)) (2.8.0)
+Requirement already satisfied: certifi>=2023.5.7 in .\.venv\lib\site-packages (from requests<3,>=2.27->streamlit>=1.34->-r requirements.txt (line 9)) (2026.7.22)
+Requirement already satisfied: httpcore==1.* in .\.venv\lib\site-packages (from httpx>=0.28->-r requirements.txt (line 13)) (1.0.9)
+Requirement already satisfied: contourpy>=1.0.1 in .\.venv\lib\site-packages (from matplotlib>=3.8->-r requirements.txt (line 14)) (1.3.2)
+Requirement already satisfied: cycler>=0.10 in .\.venv\lib\site-packages (from matplotlib>=3.8->-r requirements.txt (line 14)) (0.12.1)
+Requirement already satisfied: fonttools>=4.22.0 in .\.venv\lib\site-packages (from matplotlib>=3.8->-r requirements.txt (line 14)) (4.65.0)
+Requirement already satisfied: kiwisolver>=1.3.1 in .\.venv\lib\site-packages (from matplotlib>=3.8->-r requirements.txt (line 14)) (1.5.1)
+Requirement already satisfied: pyparsing>=3 in .\.venv\lib\site-packages (from matplotlib>=3.8->-r requirements.txt (line 14)) (3.3.2)
+Requirement already satisfied: colorama>=0.4 in .\.venv\lib\site-packages (from pytest>=8.0->-r requirements.txt (line 16)) (0.4.6)
+Requirement already satisfied: iniconfig>=1.0.1 in .\.venv\lib\site-packages (from pytest>=8.0->-r requirements.txt (line 16)) (2.3.0)
+Requirement already satisfied: pluggy<2,>=1.5 in .\.venv\lib\site-packages (from pytest>=8.0->-r requirements.txt (line 16)) (1.6.0)
+Requirement already satisfied: pygments>=2.7.2 in .\.venv\lib\site-packages (from pytest>=8.0->-r requirements.txt (line 16)) (2.21.0)
+Requirement already satisfied: tomli>=1 in .\.venv\lib\site-packages (from pytest>=8.0->-r requirements.txt (line 16)) (2.4.1)
+Requirement already satisfied: MarkupSafe>=2.0 in .\.venv\lib\site-packages (from jinja2->altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (3.0.3)
+Requirement already satisfied: attrs>=22.2.0 in .\.venv\lib\site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (26.1.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in .\.venv\lib\site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (2025.9.1)
+Requirement already satisfied: referencing>=0.28.4 in .\.venv\lib\site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (0.37.0)
+Requirement already satisfied: rpds-py>=0.25.0 in .\.venv\lib\site-packages (from jsonschema>=3.0->altair!=5.4.0,!=5.4.1,<7,>=5.0.0->streamlit>=1.34->-r requirements.txt (line 9)) (0.30.0)
+Requirement already satisfied: six>=1.5 in .\.venv\lib\site-packages (from python-dateutil>=2.8.2->pandas>=2.2->-r requirements.txt (line 15)) (1.17.0)
+Building wheels for collected packages: llmsentinel
+  Building editable for llmsentinel (pyproject.toml): started
+  Building editable for llmsentinel (pyproject.toml): finished with status 'done'
+  Created wheel for llmsentinel: filename=llmsentinel-0.1.0-0.editable-py3-none-any.whl size=8915 sha256=7e742da1238df00af4d639637171755e68c777470a09dd36f8e35c9d7b675b0c
+  Stored in directory: C:\Users\vikas\AppData\Local\Temp\pip-ephem-wheel-cache-t8mpu_u8\wheels\76\d3\94\93ec4d763f933ec7c415cb7fe12a72a7ad7ca0352a0c71373f
+Successfully built llmsentinel
+Installing collected packages: llmsentinel
+  Attempting uninstall: llmsentinel
+    Found existing installation: llmsentinel 0.1.0
+    Uninstalling llmsentinel-0.1.0:
+      Successfully uninstalled llmsentinel-0.1.0
+Successfully installed llmsentinel-0.1.0
+== 3/5  Transformer extra (torch from the PyTorch index, then the rest) ==
+   NVIDIA GPU detected -> CUDA build (cu121)
+Looking in indexes: https://download.pytorch.org/whl/cu121
+Requirement already satisfied: torch>=2.2 in .\.venv\lib\site-packages (2.5.1+cu121)
+Requirement already satisfied: filelock in .\.venv\lib\site-packages (from torch>=2.2) (3.32.3)
+Requirement already satisfied: typing-extensions>=4.8.0 in .\.venv\lib\site-packages (from torch>=2.2) (4.16.0)
+Requirement already satisfied: networkx in .\.venv\lib\site-packages (from torch>=2.2) (3.4.2)
+Requirement already satisfied: jinja2 in .\.venv\lib\site-packages (from torch>=2.2) (3.1.6)
+Requirement already satisfied: fsspec in .\.venv\lib\site-packages (from torch>=2.2) (2026.6.0)
+Requirement already satisfied: sympy==1.13.1 in .\.venv\lib\site-packages (from torch>=2.2) (1.13.1)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in .\.venv\lib\site-packages (from sympy==1.13.1->torch>=2.2) (1.3.0)
+Requirement already satisfied: MarkupSafe>=2.0 in .\.venv\lib\site-packages (from jinja2->torch>=2.2) (3.0.3)
+Requirement already satisfied: transformers>=4.40 in .\.venv\lib\site-packages (5.17.0)
+Requirement already satisfied: datasets>=2.19 in .\.venv\lib\site-packages (5.0.1)
+Requirement already satisfied: huggingface-hub<2.0,>=1.5.0 in .\.venv\lib\site-packages (from transformers>=4.40) (1.31.0)
+Requirement already satisfied: numpy>=1.17 in .\.venv\lib\site-packages (from transformers>=4.40) (2.2.6)
+Requirement already satisfied: packaging>=20.0 in .\.venv\lib\site-packages (from transformers>=4.40) (26.3)
+Requirement already satisfied: pyyaml>=5.1 in .\.venv\lib\site-packages (from transformers>=4.40) (6.0.3)
+Requirement already satisfied: regex>=2025.10.22 in .\.venv\lib\site-packages (from transformers>=4.40) (2026.9.10)
+Requirement already satisfied: tokenizers<0.24.0,>=0.23.1 in .\.venv\lib\site-packages (from transformers>=4.40) (0.23.2)
+Requirement already satisfied: typer in .\.venv\lib\site-packages (from transformers>=4.40) (0.27.2)
+Requirement already satisfied: safetensors>=0.8.0 in .\.venv\lib\site-packages (from transformers>=4.40) (0.8.0)
+Requirement already satisfied: tqdm>=4.60 in .\.venv\lib\site-packages (from transformers>=4.40) (4.70.1)
+Requirement already satisfied: click<9.0.0,>=8.4.2 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (8.5.0)
+Requirement already satisfied: filelock>=3.10.0 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (3.32.3)
+Requirement already satisfied: fsspec>=2023.5.0 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (2026.6.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.5.2 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (1.6.0)
+Requirement already satisfied: httpx<1,>=0.23.0 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (0.28.1)
+Requirement already satisfied: typing-extensions>=4.1.0 in .\.venv\lib\site-packages (from huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (4.16.0)
+Requirement already satisfied: anyio in .\.venv\lib\site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (4.15.1)
+Requirement already satisfied: certifi in .\.venv\lib\site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (2026.7.22)
+Requirement already satisfied: httpcore==1.* in .\.venv\lib\site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (1.0.9)
+Requirement already satisfied: idna in .\.venv\lib\site-packages (from httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (3.19)
+Requirement already satisfied: h11>=0.16 in .\.venv\lib\site-packages (from httpcore==1.*->httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (0.16.0)
+Requirement already satisfied: pyarrow>=21.0.0 in .\.venv\lib\site-packages (from datasets>=2.19) (25.0.1)
+Requirement already satisfied: dill<0.4.2,>=0.3.0 in .\.venv\lib\site-packages (from datasets>=2.19) (0.4.1)
+Requirement already satisfied: pandas in .\.venv\lib\site-packages (from datasets>=2.19) (2.3.3)
+Requirement already satisfied: requests>=2.32.2 in .\.venv\lib\site-packages (from datasets>=2.19) (2.34.2)
+Requirement already satisfied: xxhash in .\.venv\lib\site-packages (from datasets>=2.19) (4.0.1)
+Requirement already satisfied: multiprocess<0.70.20 in .\.venv\lib\site-packages (from datasets>=2.19) (0.70.19)
+Requirement already satisfied: aiohttp!=4.0.0a0,!=4.0.0a1 in .\.venv\lib\site-packages (from fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (3.14.3)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (1.4.0)
+Requirement already satisfied: async-timeout<6.0,>=4.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (5.0.1)
+Requirement already satisfied: attrs>=17.3.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (1.8.0)
+Requirement already satisfied: multidict<7.0,>=4.5 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (6.8.0)
+Requirement already satisfied: propcache>=0.2.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (0.5.4)
+Requirement already satisfied: yarl<2.0,>=1.17.0 in .\.venv\lib\site-packages (from aiohttp!=4.0.0a0,!=4.0.0a1->fsspec[http]<=2026.6.0,>=2023.1.0->datasets>=2.19) (1.25.1)
+Requirement already satisfied: charset_normalizer<4,>=2 in .\.venv\lib\site-packages (from requests>=2.32.2->datasets>=2.19) (3.5.1)
+Requirement already satisfied: urllib3<3,>=1.26 in .\.venv\lib\site-packages (from requests>=2.32.2->datasets>=2.19) (2.8.0)
+Requirement already satisfied: colorama in .\.venv\lib\site-packages (from tqdm>=4.60->transformers>=4.40) (0.4.6)
+Requirement already satisfied: exceptiongroup>=1.0.2 in .\.venv\lib\site-packages (from anyio->httpx<1,>=0.23.0->huggingface-hub<2.0,>=1.5.0->transformers>=4.40) (1.3.1)
+Requirement already satisfied: python-dateutil>=2.8.2 in .\.venv\lib\site-packages (from pandas->datasets>=2.19) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in .\.venv\lib\site-packages (from pandas->datasets>=2.19) (2026.3.post1)
+Requirement already satisfied: tzdata>=2022.7 in .\.venv\lib\site-packages (from pandas->datasets>=2.19) (2026.4)
+Requirement already satisfied: six>=1.5 in .\.venv\lib\site-packages (from python-dateutil>=2.8.2->pandas->datasets>=2.19) (1.17.0)
+Requirement already satisfied: shellingham>=1.3.0 in .\.venv\lib\site-packages (from typer->transformers>=4.40) (1.5.4)
+Requirement already satisfied: rich>=13.8.0 in .\.venv\lib\site-packages (from typer->transformers>=4.40) (15.0.0)
+Requirement already satisfied: annotated-doc>=0.0.2 in .\.venv\lib\site-packages (from typer->transformers>=4.40) (0.0.5)
+Requirement already satisfied: markdown-it-py>=2.2.0 in .\.venv\lib\site-packages (from rich>=13.8.0->typer->transformers>=4.40) (4.2.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in .\.venv\lib\site-packages (from rich>=13.8.0->typer->transformers>=4.40) (2.21.0)
+Requirement already satisfied: mdurl~=0.1 in .\.venv\lib\site-packages (from markdown-it-py>=2.2.0->rich>=13.8.0->typer->transformers>=4.40) (0.1.2)
+== 4/5  Baselines on both hardening sets (fast) ==
+
+=== held out: injecagent === train=1886 dev=450 test=376 ood=1070 digests={'indist': '444a988f2b69cac5', 'ood': '59a18622de216194'}
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| majority | 0.396 | 0.314 | 0.985 (n/i) | n/i | 0.000 | 0.0000 |
+| keyword | 0.389 | 0.316 | 0.985 (n/i) | n/i | 0.000 | 0.0000 |
+| tfidf-word | 0.589 | 0.591 | 0.996 (n/i) | n/i | 0.000 | 0.0000 |
+| tfidf-word+char | 0.553 | 0.582 | 0.995 (n/i) | n/i | 0.000 | 0.0000 |
+| rules-only | 0.564 | 0.538 | 0.986 (n/i) | n/i | 0.000 | 0.0000 |
+
+_OOD `ood:injecagent`: 1070 records, 1054 injection / 16 benign (prevalence 98.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+saved artifacts/results/ood/injecagent/ood_baselines.json
+
+=== held out: bipia === train=1992 dev=208 test=203 ood=1379 digests={'indist': '7bf9438e69e90000', 'ood': 'ce9096695512a1fa'}
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| majority | 0.279 | 0.286 | 0.435 | +0.149 | 0.000 | 0.0000 |
+| keyword | 0.279 | 0.293 | 0.435 | +0.142 | 0.000 | 0.0000 |
+| tfidf-word | 0.656 | 0.660 | 0.564 | -0.096 | 0.000 | 0.0000 |
+| tfidf-word+char | 0.663 | 0.697 | 0.581 | -0.117 | 0.002 | 0.0000 |
+| rules-only | 0.792 | 0.714 | 0.469 | -0.245 | 0.050 | 0.0218 OVER |
+
+_OOD `ood:bipia`: 1379 records, 600 injection / 779 benign (prevalence 43.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+saved artifacts/results/ood/bipia/ood_baselines.json
+== 5/5  Transformer, 3 seeds x 2 held-out sources (InjecAgent, BIPIA) ==
+
+=== held out: injecagent === train=1886 dev=450 test=376 ood=1070 digests={'indist': '444a988f2b69cac5', 'ood': '59a18622de216194'}
+transformer(seed=20250909): test AUPRC 0.972 | OOD AUPRC 0.994 | OOD recall@1% 0.000 (cuda)
+transformer(seed=20250910): test AUPRC 0.982 | OOD AUPRC 0.994 | OOD recall@1% 0.000 (cuda)
+transformer(seed=20250911): test AUPRC 0.987 | OOD AUPRC 0.992 | OOD recall@1% 0.000 (cuda)
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| transformer(seed=20250909) | 0.941 | 0.972 | 0.994 (n/i) | n/i | 0.000 | 0.0000 |
+| transformer(seed=20250910) | 0.965 | 0.982 | 0.994 (n/i) | n/i | 0.000 | 0.0000 |
+| transformer(seed=20250911) | 0.972 | 0.987 | 0.992 (n/i) | n/i | 0.000 | 0.0000 |
+
+_OOD `ood:injecagent`: 1070 records, 1054 injection / 16 benign (prevalence 98.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+
+transformer across 3 seeds: test AUPRC 0.9803 +/- 0.0066 | OOD AUPRC 0.9934 +/- 0.0009 | OOD recall@1% 0.0 +/- 0.0
+saved artifacts/results/ood/injecagent/ood_transformer.json
+
+=== held out: bipia === train=1992 dev=208 test=203 ood=1379 digests={'indist': '7bf9438e69e90000', 'ood': 'ce9096695512a1fa'}
+transformer(seed=20250909): test AUPRC 0.890 | OOD AUPRC 0.719 | OOD recall@1% 0.087 (cuda)
+transformer(seed=20250910): test AUPRC 0.845 | OOD AUPRC 0.676 | OOD recall@1% 0.027 (cuda)
+transformer(seed=20250911): test AUPRC 0.846 | OOD AUPRC 0.626 | OOD recall@1% 0.020 (cuda)
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | shift | OOD recall @dev 1%-FPR thr | OOD realised FPR |
+|---|---|---|---|---|---|---|
+| transformer(seed=20250909) | 0.726 | 0.890 | 0.719 | -0.172 | 0.087 | 0.0077 |
+| transformer(seed=20250910) | 0.653 | 0.845 | 0.676 | -0.170 | 0.027 | 0.0000 |
+| transformer(seed=20250911) | 0.703 | 0.846 | 0.626 | -0.220 | 0.020 | 0.0026 |
+
+_OOD `ood:bipia`: 1379 records, 600 injection / 779 benign (prevalence 43.5%). Thresholds are the dev operating points; `n/i` marks an AUPRC dominated by class balance (either class < 30 or prevalence outside 10-90%)._
+
+transformer across 3 seeds: test AUPRC 0.8605 +/- 0.0212 | OOD AUPRC 0.6734 +/- 0.038 | OOD recall@1% 0.0444 +/- 0.03
+saved artifacts/results/ood/bipia/ood_transformer.json
+
+DONE. Send this whole folder back to Ayush:
+  artifacts\results\ood\   (injecagent\ and bipia\ JSON results)

@@ -23,7 +23,12 @@ from ..schema import Channel
 from .action import DestructiveActionRule, ToolInvocationRule
 from .base import Rule, RuleError, RuleFamily, RuleHit, RuleReport
 from .exfiltration import ExfiltrationRule
-from .meta_instruction import AssistantAddressRule, MetaInstructionRule, SecrecyRule
+from .meta_instruction import (
+    AnswerShapingRule,
+    AssistantAddressRule,
+    MetaInstructionRule,
+    SecrecyRule,
+)
 from .metadata import ToolMetadataRule
 from .obfuscation import ObfuscationRule
 from .task_conflict import TaskConflictRule
@@ -42,6 +47,7 @@ def default_rules() -> list[Rule]:
     return [
         MetaInstructionRule(),
         SecrecyRule(),
+        AnswerShapingRule(),
         AssistantAddressRule(),
         ObfuscationRule(),
         ExfiltrationRule(),

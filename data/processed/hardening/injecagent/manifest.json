@@ -1,0 +1,90 @@
+{
+  "config": {
+    "bipia_max_benign": 1100,
+    "bipia_max_hosts_per_attack": 4,
+    "bipia_max_positive": 1100,
+    "held_out": "injecagent",
+    "injecagent_max_benign": 1000000,
+    "injecagent_max_positive": 1000000,
+    "near_duplicate_threshold": 0.85,
+    "seed": 20250909,
+    "thicken_metadata": true
+  },
+  "counts": {
+    "dev": {
+      "bipia": {
+        "benign": 122,
+        "injection": 120
+      },
+      "builtin": {
+        "benign": 150,
+        "injection": 58
+      }
+    },
+    "ood": {
+      "injecagent": {
+        "benign": 16,
+        "injection": 1054
+      }
+    },
+    "test": {
+      "bipia": {
+        "benign": 113,
+        "injection": 60
+      },
+      "builtin": {
+        "benign": 145,
+        "injection": 58
+      }
+    },
+    "train": {
+      "bipia": {
+        "benign": 544,
+        "injection": 420
+      },
+      "builtin": {
+        "benign": 651,
+        "injection": 271
+      }
+    }
+  },
+  "digests": {
+    "indist": "444a988f2b69cac5",
+    "ood": "59a18622de216194"
+  },
+  "exact_duplicates_removed": 3343,
+  "leakage_indist_ok": true,
+  "ood_near_duplicates_dropped": 0,
+  "ood_shared_key_dropped": 0,
+  "ood_support": {
+    "negatives": 16,
+    "positives": 1054,
+    "prevalence": 0.985
+  },
+  "pool_cross_group_dropped": 0,
+  "sizes": {
+    "dev": 450,
+    "ood": 1070,
+    "test": 376,
+    "train": 1886
+  },
+  "skipped_sources": [],
+  "tool_metadata": {
+    "dev": {
+      "benign": 44,
+      "injection": 18
+    },
+    "ood": {
+      "benign": 0,
+      "injection": 0
+    },
+    "test": {
+      "benign": 54,
+      "injection": 18
+    },
+    "train": {
+      "benign": 209,
+      "injection": 84
+    }
+  }
+}

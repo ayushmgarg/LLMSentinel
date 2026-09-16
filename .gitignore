@@ -1,0 +1,38 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Trained model checkpoints — large binaries, distributed via GitHub Releases,
+# rebuilt by scripts/train_transformer.py. See docs/EXPERIMENTS.md for the seed.
+artifacts/models/
+
+# Downloaded third-party benchmark sources — cloned locally, never redistributed.
+data/raw/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Release artifacts (uploaded to GitHub Releases, not tracked)
+dist/
+
+# Demo server log
+artifacts/results/streamlit.log
+
+# Local analyst history (machine state: scans, reviews, alerts)
+artifacts/analyst/
+
+# Local score-test-once ledgers (machine state, not shared evidence)
+artifacts/results/test_runs.json
+artifacts/results/ood/test_runs.json
+src/*.egg-info/
+
+# Raw GPU delivery as received (integrated copies live under artifacts/)
+LLMSentinel-delivery/

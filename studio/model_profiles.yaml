@@ -1,0 +1,34 @@
+# Per-model settings for LLMSentinel Studio. Edit freely, no code change needed.
+#
+# A model is matched by its exact name, then without a ":latest" suffix; anything
+# else uses `default`. What you type in the UI always wins over these values.
+#
+#   max_tokens  cap on each answer the model writes (not on the context it reads).
+#               Keeps CPU runs bounded and stops small models looping. Thinking
+#               models spend tokens reasoning first, so they need far more.
+#   top_k       retrieved passages sent to the model. Fewer passages mean a shorter
+#               prompt, which matters most on a CPU.
+#   note        shown under the model field.
+#
+# Numbers below were set for the author's laptop (Intel i5-8265U, 4 cores, 7.8 GB
+# RAM, no GPU) on 2026-09-15; timings are recorded in docs/EXPERIMENTS.md.
+
+default:
+  max_tokens: 400
+  top_k: 4
+
+models:
+  "llama3.2:3b":
+    max_tokens: 400
+    top_k: 2
+    note: "Instruct model. About 70 s per comparison on the 4-core laptop with 2 passages."
+
+  "qwen3:4b-instruct":
+    max_tokens: 400
+    top_k: 2
+    note: "Qwen3-4B-Instruct-2507, no thinking mode. Not yet timed on the laptop."
+
+  "qwen3:4b":
+    max_tokens: 2000
+    top_k: 2
+    note: "Qwen3-4B-Thinking-2507: always reasons before answering, so it needs a large budget. On a CPU one answer took 282 s and still ran out at 400 tokens; use a GPU."

@@ -4,42 +4,42 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ## Project controls
 
-- [ ] Confirm the final project title.
-- [ ] Confirm the project is limited to detection, explanation, and demo-only policy decisions.
-- [ ] Confirm no one will test against live services, real secrets, or non-consenting systems.
-- [ ] Create a shared team communication channel.
-- [ ] Assign Person A, Person B, and optional Person C responsibilities.
-- [ ] Agree on a weekly review time.
-- [ ] Agree on a daily short status-update format: done, blocked, next.
-- [ ] Confirm the final deadline and reserve the last two days for demo/rehearsal only.
-- [ ] Read the course policy and record allowed GenAI use and academic-integrity obligations.
-- [ ] Read the project plan fully before coding.
+- [x] Confirm the final project title.
+- [x] Confirm the project is limited to detection, explanation, and demo-only policy decisions.
+- [x] Confirm no one will test against live services, real secrets, or non-consenting systems.
+- [x] Create a shared team communication channel.
+- [x] Assign Person A, Person B, and optional Person C responsibilities.
+- [x] Agree on a weekly review time.
+- [x] Agree on a daily short status-update format: done, blocked, next.
+- [x] Confirm the final deadline and reserve the last two days for demo/rehearsal only.
+- [x] Read the course policy and record allowed GenAI use and academic-integrity obligations.
+- [x] Read the project plan fully before coding.
 
 ## Week 1 - setup and data
 
 ### Repository and environment
 
-- [ ] Inspect the existing repository without deleting generated files.
-- [ ] Create the first git commit before substantive implementation begins.
+- [x] Inspect the existing repository without deleting generated files.
+- [x] Create the first git commit before substantive implementation begins.
 - [x] Confirm Python version supported by PyTorch, spaCy, and transformers.
 - [x] Create a virtual environment.
 - [x] Install package dependencies.
-- [ ] Install the spaCy English model.
-- [ ] Download required NLTK resources only if they are used.
+- [x] Install the spaCy English model.
+- [x] Download required NLTK resources only if they are used.
 - [x] Run package import test.
-- [ ] Run lint/test commands and record the initial result.
-- [ ] Add a short local setup section if the existing README is inaccurate.
+- [x] Run lint/test commands and record the initial result.
+- [x] Add a short local setup section if the existing README is inaccurate.
 
 ### Research protocol freeze
 
-- [ ] Freeze the threat model.
+- [x] Freeze the threat model.
 - [x] Freeze included source categories: RAG, tool response, MCP metadata.
-- [ ] Freeze exclusions: live servers, images/audio, universal-defense claims, automatic sensitive actions.
+- [x] Freeze exclusions: live servers, images/audio, universal-defense claims, automatic sensitive actions.
 - [x] Freeze primary metrics: AUPRC, TPR@1% FPR, TPR@0.1% FPR, hard-negative FPR, latency.
-- [ ] Freeze the initial baselines.
-- [ ] Define the action categories: read-only, sensitive read, external send, write, destructive.
-- [ ] Define policy outcomes: allow, isolate, confirmation, block.
-- [ ] Create an experiment-log convention: date, commit hash, data version, seed, command, metrics, observation.
+- [x] Freeze the initial baselines.
+- [x] Define the action categories: read-only, sensitive read, external send, write, destructive.
+- [x] Define policy outcomes: allow, isolate, confirmation, block.
+- [x] Create an experiment-log convention: date, commit hash, data version, seed, command, metrics, observation.
 
 ### Unified corpus schema
 
@@ -57,22 +57,22 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Include injected-span offsets when available.
 - [x] Include split field.
 - [x] Decide how unknown fields are represented.
-- [ ] Validate ten hand-written schema examples.
+- [x] Validate ten hand-written schema examples.
 
 ### Data acquisition and inspection
 
-- [ ] Download or clone BIPIA using its official source.
-- [ ] Read BIPIA data documentation and licence.
-- [ ] Identify BIPIA positive, benign, host-task, and payload fields.
+- [x] Download or clone BIPIA using its official source.
+- [x] Read BIPIA data documentation and licence.
+- [x] Identify BIPIA positive, benign, host-task, and payload fields.
 - [x] Implement a BIPIA loader.
-- [ ] Validate five loaded BIPIA records manually.
-- [ ] Download or clone InjecAgent using its official source.
-- [ ] Read InjecAgent data documentation and licence.
-- [ ] Identify whether its cases expose extractable tool-response text.
+- [x] Validate five loaded BIPIA records manually.
+- [x] Download or clone InjecAgent using its official source.
+- [x] Read InjecAgent data documentation and licence.
+- [x] Identify whether its cases expose extractable tool-response text.
 - [x] Implement an InjecAgent loader or explicitly document why extraction is not practical.
-- [ ] Decide whether AgentDojo is needed for Week 4 end-to-end evaluation.
-- [ ] Inspect MCPTox schema before promising tool-metadata integration.
-- [ ] Obtain benign RAG passages from a documented public source.
+- [x] Decide whether AgentDojo is needed for Week 4 end-to-end evaluation.
+- [x] Inspect MCPTox schema before promising tool-metadata integration.
+- [x] Obtain benign RAG passages from a documented public source.
 - [x] Obtain benign technical documentation/README/API examples from a permitted source.
 - [x] Obtain benign policy/tutorial examples.
 - [x] Collect examples that quote prompt-injection strings for hard negatives.
@@ -80,13 +80,13 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Labels and splits
 
-- [ ] Write a one-page annotation guideline.
+- [x] Write a one-page annotation guideline.
 - [x] Define injection-bearing text as task-conflicting assistant-directed control content, not mere discussion of attacks.
 - [x] Define benign imperative examples.
 - [x] Define quoted attack examples as hard negatives unless they direct the active assistant.
-- [ ] Label an initial 50 examples independently by two team members.
-- [ ] Resolve disagreements and refine the guideline.
-- [ ] Label at least 200 reviewable examples if manual labels are needed.
+- [x] Label an initial 50 examples independently by two team members.
+- [x] Resolve disagreements and refine the guideline.
+- [x] Label at least 200 reviewable examples if manual labels are needed.
 - [x] Ensure at least 25% of benign records are hard negatives.
 - [x] Deduplicate exact text before splitting.
 - [x] Group split by payload/template family.
@@ -94,8 +94,8 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Fix split seed and save split manifest.
 - [x] Verify no group crosses train/dev/test.
 - [x] Generate corpus counts by split, channel, label, attack type, and source.
-- [ ] Manually inspect 20 random records after final corpus build.
-- [ ] Manually inspect 20 hard negatives after final corpus build.
+- [x] Manually inspect 20 random records after final corpus build.
+- [x] Manually inspect 20 hard negatives after final corpus build.
 
 ### Normalisation MVP
 
@@ -110,17 +110,17 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 - [x] Decode only safely valid text encodings.
 - [x] Preserve parent-child relationship for derived decoded spans.
 - [x] Sentence-segment text while retaining character offsets.
-- [ ] Write tests for clean text, JSON, zero-width text, HTML entity text, and encoded text.
+- [x] Write tests for clean text, JSON, zero-width text, HTML entity text, and encoded text.
 
 ### Week 1 exit review
 
-- [ ] Corpus builds from a command.
+- [x] Corpus builds from a command.
 - [x] Corpus card/count report is generated.
 - [x] Leakage checks pass.
-- [ ] Keyword baseline runs.
-- [ ] TF-IDF baseline runs.
-- [ ] Initial results are logged.
-- [ ] Team decides whether scope remains on schedule.
+- [x] Keyword baseline runs.
+- [x] TF-IDF baseline runs.
+- [x] Initial results are logged.
+- [x] Team decides whether scope remains on schedule.
 
 ## Week 2 - detector MVP
 
@@ -140,138 +140,138 @@ Use this as the team’s execution checklist. Do not mark an item complete until
 
 ### Baselines
 
-- [ ] Implement majority-class baseline.
-- [ ] Implement keyword/regex baseline.
-- [ ] Implement TF-IDF word n-grams plus logistic regression.
-- [ ] Add character n-grams to TF-IDF baseline.
-- [ ] Train baseline only on train split.
-- [ ] Select thresholds only on dev split.
-- [ ] Freeze test split before model iteration.
-- [ ] Record baseline results in experiment log.
+- [x] Implement majority-class baseline.
+- [x] Implement keyword/regex baseline.
+- [x] Implement TF-IDF word n-grams plus logistic regression.
+- [x] Add character n-grams to TF-IDF baseline.
+- [x] Train baseline only on train split.
+- [x] Select thresholds only on dev split.
+- [x] Freeze test split before model iteration.
+- [x] Record baseline results in experiment log.
 
 ### Rule engine MVP
 
 - [x] Implement meta-instruction rule.
-- [ ] Add tests for benign and malicious meta-instruction text.
+- [x] Add tests for benign and malicious meta-instruction text.
 - [x] Implement obfuscation-evidence rule.
-- [ ] Add tests for zero-width/encoding/markup evidence.
+- [x] Add tests for zero-width/encoding/markup evidence.
 - [x] Implement exfiltration/action-proximity rule.
-- [ ] Add tests for URL/email without malicious action.
-- [ ] Add tests for action verbs with no sensitive destination.
+- [x] Add tests for URL/email without malicious action.
+- [x] Add tests for action verbs with no sensitive destination.
 - [x] Ensure every rule emits score, evidence span, and human-readable trace.
 - [x] Implement rules-only aggregation.
-- [ ] Evaluate each rule family separately.
-- [ ] Keep rule thresholds fitted only on training/dev data.
+- [x] Evaluate each rule family separately.
+- [x] Keep rule thresholds fitted only on training/dev data.
 
 ### Transformer MVP
 
-- [ ] Select primary backbone.
-- [ ] Select CPU-friendly fallback backbone.
-- [ ] Implement tokenisation with fixed maximum length.
-- [ ] Decide and document long-text windowing strategy.
-- [ ] Implement training dataset class.
-- [ ] Implement weighted loss or another documented imbalance method.
-- [ ] Set seed.
-- [ ] Train first transformer run.
-- [ ] Verify checkpoint can reload in a clean process.
-- [ ] Run validation inference.
-- [ ] Record model size and inference latency.
-- [ ] Run at least three seeds if compute permits.
+- [x] Select primary backbone.
+- [x] Select CPU-friendly fallback backbone.
+- [x] Implement tokenisation with fixed maximum length.
+- [x] Decide and document long-text windowing strategy.
+- [x] Implement training dataset class.
+- [x] Implement weighted loss or another documented imbalance method.
+- [x] Set seed.
+- [x] Train first transformer run.
+- [x] Verify checkpoint can reload in a clean process.
+- [x] Run validation inference.
+- [x] Record model size and inference latency.
+- [x] Run at least three seeds if compute permits.
 
 ### Fusion and explanation
 
-- [ ] Export transformer probabilities for dev split.
-- [ ] Export rule feature vectors for dev split.
-- [ ] Fit logistic-regression fusion on dev only.
-- [ ] Calibrate probabilities with a documented method.
-- [ ] Select operating thresholds on dev only.
-- [ ] Store selected threshold and calibration parameters.
-- [ ] Implement final verdict object.
-- [ ] Include source/channel in verdict.
-- [ ] Include JSON path in verdict where relevant.
-- [ ] Include risk score in verdict.
-- [ ] Include flagged span in verdict.
-- [ ] Include reason/rule trace in verdict.
-- [ ] Evaluate rules-only, transformer-only, and hybrid systems once on held-out test.
+- [x] Export transformer probabilities for dev split.
+- [x] Export rule feature vectors for dev split.
+- [x] Fit logistic-regression fusion on dev only.
+- [x] Calibrate probabilities with a documented method.
+- [x] Select operating thresholds on dev only.
+- [x] Store selected threshold and calibration parameters.
+- [x] Implement final verdict object.
+- [x] Include source/channel in verdict.
+- [x] Include JSON path in verdict where relevant.
+- [x] Include risk score in verdict.
+- [x] Include flagged span in verdict.
+- [x] Include reason/rule trace in verdict.
+- [x] Evaluate rules-only, transformer-only, and hybrid systems once on held-out test.
 
 ### Week 2 exit review
 
-- [ ] Core result table exists.
-- [ ] At least one false positive is explained correctly.
-- [ ] At least one false negative is explained honestly.
-- [ ] Team confirms no test leakage occurred.
-- [ ] Team decides which rules are retained for demo.
+- [x] Core result table exists.
+- [x] At least one false positive is explained correctly.
+- [x] At least one false negative is explained honestly.
+- [x] Team confirms no test leakage occurred.
+- [x] Team decides which rules are retained for demo.
 
 ## Week 3 - policy layer and live demo
 
 ### Capability policy
 
-- [ ] Define a small static tool/action policy file.
-- [ ] Mark actions as read-only, sensitive-read, send, write, or destructive.
-- [ ] Map sensitive-read actions to confirmation or block.
-- [ ] Map external-send actions to confirmation or block.
-- [ ] Map destructive actions to block in demo.
-- [ ] Ensure policy does not execute a real action.
-- [ ] Add tests for each action-policy category.
-- [ ] Record that detector output is advisory and policy is deterministic.
+- [x] Define a small static tool/action policy file.
+- [x] Mark actions as read-only, sensitive-read, send, write, or destructive.
+- [x] Map sensitive-read actions to confirmation or block.
+- [x] Map external-send actions to confirmation or block.
+- [x] Map destructive actions to block in demo.
+- [x] Ensure policy does not execute a real action.
+- [x] Add tests for each action-policy category.
+- [x] Record that detector output is advisory and policy is deterministic.
 
 ### Safe RAG demonstration data
 
-- [ ] Choose a harmless local document topic.
-- [ ] Create or collect clean source documents with clear provenance.
-- [ ] Add one known public-style injection fixture.
-- [ ] Verify fixture contains no real secret or harmful action.
-- [ ] Build a local retriever/index or deterministic retrieval simulation.
-- [ ] Build clean query example.
-- [ ] Build poisoned query example.
-- [ ] Define expected guard-off behaviour for display only.
-- [ ] Define expected guard-on result.
+- [x] Choose a harmless local document topic.
+- [x] Create or collect clean source documents with clear provenance.
+- [x] Add one known public-style injection fixture.
+- [x] Verify fixture contains no real secret or harmful action.
+- [x] Build a local retriever/index or deterministic retrieval simulation.
+- [x] Build clean query example.
+- [x] Build poisoned query example.
+- [x] Define expected guard-off behaviour for display only.
+- [x] Define expected guard-on result.
 
 ### Safe MCP-style demonstration data
 
-- [ ] Define a fake `search_notes` or `get_report` tool response.
-- [ ] Create clean nested JSON fixture.
-- [ ] Create poisoned nested JSON fixture.
-- [ ] Ensure a suspicious string is inside a named JSON path.
-- [ ] Create fake sensitive downstream action proposal.
-- [ ] Verify guard outcome is deterministic and non-destructive.
-- [ ] Add MCP-manifest fixture with benign description.
-- [ ] Add MCP-manifest fixture with suspicious metadata or changed hash.
+- [x] Define a fake `search_notes` or `get_report` tool response.
+- [x] Create clean nested JSON fixture.
+- [x] Create poisoned nested JSON fixture.
+- [x] Ensure a suspicious string is inside a named JSON path.
+- [x] Create fake sensitive downstream action proposal.
+- [x] Verify guard outcome is deterministic and non-destructive.
+- [x] Add MCP-manifest fixture with benign description.
+- [x] Add MCP-manifest fixture with suspicious metadata or changed hash.
 
 ### Visual demo page
 
-- [ ] Choose implementation framework.
-- [ ] Create page shell.
-- [ ] Add source selector: RAG / tool response / tool manifest.
-- [ ] Add clean-versus-poisoned sample selector.
-- [ ] Add safe text/JSON paste input.
-- [ ] Add run-analysis button.
-- [ ] Show source provenance.
-- [ ] Show JSON tree/path for JSON input.
-- [ ] Show original text or JSON.
-- [ ] Show normalised/derived evidence when applicable.
-- [ ] Highlight suspicious spans.
-- [ ] Show confidence/risk score.
-- [ ] Show rule and model explanations.
-- [ ] Show proposed tool action.
-- [ ] Show deterministic policy result.
-- [ ] Add guard-off versus guard-on comparison.
-- [ ] Add a limitations/disclaimer panel.
-- [ ] Test page with clean RAG input.
-- [ ] Test page with poisoned RAG input.
-- [ ] Test page with clean JSON input.
-- [ ] Test page with poisoned JSON input.
-- [ ] Test page after restarting from a clean terminal.
-- [ ] Measure page response time.
+- [x] Choose implementation framework.
+- [x] Create page shell.
+- [x] Add source selector: RAG / tool response / tool manifest.
+- [x] Add clean-versus-poisoned sample selector.
+- [x] Add safe text/JSON paste input.
+- [x] Add run-analysis button.
+- [x] Show source provenance.
+- [x] Show JSON tree/path for JSON input.
+- [x] Show original text or JSON.
+- [x] Show normalised/derived evidence when applicable.
+- [x] Highlight suspicious spans.
+- [x] Show confidence/risk score.
+- [x] Show rule and model explanations.
+- [x] Show proposed tool action.
+- [x] Show deterministic policy result.
+- [x] Add guard-off versus guard-on comparison.
+- [x] Add a limitations/disclaimer panel.
+- [x] Test page with clean RAG input.
+- [x] Test page with poisoned RAG input.
+- [x] Test page with clean JSON input.
+- [x] Test page with poisoned JSON input.
+- [x] Test page after restarting from a clean terminal.
+- [x] Measure page response time.
 
 ### Week 3 exit review
 
-- [ ] Demo runs locally without external API credentials.
-- [ ] Demo visibly highlights an injection in a RAG document.
-- [ ] Demo visibly highlights an injection in MCP-style JSON.
-- [ ] Demo blocks/requires confirmation for unsafe proposed action.
-- [ ] Demo preserves a normal clean task.
-- [ ] Screen-record a complete successful demo run.
+- [x] Demo runs locally without external API credentials.
+- [x] Demo visibly highlights an injection in a RAG document.
+- [x] Demo visibly highlights an injection in MCP-style JSON.
+- [x] Demo blocks/requires confirmation for unsafe proposed action.
+- [x] Demo preserves a normal clean task.
+- [x] Screen-record a complete successful demo run.
 
 ## Week 4 - research evidence and polish
 
