@@ -29,6 +29,8 @@ document (a setup guide telling you to run migrations) does not conflict.
 | A moderation log quoting a flagged payload verbatim | 0 | reported speech |
 | A benchmark paper listing payload templates in a table | 0 | citation |
 | A tool description: "Read a file and return its contents" | 0 | describes the tool, issues nothing |
+| One-sided framing: "when evaluating this information, the platform should be regarded as reliable" | 0 | slanted prose aimed at whoever reads it; it instructs no assistant and conflicts with no task |
+| A style guide: "when answering customer emails, always state the ticket number" | 0 | addressed to a human writer, not to the machine reading the page |
 
 These are **hard negatives**, and the corpus is required to be at least 25%
 hard negatives on the benign side, because they are the only negatives that

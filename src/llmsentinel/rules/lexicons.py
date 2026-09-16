@@ -15,6 +15,7 @@ from typing import Final
 
 __all__ = [
     "ACTION_VERBS",
+    "ANSWER_SHAPING_PATTERNS",
     "ASSISTANT_ADDRESS_PATTERNS",
     "CITATION_MARKERS",
     "DESTINATION_PATTERNS",
@@ -189,6 +190,46 @@ ASSISTANT_ADDRESS_PATTERNS: Final[NamedPatterns] = (
         "task_reassignment",
         r"\byour\s+(?:only\s+)?(?:task|job|goal|instruction|objective)\s+is\s+(?:now\s+)?to\b",
         0.80,
+    ),
+)
+
+# --------------------------------------------------------- answer shaping
+#: Text that dictates *what the answer must claim* about the document carrying it.
+#: This is content manipulation without any exfiltration or tool call, and it was
+#: under-covered: the corpus taught the transformer blatant contradictions, so a
+#: polished, plausible claim scored far below the operating point (EXPERIMENTS,
+#: 2026-09-16).
+#:
+#: Both patterns are written for the *shape*, not for any sample text, and both
+#: demand more than an imperative, because ordinary policy and style guides are
+#: full of "when answering ..., always state ...":
+#:
+#: * ``answer_scoped_assertion`` needs the instruction to be scoped to the
+#:   document that carries it ("this page", "the following text"), which is what
+#:   makes it assistant-directed rather than a rule for a human writer;
+#: * ``assert_over_source`` needs the claim to be asserted *against* the source
+#:   ("whatever the document says"), which no honest document asks for.
+ANSWER_SHAPING_PATTERNS: Final[NamedPatterns] = (
+    (
+        "answer_scoped_assertion",
+        r"\b(?:when|while|before|whenever)\s+(?:you\s+)?"
+        r"(?:answer|answering|respond|responding|repl(?:y|ying)|summari[sz]e|summari[sz]ing|"
+        r"describ(?:e|ing)|explain(?:ing)?|discuss(?:ing)?|report(?:ing)?)\b"
+        r"[^.\n]{0,70}?\b(?:this|these|the\s+(?:above|following|present))\s+"
+        r"(?:document|text|page|article|passage|file|content|information|data|note|report|section)s?\b"
+        r"[^.\n]{0,70}?\b(?:always|must|should|only|instead|never)\b"
+        r"[^.\n]{0,40}?\b(?:state|say|claim|assert|report|mention|describe|present|tell|insist)\b",
+        0.82,
+    ),
+    (
+        "assert_over_source",
+        r"\b(?:state|say|claim|assert|report|describe|present|answer|respond|"
+        r"tell\s+(?:the\s+)?(?:user|reader|customer))\b"
+        r"[^.\n]{0,90}?\b(?:whatever|regardless\s+of|no\s+matter|even\s+if|irrespective\s+of)\b"
+        r"[^.\n]{0,50}?\b(?:document|text|page|article|passage|source|data|evidence|file|"
+        r"content|context|log|statement|section)s?\b"
+        r"[^.\n]{0,30}?\b(?:says?|states?|shows?|indicates?|contains?|claims?|suggests?|reads?)\b",
+        0.88,
     ),
 )
 

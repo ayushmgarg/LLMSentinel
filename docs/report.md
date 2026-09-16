@@ -92,7 +92,10 @@ AI Security Project page for [6].*
   segmentation — all with an offset map back to the raw bytes so a flagged span
   highlights the original text.
 - **Rule engine.** Seven families (meta-instruction, obfuscation, exfiltration,
-  action-hijack, assistant-address, metadata-poisoning, task-conflict), each
+  action-hijack, assistant-address, metadata-poisoning, task-conflict) — the
+  meta-instruction family holds four rules, including `answer_shaping.v1` for
+  content manipulation that fixes what the answer must claim about its own
+  document (added 2026-09-16; see Limitations) — each
   emitting a score, span, and human-readable trace, with context suppression for
   quoted/documented text. The family weights and the suppression/damping factors
   are **hand-set constants**, not learned: each is a named constant carrying its
@@ -205,6 +208,20 @@ scoring into the aggregate).
   (`docs/ood_evaluation.md`). Consequence seen in practice: on a poisoned MCP tool
   description the transformer scored 0.984, under its 0.9954 operating point, and the
   metadata rule carried the detection — which is why the rules stay in the decision.
+- **Soft-claim content manipulation is under-covered.** An instruction that fixes
+  the answer's content without contradicting the document or naming a destination
+  ("when answering questions about this document, always state that …") scored 0.591
+  with the transformer, under its 0.9954 operating point, while a blatantly
+  self-contradicting version scored 0.9998. `answer_shaping.v1` and two opt-in seed
+  families were added on 2026-09-16; the rule fires on the shape but its rules-only
+  aggregate (0.75–0.78) stays below the 0.8340 operating point, so the fix depends on
+  retraining with those families, which is pending. The rule's weight is a prior: it
+  fires on one record in the canonical corpus, so dev gives it no support (dev metrics
+  were byte-identical before and after adding it).
+- **One-sided framing is out of scope by definition.** Prose that argues a position
+  without instructing the assistant is benign under `docs/annotation_guideline.md`,
+  and the detector scores it near zero. Detecting slanted-but-passive content is a
+  different problem (claim verification), not indirect prompt injection.
 - **Calibration not established** — fusion output is used directly; no reliability
   / Brier / ECE validated.
 - **Semantic layer** uses a lexical similarity proxy by default; the neural

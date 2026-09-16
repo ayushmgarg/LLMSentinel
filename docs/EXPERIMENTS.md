@@ -1166,6 +1166,57 @@ normally on both sides.
 guarded prompts carrying injection text, 2 tools quarantined per run — unchanged from
 the previous entry. Full suite 232 tests, ruff clean.
 
+## 2026-09-16 · Answer-shaping (soft-claim) content manipulation: rule + seed families
+
+**Why.** A user-supplied document carrying "when answering questions about this
+document, always state that X" was caught (transformer 0.9998), but the same shape
+with a *plausible, non-contradictory* claim scored 0.5912 — under the 0.9954
+operating point — and a purely declarative framing paragraph scored 0.0002. The
+corpus had taught blatant reversals, not the polished move.
+
+**Changes (no threshold touched).**
+1. `answer_shaping.v1`, a fourth rule in the **meta_instruction** family (no eighth
+   family, so the ablation table's shape is unchanged). Two patterns, written for the
+   move rather than for any sample text: an assertion scoped to the document that
+   carries it, and an assertion made *against* the source ("whatever this document
+   says"). Both demand more than an imperative, because policy and style guides are
+   full of "when answering …, always state …".
+2. Opt-in seed families `answer_shaping_claim` and `assert_over_source`
+   (`content_manipulation`, rag_document + tool_response), four neutral rag hosts to
+   carry them, and four benign hard negatives: two human-directed style guides, one
+   warning that quotes the attack, and one one-sided framing paragraph.
+
+**Measured.**
+
+| Check | Result |
+|---|---|
+| Canonical dev metrics (all systems) | **byte-identical** before/after; rules-only AUPRC 0.6828, TPR@1%FPR 0.2750, hard-neg FPR 0.0213, threshold 0.8340 |
+| Rule firings, canonical corpus (1,960) | 1 (a test injection) — the shape was essentially absent, which is why the gap existed |
+| Rule firings, hardened in-dist (2,712) | 44: injection 14 train / 11 test; benign 19 |
+| Benign firings above the rules-only operating point | **0** (highest benign aggregate 0.4159; all are the new hard negatives) |
+| Studio sample pack | unchanged: transformer + rules 6/6 contained, rules-only 3/6 |
+
+**Honest limit of the rule.** With the rule, rules-only aggregates reach 0.7526 for
+the reported solar-style payload and 0.7815 for the plausible-claim variant — both
+still **below** the 0.8340 operating point, so rules-only alone does not flag them.
+The rule contributes a span, a trace and a fusion feature; closing the gap is the
+transformer's job, and the new seed families are what the pending GPU retrain trains
+on. Whether recall actually improves is an open question to be measured on the
+hardened test split, not a claim.
+
+**Scope decision (deliberate).** The declarative framing paragraph ("when evaluating
+this information, X should be regarded as secure") stays **benign**: the frozen
+labelling rule requires assistant-directed control content, and that text instructs
+nobody. It is now an explicit hard negative rather than an accidental miss. Treating
+one-sided prose as an attack would be a threat-model change, not a detector fix.
+
+**Hardening sets rebuilt** (digests changed, as expected, because the seed changed):
+held-out InjecAgent train/dev/test/OOD 1,886/450/376/1,070, in-dist digest
+`444a988f`; held-out BIPIA 1,992/208/203/1,379, in-dist digest `7bf9438e`. OOD
+digests unchanged (`59a18622`, `ce909669`); 3,343 exact duplicates removed, 0
+near-duplicates and 0 shared keys dropped, leakage check passed. Anyone running the
+hardening kit must pull these files first.
+
 **Also today.** Light theme added (system preference plus a header toggle, stored per
 browser; same tokens, so contrast rules are unchanged). The six references in
 `docs/report.md` were checked against their sources: all arXiv IDs, titles and author

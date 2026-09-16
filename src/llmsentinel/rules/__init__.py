@@ -7,7 +7,12 @@ from .base import Rule, RuleError, RuleFamily, RuleHit, RuleReport
 from .context import ContextIndex, Suppression
 from .engine import RuleEngine, RuleEngineConfig, default_rules
 from .exfiltration import ExfiltrationRule
-from .meta_instruction import AssistantAddressRule, MetaInstructionRule, SecrecyRule
+from .meta_instruction import (
+    AnswerShapingRule,
+    AssistantAddressRule,
+    MetaInstructionRule,
+    SecrecyRule,
+)
 from .metadata import (
     ManifestDiff,
     ManifestPin,
@@ -21,6 +26,7 @@ from .pattern_rule import PatternRule
 from .task_conflict import TaskConflictRule, topical_overlap
 
 __all__ = [
+    "AnswerShapingRule",
     "AssistantAddressRule",
     "ContextIndex",
     "DestructiveActionRule",

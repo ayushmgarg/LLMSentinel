@@ -44,8 +44,14 @@ Code: `src/llmsentinel/evaluation/ood.py`, CLI `scripts/ood_eval.py`, tests
 
 | Held out | train | dev | test | OOD | OOD injection / benign | digests (indist / OOD) |
 |---|---|---|---|---|---|---|
-| InjecAgent | 1,812 | 432 | 360 | 1,070 | 1,054 / 16 (98.5%) | `3fd78561` / `59a18622` |
-| BIPIA | 1,918 | 190 | 187 | 1,379 | 600 / 779 (43.5%) | `2d6b2599` / `ce909669` |
+| InjecAgent | 1,886 | 450 | 376 | 1,070 | 1,054 / 16 (98.5%) | `444a988f` / `59a18622` |
+| BIPIA | 1,992 | 208 | 203 | 1,379 | 600 / 779 (43.5%) | `7bf9438e` / `ce909669` |
+
+> Sizes and in-distribution digests changed on 2026-09-16 when the answer-shaping
+> families below were added to the opt-in seed; the OOD sets and their digests are
+> unchanged. The baseline table further down was scored on the earlier sets
+> (`3fd78561` / `2d6b2599`) and is kept as recorded; the transformer run will use the
+> current ones.
 
 Build: `python scripts/ood_eval.py build --held-out both` →
 `data/processed/hardening/<held_out>/{indist.jsonl, ood_<held_out>.jsonl, manifest.json}`.
@@ -81,6 +87,23 @@ negatives. Rebuilding the canonical corpus without it still gives digest
 In-distribution test `tool_metadata` support: **18 positives of 72** (canonical
 test: 5 positives). These families are authored for this project; they are not
 MCPTox categories.
+
+### Answer-shaping (soft-claim) content manipulation
+
+Added 2026-09-16 after a reported miss: an instruction that fixes what the answer
+must claim, without contradicting the document or naming a destination, scored 0.591
+with the transformer (operating point 0.9954), while a self-contradicting version
+scored 0.9998. Two families, `answer_shaping_claim` and `assert_over_source`
+(`content_manipulation`, `rag_document` + `tool_response`), vary domain, verb and
+framing so the model sees the move rather than a phrase. Four neutral prose hosts
+carry them.
+
+Four benign hard negatives were added with them, because positives alone would teach
+that any sentence about answering is an attack: two human-directed style guides, a
+warning that quotes the attack, and a one-sided framing paragraph that instructs
+nobody (benign by `docs/annotation_guideline.md`). On the rebuilt sets the rule fires
+on 25 injections and 19 benign records, and **no benign record reaches the rules-only
+operating point** (highest 0.416).
 
 ## Benchmarks inspected
 
