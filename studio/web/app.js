@@ -174,7 +174,7 @@ function renderDetector(detector) {
   box.classList.add(loaded ? "detector--ok" : "detector--warn");
   box.append(
     icon(loaded ? "i-shield-check" : "i-shield"),
-    el("span", {}, [el("strong", { text: `Detector: ${detector.detector}` })]),
+    el("span", {}, [el("strong", { text: `Detector: ${detector.detector}${loaded ? "" : " (fallback)"}` })]),
   );
   const notes = [detector.decision_rule, ...(detector.notes || [])].filter(Boolean);
   box.setAttribute("title", notes.join("\n"));
@@ -835,8 +835,17 @@ function renderSide(side, guarded) {
 
 function renderResults(result) {
   $("#results-empty").hidden = true;
+  const fallback = result.detector && result.detector.transformer_loaded === false;
   $("#results-body").replaceChildren(...[
     renderBanner(result),
+    fallback ? el("div", { className: "notice notice--quiet" }, [
+      icon("i-alert"),
+      el("div", {}, [
+        el("p", {}, [el("strong", { text: "Rules-only fallback. " }),
+          "The transformer checkpoint is not loaded, so these results come from the rule engine alone. It is markedly weaker: on this sample pack it contains 3 of 6 preset attacks, against 6 of 6 with the transformer."]),
+        el("p", { className: "fine muted", text: (result.detector.notes || []).join(" ") }),
+      ]),
+    ]) : null,
     el("div", { className: "compare" }, [renderSide(result.unguarded, false), renderSide(result.guarded, true)]),
     result.manifests && result.manifests.tools.length ? renderManifestPanel(result) : null,
     result.sentinel.chunks.length ? renderInspection(result) : null,

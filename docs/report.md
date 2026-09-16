@@ -94,7 +94,13 @@ AI Security Project page for [6].*
 - **Rule engine.** Seven families (meta-instruction, obfuscation, exfiltration,
   action-hijack, assistant-address, metadata-poisoning, task-conflict), each
   emitting a score, span, and human-readable trace, with context suppression for
-  quoted/documented text.
+  quoted/documented text. The family weights and the suppression/damping factors
+  are **hand-set constants**, not learned: each is a named constant carrying its
+  reasoning in the module, fixed by inspection on train/dev. Their value was tested
+  rather than assumed — every family was scored alone and in a leave-one-family-out
+  ablation on dev (`docs/EXPERIMENTS.md`, 2026-09-06), and no weight was chosen
+  against test, which is scored once. The learned combination of these signals is
+  the fusion model below.
 - **Transformer.** `distilroberta-base` fine-tuned as a binary classifier;
   overlapping windows for long text, scored by the max window; class-weighted
   loss; span-aware window labelling (windows labelled positive only where the
@@ -188,6 +194,17 @@ scoring into the aggregate).
 - **Seed variance is small but real:** dev AUPRC 0.951 ± 0.011 across three seeds
   (`seed_variance.json`). Test was scored once with the canonical seed's
   thresholds, so its numbers are a single realisation, not a variance estimate.
+- **Rule weights are hand-set, not learned.** Family weights and suppression/damping
+  factors were fixed by inspection on train/dev. They are ablated (each family alone
+  and leave-one-family-out on dev) and never tuned against test, but they are a
+  designer's priors: another corpus could need different values, and the rule engine
+  should be re-ablated before it is trusted elsewhere.
+- **`tool_metadata` is the thinnest channel.** The canonical corpus has ~5 test
+  positives there, so its per-channel number (0.683) is indicative only. The §16a
+  hardening sets raise it to 18 test positives with authored families
+  (`docs/ood_evaluation.md`). Consequence seen in practice: on a poisoned MCP tool
+  description the transformer scored 0.984, under its 0.9954 operating point, and the
+  metadata rule carried the detection — which is why the rules stay in the decision.
 - **Calibration not established** — fusion output is used directly; no reliability
   / Brier / ECE validated.
 - **Semantic layer** uses a lexical similarity proxy by default; the neural

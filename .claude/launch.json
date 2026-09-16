@@ -13,6 +13,12 @@
       "runtimeExecutable": ".venv/Scripts/python.exe",
       "runtimeArgs": ["-m", "studio.server", "--port", "8700"],
       "port": 8700
+    },
+    {
+      "name": "llmsentinel-studio-rules-only",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "studio.server", "--port", "8701", "--rules-only"],
+      "port": 8701
     }
   ]
 }
