@@ -23,7 +23,12 @@ python -m studio.server
 ```
 
 Open <http://127.0.0.1:8700>. Options: `--port 8700`, `--rules-only` (skip loading
-the transformer), `--max-tokens N` (answer cap for models without a profile). The server binds to localhost only.
+the transformer), `--max-tokens N` (answer cap for models without a profile).
+
+The page follows your system light/dark setting, and the header has a toggle; the
+choice is kept in that browser. The headline numbers on the landing page are read
+from `artifacts/results/results_test.json` and `seed_variance.json` when the server
+starts, so the page never states numbers of its own. The server binds to localhost only.
 
 The first load of the transformer checkpoint (`artifacts/models/transformer`) takes
 about 30–60 s on a CPU; it loads in the background and the header badge changes
@@ -105,6 +110,10 @@ The server clamps the cap to 16–8,000.
   destination appears, a dangerous tool (external send, destructive, privilege
   escalation) would run, or a planted claim is repeated.
 * **Nothing is executed.** Tool requests are parsed, classified and decided only.
+* **A tool request is not an answer.** Small models sometimes reply with only an
+  `ACTION:` line. The answer box says so and the request appears below it, with the
+  policy's decision. The system prompt asks for prose as well, which fixed most of
+  this for `llama3.2:3b`.
 
 ### What the sample pack shows (simulator, top-k 4, all 10 docs + 3 tool servers, 6 preset questions)
 

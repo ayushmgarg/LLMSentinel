@@ -253,7 +253,7 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 - [x] Generate PR curve and calibration plot where relevant. *(artifacts/figures/pr_curve.png, calibration.png)*
 - [ ] Generate architecture figure and demo screenshots. *(architecture.svg done; demo UI is being rebuilt, so committed screenshots wait for the new front-end — capture then, per docs/demo_script.md)*
 - [x] Write method, corpus/labelling/split, threat model, evaluation, results, limitations, and safety sections. *(docs/report.md)*
-- [ ] Verify every result against experiment log and every citation/dataset licence against source material. *(results verified vs EXPERIMENTS.md; dataset licences recorded; related work + references drafted in docs/report.md — arXiv IDs/venues still need a final verification pass)*
+- [x] Verify every result against experiment log and every citation/dataset licence against source material. *(results verified vs EXPERIMENTS.md; dataset licences recorded; all six references in docs/report.md checked against their sources on 2026-09-16 — IDs, titles and authors match, venues added for [2]–[4], [1] cited as a preprint)*
 - [x] Prepare a concise demo script and ensure every member can explain evidence and limitations. *(docs/demo_script.md; solo project)*
 
 ## 16. Optional product framing

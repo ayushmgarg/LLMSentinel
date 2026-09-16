@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LLMSentinel Studio</title>
   <meta name="description" content="Research prototype: watch the same model answer from poisoned context, with and without LLMSentinel.">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,6 +45,8 @@
     <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16z"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.6M12 18.9v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2.5 12h2.6M18.9 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></symbol>
   </svg>
 
   <header class="nav">
@@ -58,6 +60,7 @@
         <a href="#console">Console</a>
         <a href="#how">How it works</a>
       </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme"></button>
       <span class="pill pill--proto"><span class="dot" aria-hidden="true"></span>Research prototype</span>
     </div>
   </header>
@@ -152,9 +155,9 @@
           <p class="muted">Measured on the project's research corpus (BIPIA, InjecAgent and authored data; source-stratified splits; test scored once). Research numbers, not a production guarantee. Details in <code>docs/report.md</code>.</p>
         </div>
         <div class="stats">
-          <div class="stat"><span class="stat__value">0.984</span><span class="stat__label">held-out test AUPRC, transformer</span></div>
-          <div class="stat"><span class="stat__value">0.951<small> ± 0.011</small></span><span class="stat__label">dev AUPRC across three training seeds</span></div>
-          <div class="stat"><span class="stat__value">0.920</span><span class="stat__label">test recall at the dev 1%-FPR operating point</span></div>
+          <div class="stat"><span class="stat__value" id="stat-test-auprc">0.984</span><span class="stat__label">held-out test AUPRC, transformer</span></div>
+          <div class="stat"><span class="stat__value" id="stat-dev-auprc">0.951<small> ± 0.011</small></span><span class="stat__label">dev AUPRC across three training seeds</span></div>
+          <div class="stat"><span class="stat__value" id="stat-test-recall">0.920</span><span class="stat__label">test recall at the dev 1%-FPR operating point</span></div>
         </div>
         <div class="notice">
           <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>

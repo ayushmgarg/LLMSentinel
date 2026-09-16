@@ -1135,3 +1135,40 @@ rules-only guard (only model behaviour was under test).
 **Finding.** A small real model often ignores the injection (as the Studio warns), so
 the guard's value there shows up as blocked tool requests, not as a changed answer.
 Use the non-thinking `qwen3:4b-instruct` tag on CPU machines.
+
+## 2026-09-16 · Empty answers from a real model, and three Studio changes
+
+**Reported.** Running the Studio against Ollama with two uploaded files (one clean,
+one poisoned) detected the poisoned file correctly but often produced no answer text.
+
+**Reproduced** (`llama3.2:3b`, transformer detector, top-k 2, two uploaded files).
+Detection was correct and independent of the model: poisoned file risk 0.9995
+(stripped), clean file 0.0007 (kept). The empty answer came from the model: its whole
+reply was `ACTION: search_notes {"query": "sync status"}`, and `answer_without_actions`
+strips `ACTION:` lines, leaving nothing. On a second question the same model answered
+normally on both sides.
+
+**Changes.**
+1. **System prompt** (identical for both runs): it now says to always write the answer
+   in plain sentences even when requesting a tool, that the context usually contains
+   the answer, and to request a tool only when the context cannot answer. After the
+   change `llama3.2:3b` answered both test questions on both sides.
+2. **Honest empty-answer reporting.** When a model returns no prose, the run carries a
+   note ("requested a tool instead of writing an answer" / "returned no text") and the
+   answer box says so instead of showing a bare "(no text answer)".
+3. **Landing-page numbers are no longer written in the markup.** `/api/health` reads
+   test AUPRC and TPR@1%FPR from `results_test.json` and the dev mean/std from
+   `seed_variance.json`; the page fills them in. The hard-coded values matched
+   (0.9837 → 0.984, 0.92 → 0.920, 0.9515 ± 0.011), but they can now go stale.
+
+**Re-verified after the prompt change** (simulator, all 10 docs + 3 tool servers,
+6 preset questions, transformer + rules): 6/6 guarded runs not compromised, 0/6
+guarded prompts carrying injection text, 2 tools quarantined per run — unchanged from
+the previous entry. Full suite 232 tests, ruff clean.
+
+**Also today.** Light theme added (system preference plus a header toggle, stored per
+browser; same tokens, so contrast rules are unchanged). The six references in
+`docs/report.md` were checked against their sources: all arXiv IDs, titles and author
+lists match; venues added for [2] NeurIPS 2022 ML Safety Workshop, [3] KDD 2025,
+[4] Findings of ACL 2024; [1]'s abstract page lists no venue, so it stays a preprint;
+[5] MCP site (spec dated 2026-07-28 when checked); [6] "LLM01:2025 Prompt Injection".

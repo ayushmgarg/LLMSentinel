@@ -28,6 +28,7 @@ from .config import (
     PROVIDER_PRESETS,
     WEB_DIR,
     StudioSettings,
+    load_evidence,
     load_model_profiles,
     profile_for,
 )
@@ -149,6 +150,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 "detector": detector_status(),
                 "presets": PROVIDER_PRESETS,
                 "model_profiles": profiles,
+                "evidence": load_evidence(settings.results_path.parent),
                 "default_max_tokens": settings.max_tokens,
                 "questions": questions,
                 "pack": pack,

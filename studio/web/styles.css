@@ -46,6 +46,111 @@
   --t-fast: 140ms;
   --t: 220ms;
   --t-slow: 420ms;
+
+  /* surfaces that are not plain tokens, kept here so both themes can set them */
+  --nav-bg: rgba(6, 9, 18, 0.72);
+  --code-bg: #070b16;
+  --grid-line: rgba(148, 163, 184, 0.05);
+  --glow-1: rgba(34, 211, 238, 0.15);
+  --glow-2: rgba(192, 132, 252, 0.16);
+  --glow-3: rgba(129, 140, 248, 0.1);
+  --mark-bg: rgba(244, 63, 94, 0.3);
+  --mark-text: #ffe4e8;
+  --removed-text: #fecdd3;
+}
+
+/* Light theme. Applied when the user picks it, and by default when the system asks
+   for light and the user has not chosen dark. Same token names, so components and
+   their contrast rules are unchanged. */
+:root[data-theme="light"] {
+  --bg: #f5f7fb;
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-solid: #ffffff;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
+  --border: rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.26);
+
+  --text: #0f172a;
+  --text-2: #334155;
+  --muted: #5b6577;
+
+  --cyan: #0e7490;
+  --indigo: #4338ca;
+  --violet: #7e22ce;
+  --on-grad: #ffffff;
+
+  --danger: #be123c;
+  --danger-bg: rgba(225, 29, 72, 0.08);
+  --danger-border: rgba(190, 18, 60, 0.32);
+  --success: #047857;
+  --success-bg: rgba(5, 150, 105, 0.08);
+  --success-border: rgba(4, 120, 87, 0.3);
+  --warning: #b45309;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(180, 83, 9, 0.28);
+  --info-bg: rgba(67, 56, 202, 0.07);
+  --info-border: rgba(67, 56, 202, 0.24);
+
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 20px 48px -30px rgba(15, 23, 42, 0.45);
+  --ring: 0 0 0 3px rgba(14, 116, 144, 0.45);
+
+  --nav-bg: rgba(245, 247, 251, 0.82);
+  --code-bg: #f8fafc;
+  --grid-line: rgba(15, 23, 42, 0.05);
+  --glow-1: rgba(14, 116, 144, 0.1);
+  --glow-2: rgba(126, 34, 206, 0.09);
+  --glow-3: rgba(67, 56, 202, 0.08);
+  --mark-bg: rgba(244, 63, 94, 0.18);
+  --mark-text: #7f1d1d;
+  --removed-text: #9f1239;
+}
+
+/* System preference, unless the user has explicitly chosen dark. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f5f7fb;
+    --surface: rgba(255, 255, 255, 0.86);
+    --surface-solid: #ffffff;
+    --surface-2: #f1f5f9;
+    --surface-3: #e2e8f0;
+    --border: rgba(15, 23, 42, 0.12);
+    --border-strong: rgba(15, 23, 42, 0.26);
+
+    --text: #0f172a;
+    --text-2: #334155;
+    --muted: #5b6577;
+
+    --cyan: #0e7490;
+    --indigo: #4338ca;
+    --violet: #7e22ce;
+    --on-grad: #ffffff;
+
+    --danger: #be123c;
+    --danger-bg: rgba(225, 29, 72, 0.08);
+    --danger-border: rgba(190, 18, 60, 0.32);
+    --success: #047857;
+    --success-bg: rgba(5, 150, 105, 0.08);
+    --success-border: rgba(4, 120, 87, 0.3);
+    --warning: #b45309;
+    --warning-bg: rgba(245, 158, 11, 0.12);
+    --warning-border: rgba(180, 83, 9, 0.28);
+    --info-bg: rgba(67, 56, 202, 0.07);
+    --info-border: rgba(67, 56, 202, 0.24);
+
+    --shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 20px 48px -30px rgba(15, 23, 42, 0.45);
+    --ring: 0 0 0 3px rgba(14, 116, 144, 0.45);
+
+    --nav-bg: rgba(245, 247, 251, 0.82);
+    --code-bg: #f8fafc;
+    --grid-line: rgba(15, 23, 42, 0.05);
+    --glow-1: rgba(14, 116, 144, 0.1);
+    --glow-2: rgba(126, 34, 206, 0.09);
+    --glow-3: rgba(67, 56, 202, 0.08);
+    --mark-bg: rgba(244, 63, 94, 0.18);
+    --mark-text: #7f1d1d;
+    --removed-text: #9f1239;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -99,15 +204,15 @@ p { margin: 0; }
 /* backdrop ------------------------------------------------------------------ */
 .backdrop { position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
-    radial-gradient(900px 520px at 12% -8%, rgba(34, 211, 238, 0.15), transparent 62%),
-    radial-gradient(820px 520px at 92% 2%, rgba(192, 132, 252, 0.16), transparent 62%),
-    radial-gradient(760px 620px at 50% 115%, rgba(129, 140, 248, 0.1), transparent 62%);
+    radial-gradient(900px 520px at 12% -8%, var(--glow-1), transparent 62%),
+    radial-gradient(820px 520px at 92% 2%, var(--glow-2), transparent 62%),
+    radial-gradient(760px 620px at 50% 115%, var(--glow-3), transparent 62%);
 }
 .backdrop::after {
   content: ""; position: absolute; inset: 0;
   background-image:
-    linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 52px 52px;
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 72%);
   mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 72%);
@@ -116,7 +221,7 @@ p { margin: 0; }
 /* nav ----------------------------------------------------------------------- */
 .nav {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(6, 9, 18, 0.72);
+  background: var(--nav-bg);
   -webkit-backdrop-filter: saturate(140%) blur(14px); backdrop-filter: saturate(140%) blur(14px);
   border-bottom: 1px solid var(--border);
 }
@@ -166,6 +271,12 @@ p { margin: 0; }
 .btn.is-loading .spinner { display: inline-block; }
 .btn.is-loading .run-icon { display: none; }
 .link { color: var(--cyan); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.icon-btn {
+  display: grid; place-items: center; width: 44px; height: 44px; flex: none; padding: 0;
+  border-radius: 12px; border: 1px solid var(--border-strong); background: var(--surface-2);
+  color: var(--text-2); cursor: pointer; transition: color var(--t-fast), background var(--t-fast);
+}
+.icon-btn:hover { color: var(--text); background: var(--surface-3); }
 
 .spinner {
   width: 16px; height: 16px; border-radius: 50%;
@@ -362,7 +473,7 @@ input:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .dropzone {
   display: grid; justify-items: center; text-align: center; gap: 6px; padding: 18px; border-radius: 14px;
-  border: 1.5px dashed var(--border-strong); background: rgba(15, 22, 38, 0.5); color: var(--text-2);
+  border: 1.5px dashed var(--border-strong); background: var(--surface); color: var(--text-2);
   transition: border-color var(--t), background var(--t);
 }
 .dropzone .icon { color: var(--indigo); }
@@ -456,13 +567,13 @@ input:disabled { opacity: 0.55; cursor: not-allowed; }
   white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.88rem; line-height: 1.6; color: var(--text-2);
   padding: 12px 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border); max-height: 280px; overflow-y: auto;
 }
-mark.flag { color: #ffe4e8; background: rgba(244, 63, 94, 0.3); border-bottom: 2px solid var(--danger); border-radius: 3px; padding: 0 2px; }
+mark.flag { color: var(--mark-text); background: var(--mark-bg); border-bottom: 2px solid var(--danger); border-radius: 3px; padding: 0 2px; }
 .reasons { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.84rem; color: var(--text-2); overflow-wrap: anywhere; }
 .code {
   margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.8rem; line-height: 1.55; color: var(--text-2);
-  padding: 10px 12px; border-radius: 10px; background: #070b16; border: 1px solid var(--border); max-height: 320px; overflow: auto;
+  padding: 10px 12px; border-radius: 10px; background: var(--code-bg); border: 1px solid var(--border); max-height: 320px; overflow: auto;
 }
-.code--removed { border-color: var(--danger-border); color: #fecdd3; text-decoration: line-through; text-decoration-color: rgba(251, 113, 133, 0.6); }
+.code--removed { border-color: var(--danger-border); color: var(--removed-text); text-decoration: line-through; text-decoration-color: rgba(251, 113, 133, 0.6); }
 .code--changed { border-color: var(--warning-border); }
 
 .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

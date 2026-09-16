@@ -112,6 +112,45 @@ function toast(title, message = "", tone = "neutral") {
   }, tone === "danger" ? 7000 : 4000);
 }
 
+/* ------------------------------------------------------------------- theme */
+const THEME_KEY = "llmsentinel-studio-theme";
+
+function storedTheme() {
+  try {
+    const value = localStorage.getItem(THEME_KEY);
+    return value === "light" || value === "dark" ? value : null;
+  } catch (error) {
+    return null; // private window or blocked storage
+  }
+}
+
+function systemTheme() {
+  return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  const button = $("#theme-toggle");
+  if (!button) return;
+  const dark = theme === "dark";
+  button.replaceChildren(icon(dark ? "i-sun" : "i-moon"));
+  button.setAttribute("aria-label", dark ? "Switch to the light theme" : "Switch to the dark theme");
+  button.setAttribute("title", button.getAttribute("aria-label"));
+}
+
+function initTheme() {
+  applyTheme(storedTheme() || systemTheme());
+  $("#theme-toggle").addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch (error) {
+      /* not stored; the choice still applies to this tab */
+    }
+    applyTheme(next);
+  });
+}
+
 /* ---------------------------------------------------------------- detector */
 let healthTimer = null;
 
@@ -160,6 +199,27 @@ function thresholdText(detector) {
     return `transformer ≥ ${fixed(model["fpr=0.01"])} or rules ≥ ${fixed(rules["fpr=0.001"])}`;
   }
   return `rules ≥ ${fixed(rules["fpr=0.01"])}`;
+}
+
+/* Headline numbers come from the evaluation outputs, not from the markup. */
+function applyEvidence(evidence) {
+  if (!evidence) return;
+  const set = (selector, value) => {
+    const node = $(selector);
+    if (node && value !== undefined && value !== null) node.textContent = Number(value).toFixed(3);
+  };
+  set("#stat-test-auprc", evidence.test_auprc);
+  set("#stat-test-recall", evidence.test_tpr_at_1pct_fpr);
+  // The seed mean is stored as 0.9515; rounding it to three places would print a
+  // different number from the one the docs quote, so show the stored precision.
+  const exact = (value) => Number(value).toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+  const dev = $("#stat-dev-auprc");
+  if (dev && evidence.dev_auprc_mean !== undefined && evidence.dev_auprc_mean !== null) {
+    dev.replaceChildren(document.createTextNode(exact(evidence.dev_auprc_mean)));
+    if (evidence.dev_auprc_std !== undefined && evidence.dev_auprc_std !== null) {
+      dev.append(el("small", { text: ` ± ${exact(evidence.dev_auprc_std)}` }));
+    }
+  }
 }
 
 /* ---------------------------------------------------------------- provider */
@@ -735,7 +795,9 @@ function renderSide(side, guarded) {
   }
   const tone = side.compromised ? "danger" : "success";
   const body = el("div", { className: "side__body" }, [
-    el("div", { className: "answer", text: side.answer || "(no text answer)" }),
+    el("div", { className: "answer", text: side.answer || (side.actions.length
+      ? "(no prose: the model replied with a tool request only — see below)"
+      : "(the model returned no text)") }),
   ]);
   if (side.indicators.length) {
     body.append(el("div", {}, [
@@ -819,6 +881,7 @@ async function runComparison() {
 
 /* -------------------------------------------------------------------- init */
 async function init() {
+  initTheme();
   document.querySelectorAll('input[name="provider"]').forEach((radio) => radio.addEventListener("change", () => applyProvider(radio.value)));
   $("#base-url").addEventListener("input", rememberEdit);
   $("#model").addEventListener("input", rememberEdit);
@@ -864,6 +927,7 @@ async function init() {
     state.samples.forEach((s) => state.selected.add(s.doc_id));
     state.manifests = samples.manifests || [];
     state.manifests.forEach((m) => state.selectedManifests.add(m.manifest_id));
+    applyEvidence(health.evidence);
     renderDetector(health.detector);
     renderSamples();
     renderManifests();

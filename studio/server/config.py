@@ -7,6 +7,7 @@ by default; both ignore the API key locally.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -79,6 +80,41 @@ def load_model_profiles(path: Path = MODEL_PROFILES_PATH) -> dict[str, Any]:
         "default": dict(raw.get("default") or {}),
         "models": {str(name): dict(values or {}) for name, values in models.items()},
     }
+
+
+def load_evidence(results_dir: Path = RESULTS_DIR) -> dict[str, float]:
+    """Headline numbers read from the evaluation outputs, so the page never states its own.
+
+    Missing or unreadable files simply give fewer keys; the page then keeps the values
+    written in the HTML.
+    """
+
+    evidence: dict[str, float] = {}
+    test_path = Path(results_dir) / "results_test.json"
+    if test_path.is_file():
+        try:
+            for entry in json.loads(test_path.read_text(encoding="utf-8")):
+                if entry.get("name") != "transformer":
+                    continue
+                metrics = entry.get("test") or entry
+                if metrics.get("auprc") is not None:
+                    evidence["test_auprc"] = float(metrics["auprc"])
+                recall = (metrics.get("tpr_at_fpr") or {}).get("fpr=0.01")
+                if recall is not None:
+                    evidence["test_tpr_at_1pct_fpr"] = float(recall)
+        except (ValueError, TypeError, AttributeError):
+            pass
+    variance_path = Path(results_dir) / "seed_variance.json"
+    if variance_path.is_file():
+        try:
+            dev = (json.loads(variance_path.read_text(encoding="utf-8")) or {}).get("dev_auprc") or {}
+            if dev.get("mean") is not None:
+                evidence["dev_auprc_mean"] = float(dev["mean"])
+            if dev.get("std") is not None:
+                evidence["dev_auprc_std"] = float(dev["std"])
+        except (ValueError, TypeError, AttributeError):
+            pass
+    return evidence
 
 
 def profile_for(model: str, profiles: dict[str, Any]) -> dict[str, Any]:

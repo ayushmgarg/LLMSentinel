@@ -51,8 +51,9 @@ and BIPIA.
   than an action, and (c) evaluate with leakage-free grouped splits and a
   once-only test protocol, reporting confounds explicitly.
 
-*Citations are drafted; arXiv IDs, authors and venues must be verified against
-the source material before any submission (checklist §15).*
+*Citations were verified against the source material on 2026-09-16 (checklist §15):
+arXiv abstract pages for [1]–[4], modelcontextprotocol.io for [5], and the OWASP Gen
+AI Security Project page for [6].*
 
 ## 2. Threat model
 
@@ -223,19 +224,25 @@ python scripts/robustness_suite.py
 
 ## References
 
-*To verify (IDs/authors/venues) before submission.*
+*Checked against the sources on 2026-09-16: every arXiv ID, title and author list
+below matches its abstract page. Venues are given where the source states one; [1]'s
+abstract page lists no venue, so it is cited as a preprint.*
 
 1. K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, M. Fritz.
    "Not What You've Signed Up For: Compromising Real-World LLM-Integrated
    Applications with Indirect Prompt Injection." arXiv:2302.12173, 2023.
 2. F. Perez, I. Ribeiro. "Ignore Previous Prompt: Attack Techniques for Language
-   Models." arXiv:2211.09527, 2022.
-3. J. Yi et al. "Benchmarking and Defending Against Indirect Prompt Injection
-   Attacks on Large Language Models" (BIPIA). arXiv:2312.14197, 2023.
-4. Q. Zhan et al. "InjecAgent: Benchmarking Indirect Prompt Injections in
-   Tool-Integrated Large Language Model Agents." arXiv:2403.02691, 2024.
-5. Anthropic. "Model Context Protocol (MCP)." Specification, 2024.
-   https://modelcontextprotocol.io
-6. OWASP. "Top 10 for Large Language Model Applications — LLM01: Prompt
-   Injection." 2023–2025.
+   Models." arXiv:2211.09527, 2022. ML Safety Workshop, NeurIPS 2022.
+3. J. Yi, Y. Xie, B. Zhu, E. Kiciman, G. Sun, X. Xie, F. Wu. "Benchmarking and
+   Defending Against Indirect Prompt Injection Attacks on Large Language Models"
+   (BIPIA). arXiv:2312.14197, 2023; accepted at KDD 2025
+   (doi:10.1145/3690624.3709179).
+4. Q. Zhan, Z. Liang, Z. Ying, D. Kang. "InjecAgent: Benchmarking Indirect Prompt
+   Injections in Tool-Integrated Large Language Model Agents." arXiv:2403.02691,
+   2024. Findings of ACL 2024.
+5. "Model Context Protocol (MCP)." Open standard introduced by Anthropic in 2024;
+   https://modelcontextprotocol.io (specification dated 2026-07-28 when checked).
+6. OWASP Gen AI Security Project. "2025 Top 10 Risk & Mitigations for LLMs and Gen
+   AI Apps" — entry "LLM01:2025 Prompt Injection".
+   https://genai.owasp.org/llm-top-10/
 
