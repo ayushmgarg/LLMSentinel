@@ -1,15 +1,15 @@
 {
-  "generated": "2026-09-15T09:28:05+00:00",
+  "generated": "2026-09-16T11:54:18+00:00",
   "held_out": "bipia",
   "digests": {
-    "indist": "2d6b2599574215a6",
+    "indist": "7bf9438e69e90000",
     "ood": "ce9096695512a1fa"
   },
   "sizes": {
-    "dev": 190,
+    "dev": 208,
     "ood": 1379,
-    "test": 187,
-    "train": 1918
+    "test": 203,
+    "train": 1992
   },
   "ood_support": {
     "negatives": 779,
@@ -23,17 +23,17 @@
       "config": {
         "name": "majority",
         "type": "MajorityBaseline",
-        "prior": 0.678310740354536
+        "prior": 0.6651606425702812
       },
       "dev": {
         "system": "majority",
         "split": "dev",
-        "n": 190,
-        "positives": 53,
-        "negatives": 137,
-        "auprc": 0.2789473684210526,
+        "n": 208,
+        "positives": 58,
+        "negatives": 150,
+        "auprc": 0.27884615384615385,
         "auroc": 0.5,
-        "positive_rate": 0.2789473684210526,
+        "positive_rate": 0.27884615384615385,
         "tpr_at_fpr": {
           "fpr=0.01": 0.0,
           "fpr=0.001": 0.0
@@ -56,9 +56,9 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 54.0,
-            "positives": 14.0,
-            "auprc": 0.25925925925925924,
+            "n": 63.0,
+            "positives": 16.0,
+            "auprc": 0.25396825396825395,
             "auroc": 0.5
           },
           "tool_metadata": {
@@ -68,17 +68,17 @@
             "auroc": 0.5
           },
           "tool_response": {
-            "n": 74.0,
-            "positives": 21.0,
-            "auprc": 0.28378378378378377,
+            "n": 83.0,
+            "positives": 24.0,
+            "auprc": 0.2891566265060241,
             "auroc": 0.5
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 190.0,
-            "positives": 53.0,
-            "auprc": 0.2789473684210526,
+            "n": 208.0,
+            "positives": 58.0,
+            "auprc": 0.27884615384615385,
             "auroc": 0.5
           }
         },
@@ -87,14 +87,14 @@
           "fpr=0.01": {
             "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 53
+            "tn": 150,
+            "fn": 58
           },
           "fpr=0.001": {
             "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 53
+            "tn": 150,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -105,12 +105,12 @@
       "test": {
         "system": "majority",
         "split": "test",
-        "n": 187,
-        "positives": 53,
-        "negatives": 134,
-        "auprc": 0.28342245989304815,
+        "n": 203,
+        "positives": 58,
+        "negatives": 145,
+        "auprc": 0.2857142857142857,
         "auroc": 0.5,
-        "positive_rate": 0.28342245989304815,
+        "positive_rate": 0.2857142857142857,
         "tpr_at_fpr": {
           "fpr=0.01": 0.0,
           "fpr=0.001": 0.0
@@ -133,8 +133,8 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 49.0,
-            "positives": 14.0,
+            "n": 56.0,
+            "positives": 16.0,
             "auprc": 0.2857142857142857,
             "auroc": 0.5
           },
@@ -145,17 +145,17 @@
             "auroc": 0.5
           },
           "tool_response": {
-            "n": 66.0,
-            "positives": 21.0,
-            "auprc": 0.3181818181818182,
+            "n": 75.0,
+            "positives": 24.0,
+            "auprc": 0.32,
             "auroc": 0.5
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 187.0,
-            "positives": 53.0,
-            "auprc": 0.28342245989304815,
+            "n": 203.0,
+            "positives": 58.0,
+            "auprc": 0.2857142857142857,
             "auroc": 0.5
           }
         },
@@ -164,14 +164,14 @@
           "fpr=0.01": {
             "tp": 0,
             "fp": 0,
-            "tn": 134,
-            "fn": 53
+            "tn": 145,
+            "fn": 58
           },
           "fpr=0.001": {
             "tp": 0,
             "fp": 0,
-            "tn": 134,
-            "fn": 53
+            "tn": 145,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -262,7 +262,7 @@
         "fpr=0.01": 0.0,
         "fpr=0.001": 0.0
       },
-      "shift_auprc": 0.1517
+      "shift_auprc": 0.1494
     },
     {
       "system": "keyword",
@@ -276,12 +276,12 @@
       "dev": {
         "system": "keyword",
         "split": "dev",
-        "n": 190,
-        "positives": 53,
-        "negatives": 137,
-        "auprc": 0.2686196623634558,
-        "auroc": 0.46598264701831704,
-        "positive_rate": 0.2789473684210526,
+        "n": 208,
+        "positives": 58,
+        "negatives": 150,
+        "auprc": 0.27945402298850575,
+        "auroc": 0.5014942528735633,
+        "positive_rate": 0.27884615384615385,
         "tpr_at_fpr": {
           "fpr=0.01": 0.0,
           "fpr=0.001": 0.0
@@ -304,10 +304,10 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 54.0,
-            "positives": 14.0,
-            "auprc": 0.25793650793650796,
-            "auroc": 0.4964285714285714
+            "n": 63.0,
+            "positives": 16.0,
+            "auprc": 0.31547619047619047,
+            "auroc": 0.5824468085106382
           },
           "tool_metadata": {
             "n": 62.0,
@@ -316,18 +316,18 @@
             "auroc": 0.3522727272727273
           },
           "tool_response": {
-            "n": 74.0,
-            "positives": 21.0,
-            "auprc": 0.3035430388371565,
-            "auroc": 0.5390835579514824
+            "n": 83.0,
+            "positives": 24.0,
+            "auprc": 0.31824520303435966,
+            "auroc": 0.5526129943502825
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 190.0,
-            "positives": 53.0,
-            "auprc": 0.2686196623634558,
-            "auroc": 0.46598264701831704
+            "n": 208.0,
+            "positives": 58.0,
+            "auprc": 0.27945402298850575,
+            "auroc": 0.5014942528735633
           }
         },
         "per_attack_recall": {},
@@ -335,14 +335,14 @@
           "fpr=0.01": {
             "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 53
+            "tn": 150,
+            "fn": 58
           },
           "fpr=0.001": {
             "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 53
+            "tn": 150,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -353,12 +353,12 @@
       "test": {
         "system": "keyword",
         "split": "test",
-        "n": 187,
-        "positives": 53,
-        "negatives": 134,
-        "auprc": 0.40886220697541453,
-        "auroc": 0.638200506899465,
-        "positive_rate": 0.28342245989304815,
+        "n": 203,
+        "positives": 58,
+        "negatives": 145,
+        "auprc": 0.2926687916545928,
+        "auroc": 0.5137931034482759,
+        "positive_rate": 0.2857142857142857,
         "tpr_at_fpr": {
           "fpr=0.01": 0.0,
           "fpr=0.001": 0.0
@@ -381,10 +381,10 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 49.0,
-            "positives": 14.0,
-            "auprc": 0.5153061224489797,
-            "auroc": 0.75
+            "n": 56.0,
+            "positives": 16.0,
+            "auprc": 0.2857142857142857,
+            "auroc": 0.5
           },
           "tool_metadata": {
             "n": 72.0,
@@ -393,18 +393,18 @@
             "auroc": 0.5
           },
           "tool_response": {
-            "n": 66.0,
-            "positives": 21.0,
-            "auprc": 0.4642857142857143,
-            "auroc": 0.6714285714285715
+            "n": 75.0,
+            "positives": 24.0,
+            "auprc": 0.3333333333333333,
+            "auroc": 0.5245098039215687
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 187.0,
-            "positives": 53.0,
-            "auprc": 0.40886220697541453,
-            "auroc": 0.638200506899465
+            "n": 203.0,
+            "positives": 58.0,
+            "auprc": 0.2926687916545928,
+            "auroc": 0.5137931034482759
           }
         },
         "per_attack_recall": {},
@@ -412,14 +412,14 @@
           "fpr=0.01": {
             "tp": 0,
             "fp": 0,
-            "tn": 134,
-            "fn": 53
+            "tn": 145,
+            "fn": 58
           },
           "fpr=0.001": {
             "tp": 0,
             "fp": 0,
-            "tn": 134,
-            "fn": 53
+            "tn": 145,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -510,7 +510,7 @@
         "fpr=0.01": 0.0,
         "fpr=0.001": 0.0
       },
-      "shift_auprc": 0.0262
+      "shift_auprc": 0.1424
     },
     {
       "system": "tfidf-word",
@@ -525,19 +525,19 @@
       "dev": {
         "system": "tfidf-word",
         "split": "dev",
-        "n": 190,
-        "positives": 53,
-        "negatives": 137,
-        "auprc": 0.7904659728368084,
-        "auroc": 0.8690263049166781,
-        "positive_rate": 0.2789473684210526,
+        "n": 208,
+        "positives": 58,
+        "negatives": 150,
+        "auprc": 0.6564316104277075,
+        "auroc": 0.8349425287356322,
+        "positive_rate": 0.27884615384615385,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.49056603773584906,
-          "fpr=0.001": 0.49056603773584906
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "thresholds": {
-          "fpr=0.01": 0.45228415125521737,
-          "fpr=0.001": 0.45228415125521737
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
           "fpr=0.01": 0.0,
@@ -553,82 +553,45 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 54.0,
-            "positives": 14.0,
-            "auprc": 0.6863420487558419,
-            "auroc": 0.8321428571428571,
-            "recall@fpr=0.01": 0.14285714285714285,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.14285714285714285,
-            "fpr@fpr=0.001": 0.0
+            "n": 63.0,
+            "positives": 16.0,
+            "auprc": 0.38742893247520527,
+            "auroc": 0.6529255319148937
           },
           "tool_metadata": {
             "n": 62.0,
             "positives": 18.0,
-            "auprc": 0.8890879515062522,
-            "auroc": 0.9368686868686869,
-            "recall@fpr=0.01": 0.5555555555555556,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.5555555555555556,
-            "fpr@fpr=0.001": 0.0
+            "auprc": 0.9495791415533299,
+            "auroc": 0.9696969696969696
           },
           "tool_response": {
-            "n": 74.0,
-            "positives": 21.0,
-            "auprc": 0.840286407540721,
-            "auroc": 0.8876909254267744,
-            "recall@fpr=0.01": 0.6666666666666666,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.6666666666666666,
-            "fpr@fpr=0.001": 0.0
+            "n": 83.0,
+            "positives": 24.0,
+            "auprc": 0.7010768591158308,
+            "auroc": 0.8742937853107344
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 190.0,
-            "positives": 53.0,
-            "auprc": 0.7904659728368084,
-            "auroc": 0.8690263049166781,
-            "recall@fpr=0.01": 0.49056603773584906,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.49056603773584906,
-            "fpr@fpr=0.001": 0.0
+            "n": 208.0,
+            "positives": 58.0,
+            "auprc": 0.6564316104277075,
+            "auroc": 0.8349425287356322
           }
         },
-        "per_attack_recall": {
-          "fpr=0.01": {
-            "exfiltration": 1.0,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.3333333333333333,
-            "meta_instruction__support": 15.0,
-            "metadata_poisoning": 0.38461538461538464,
-            "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.55,
-            "obfuscation__support": 20.0
-          },
-          "fpr=0.001": {
-            "exfiltration": 1.0,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.3333333333333333,
-            "meta_instruction__support": 15.0,
-            "metadata_poisoning": 0.38461538461538464,
-            "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.55,
-            "obfuscation__support": 20.0
-          }
-        },
+        "per_attack_recall": {},
         "confusion": {
           "fpr=0.01": {
-            "tp": 26,
+            "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 27
+            "tn": 150,
+            "fn": 58
           },
           "fpr=0.001": {
-            "tp": 26,
+            "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 27
+            "tn": 150,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -639,126 +602,82 @@
       "test": {
         "system": "tfidf-word",
         "split": "test",
-        "n": 187,
-        "positives": 53,
-        "negatives": 134,
-        "auprc": 0.6400764224539233,
-        "auroc": 0.8035764573359617,
-        "positive_rate": 0.28342245989304815,
+        "n": 203,
+        "positives": 58,
+        "negatives": 145,
+        "auprc": 0.6602316168096534,
+        "auroc": 0.7934601664684899,
+        "positive_rate": 0.2857142857142857,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.39622641509433965,
-          "fpr=0.001": 0.39622641509433965
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "thresholds": {
-          "fpr=0.01": 0.45228415125521737,
-          "fpr=0.001": 0.45228415125521737
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.09701492537313433,
-          "fpr=0.001": 0.09701492537313433
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
-          "fpr=0.01": true,
-          "fpr=0.001": true
+          "fpr=0.01": false,
+          "fpr=0.001": false
         },
         "hard_negative_fpr": {
-          "fpr=0.01": 0.14084507042253522,
-          "fpr=0.001": 0.14084507042253522
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "per_channel": {
           "rag_document": {
-            "n": 49.0,
-            "positives": 14.0,
-            "auprc": 0.7887611274829319,
-            "auroc": 0.9040816326530612,
-            "recall@fpr=0.01": 0.21428571428571427,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.21428571428571427,
-            "fpr@fpr=0.001": 0.0
+            "n": 56.0,
+            "positives": 16.0,
+            "auprc": 0.7531144747569429,
+            "auroc": 0.8890625000000001
           },
           "tool_metadata": {
             "n": 72.0,
             "positives": 18.0,
-            "auprc": 0.499969592687953,
-            "auroc": 0.7304526748971194,
-            "recall@fpr=0.01": 0.4444444444444444,
-            "fpr@fpr=0.01": 0.24074074074074073,
-            "recall@fpr=0.001": 0.4444444444444444,
-            "fpr@fpr=0.001": 0.24074074074074073
+            "auprc": 0.5564061899242988,
+            "auroc": 0.7582304526748972
           },
           "tool_response": {
-            "n": 66.0,
-            "positives": 21.0,
-            "auprc": 0.8107582311741072,
-            "auroc": 0.8624338624338624,
-            "recall@fpr=0.01": 0.47619047619047616,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.47619047619047616,
-            "fpr@fpr=0.001": 0.0
+            "n": 75.0,
+            "positives": 24.0,
+            "auprc": 0.783909967616363,
+            "auroc": 0.8145424836601306
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 187.0,
-            "positives": 53.0,
-            "auprc": 0.6400764224539233,
-            "auroc": 0.8035764573359617,
-            "recall@fpr=0.01": 0.39622641509433965,
-            "fpr@fpr=0.01": 0.09701492537313433,
-            "recall@fpr=0.001": 0.39622641509433965,
-            "fpr@fpr=0.001": 0.09701492537313433
+            "n": 203.0,
+            "positives": 58.0,
+            "auprc": 0.6602316168096534,
+            "auroc": 0.7934601664684899
           }
         },
-        "per_attack_recall": {
-          "fpr=0.01": {
-            "content_manipulation": 0.7777777777777778,
-            "content_manipulation__support": 9.0,
-            "exfiltration": 0.2,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.2916666666666667,
-            "meta_instruction__support": 24.0,
-            "metadata_poisoning": 0.5,
-            "metadata_poisoning__support": 6.0,
-            "obfuscation": 0.3333333333333333,
-            "obfuscation__support": 9.0
-          },
-          "fpr=0.001": {
-            "content_manipulation": 0.7777777777777778,
-            "content_manipulation__support": 9.0,
-            "exfiltration": 0.2,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.2916666666666667,
-            "meta_instruction__support": 24.0,
-            "metadata_poisoning": 0.5,
-            "metadata_poisoning__support": 6.0,
-            "obfuscation": 0.3333333333333333,
-            "obfuscation__support": 9.0
-          }
-        },
+        "per_attack_recall": {},
         "confusion": {
           "fpr=0.01": {
-            "tp": 21,
-            "fp": 13,
-            "tn": 121,
-            "fn": 32
+            "tp": 0,
+            "fp": 0,
+            "tn": 145,
+            "fn": 58
           },
           "fpr=0.001": {
-            "tp": 21,
-            "fp": 13,
-            "tn": 121,
-            "fn": 32
+            "tp": 0,
+            "fp": 0,
+            "tn": 145,
+            "fn": 58
           }
         },
         "latency_ms": {},
         "ci": {},
         "notes": [
-          "threshold for fpr=0.01 taken from dev: 0.452284",
-          "threshold for fpr=0.001 taken from dev: 0.452284"
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
         ],
-        "warnings": [
-          "fpr=0.01: realised FPR 0.0970 exceeds the 0.01 budget (13 false positives on 134 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
-          "fpr=0.001: realised FPR 0.0970 exceeds the 0.001 budget (13 false positives on 134 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
-        ]
+        "warnings": []
       },
       "ood": {
         "system": "tfidf-word",
@@ -766,104 +685,64 @@
         "n": 1379,
         "positives": 600,
         "negatives": 779,
-        "auprc": 0.5977484863527364,
-        "auroc": 0.6482327770646128,
+        "auprc": 0.5640033081867892,
+        "auroc": 0.6255733846812153,
         "positive_rate": 0.43509789702683105,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.6966666666666667,
-          "fpr=0.001": 0.6966666666666667
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "thresholds": {
-          "fpr=0.01": 0.45228415125521737,
-          "fpr=0.001": 0.45228415125521737
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.5096277278562259,
-          "fpr=0.001": 0.5096277278562259
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
-          "fpr=0.01": true,
-          "fpr=0.001": true
+          "fpr=0.01": false,
+          "fpr=0.001": false
         },
         "hard_negative_fpr": {},
         "per_channel": {
           "rag_document": {
             "n": 1379.0,
             "positives": 600.0,
-            "auprc": 0.5977484863527364,
-            "auroc": 0.6482327770646128,
-            "recall@fpr=0.01": 0.6966666666666667,
-            "fpr@fpr=0.01": 0.5096277278562259,
-            "recall@fpr=0.001": 0.6966666666666667,
-            "fpr@fpr=0.001": 0.5096277278562259
+            "auprc": 0.5640033081867892,
+            "auroc": 0.6255733846812153
           }
         },
         "per_dataset": {
           "bipia": {
             "n": 1379.0,
             "positives": 600.0,
-            "auprc": 0.5977484863527364,
-            "auroc": 0.6482327770646128,
-            "recall@fpr=0.01": 0.6966666666666667,
-            "fpr@fpr=0.01": 0.5096277278562259,
-            "recall@fpr=0.001": 0.6966666666666667,
-            "fpr@fpr=0.001": 0.5096277278562259
+            "auprc": 0.5640033081867892,
+            "auroc": 0.6255733846812153
           }
         },
-        "per_attack_recall": {
-          "fpr=0.01": {
-            "action_hijack": 0.85,
-            "action_hijack__support": 20.0,
-            "content_manipulation": 0.61875,
-            "content_manipulation__support": 160.0,
-            "exfiltration": 0.75,
-            "exfiltration__support": 40.0,
-            "meta_instruction": 0.45,
-            "meta_instruction__support": 20.0,
-            "obfuscation": 0.7875,
-            "obfuscation__support": 80.0,
-            "unknown": 0.7142857142857143,
-            "unknown__support": 280.0
-          },
-          "fpr=0.001": {
-            "action_hijack": 0.85,
-            "action_hijack__support": 20.0,
-            "content_manipulation": 0.61875,
-            "content_manipulation__support": 160.0,
-            "exfiltration": 0.75,
-            "exfiltration__support": 40.0,
-            "meta_instruction": 0.45,
-            "meta_instruction__support": 20.0,
-            "obfuscation": 0.7875,
-            "obfuscation__support": 80.0,
-            "unknown": 0.7142857142857143,
-            "unknown__support": 280.0
-          }
-        },
+        "per_attack_recall": {},
         "confusion": {
           "fpr=0.01": {
-            "tp": 418,
-            "fp": 397,
-            "tn": 382,
-            "fn": 182
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
           },
           "fpr=0.001": {
-            "tp": 418,
-            "fp": 397,
-            "tn": 382,
-            "fn": 182
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
           }
         },
         "latency_ms": {},
         "ci": {},
         "notes": [
-          "threshold for fpr=0.01 taken from dev: 0.452284",
-          "threshold for fpr=0.001 taken from dev: 0.452284"
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
         ],
-        "warnings": [
-          "fpr=0.01: realised FPR 0.5096 exceeds the 0.01 budget (397 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
-          "fpr=0.001: realised FPR 0.5096 exceeds the 0.001 budget (397 false positives on 779 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
-        ]
+        "warnings": []
       },
       "ood_support": {
         "n": 1379,
@@ -873,14 +752,14 @@
       },
       "ood_auprc_informative": true,
       "ood_recall_at_dev_thresholds": {
-        "fpr=0.01": 0.6966666666666667,
-        "fpr=0.001": 0.6966666666666667
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
       },
       "ood_realised_fpr": {
-        "fpr=0.01": 0.5096277278562259,
-        "fpr=0.001": 0.5096277278562259
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
       },
-      "shift_auprc": -0.0423
+      "shift_auprc": -0.0962
     },
     {
       "system": "tfidf-word+char",
@@ -895,22 +774,22 @@
       "dev": {
         "system": "tfidf-word+char",
         "split": "dev",
-        "n": 190,
-        "positives": 53,
-        "negatives": 137,
-        "auprc": 0.8483649095872731,
-        "auroc": 0.9091034292797135,
-        "positive_rate": 0.2789473684210526,
+        "n": 208,
+        "positives": 58,
+        "negatives": 150,
+        "auprc": 0.6625168372373744,
+        "auroc": 0.836551724137931,
+        "positive_rate": 0.27884615384615385,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.5094339622641509,
-          "fpr=0.001": 0.49056603773584906
+          "fpr=0.01": 0.034482758620689655,
+          "fpr=0.001": 0.034482758620689655
         },
         "thresholds": {
-          "fpr=0.01": 0.39784791970541994,
-          "fpr=0.001": 0.418630641370128
+          "fpr=0.01": 0.9383540965404032,
+          "fpr=0.001": 0.9383540965404032
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.0072992700729927005,
+          "fpr=0.01": 0.0,
           "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
@@ -923,82 +802,82 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 54.0,
-            "positives": 14.0,
-            "auprc": 0.7618811128663345,
-            "auroc": 0.8517857142857144,
-            "recall@fpr=0.01": 0.21428571428571427,
+            "n": 63.0,
+            "positives": 16.0,
+            "auprc": 0.39172815517674797,
+            "auroc": 0.6236702127659575,
+            "recall@fpr=0.01": 0.0,
             "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.14285714285714285,
+            "recall@fpr=0.001": 0.0,
             "fpr@fpr=0.001": 0.0
           },
           "tool_metadata": {
             "n": 62.0,
             "positives": 18.0,
-            "auprc": 0.92160298070784,
-            "auroc": 0.962121212121212,
-            "recall@fpr=0.01": 0.6111111111111112,
-            "fpr@fpr=0.01": 0.022727272727272728,
-            "recall@fpr=0.001": 0.6111111111111112,
+            "auprc": 0.9632804232804233,
+            "auroc": 0.9810606060606061,
+            "recall@fpr=0.01": 0.1111111111111111,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.1111111111111111,
             "fpr@fpr=0.001": 0.0
           },
           "tool_response": {
-            "n": 74.0,
-            "positives": 21.0,
-            "auprc": 0.864432984754788,
-            "auroc": 0.89937106918239,
-            "recall@fpr=0.01": 0.6190476190476191,
+            "n": 83.0,
+            "positives": 24.0,
+            "auprc": 0.6393947905025874,
+            "auroc": 0.8312146892655368,
+            "recall@fpr=0.01": 0.0,
             "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.6190476190476191,
+            "recall@fpr=0.001": 0.0,
             "fpr@fpr=0.001": 0.0
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 190.0,
-            "positives": 53.0,
-            "auprc": 0.8483649095872731,
-            "auroc": 0.9091034292797135,
-            "recall@fpr=0.01": 0.5094339622641509,
-            "fpr@fpr=0.01": 0.0072992700729927005,
-            "recall@fpr=0.001": 0.49056603773584906,
+            "n": 208.0,
+            "positives": 58.0,
+            "auprc": 0.6625168372373744,
+            "auroc": 0.836551724137931,
+            "recall@fpr=0.01": 0.034482758620689655,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.034482758620689655,
             "fpr@fpr=0.001": 0.0
           }
         },
         "per_attack_recall": {
           "fpr=0.01": {
-            "exfiltration": 1.0,
+            "exfiltration": 0.4,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.4,
-            "meta_instruction__support": 15.0,
-            "metadata_poisoning": 0.46153846153846156,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 16.0,
+            "metadata_poisoning": 0.0,
             "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.5,
-            "obfuscation__support": 20.0
+            "obfuscation": 0.0,
+            "obfuscation__support": 24.0
           },
           "fpr=0.001": {
-            "exfiltration": 1.0,
+            "exfiltration": 0.4,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.3333333333333333,
-            "meta_instruction__support": 15.0,
-            "metadata_poisoning": 0.46153846153846156,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 16.0,
+            "metadata_poisoning": 0.0,
             "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.5,
-            "obfuscation__support": 20.0
+            "obfuscation": 0.0,
+            "obfuscation__support": 24.0
           }
         },
         "confusion": {
           "fpr=0.01": {
-            "tp": 27,
-            "fp": 1,
-            "tn": 136,
-            "fn": 26
+            "tp": 2,
+            "fp": 0,
+            "tn": 150,
+            "fn": 56
           },
           "fpr=0.001": {
-            "tp": 26,
+            "tp": 2,
             "fp": 0,
-            "tn": 137,
-            "fn": 27
+            "tn": 150,
+            "fn": 56
           }
         },
         "latency_ms": {},
@@ -1009,126 +888,123 @@
       "test": {
         "system": "tfidf-word+char",
         "split": "test",
-        "n": 187,
-        "positives": 53,
-        "negatives": 134,
-        "auprc": 0.6800298960206536,
-        "auroc": 0.8134328358208955,
-        "positive_rate": 0.28342245989304815,
+        "n": 203,
+        "positives": 58,
+        "negatives": 145,
+        "auprc": 0.6972605759520917,
+        "auroc": 0.8041617122473246,
+        "positive_rate": 0.2857142857142857,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.5094339622641509,
-          "fpr=0.001": 0.4716981132075472
+          "fpr=0.01": 0.017241379310344827,
+          "fpr=0.001": 0.017241379310344827
         },
         "thresholds": {
-          "fpr=0.01": 0.39784791970541994,
-          "fpr=0.001": 0.418630641370128
+          "fpr=0.01": 0.9383540965404032,
+          "fpr=0.001": 0.9383540965404032
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.15671641791044777,
-          "fpr=0.001": 0.1417910447761194
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
-          "fpr=0.01": true,
-          "fpr=0.001": true
+          "fpr=0.01": false,
+          "fpr=0.001": false
         },
         "hard_negative_fpr": {
-          "fpr=0.01": 0.23943661971830985,
-          "fpr=0.001": 0.22535211267605634
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "per_channel": {
           "rag_document": {
-            "n": 49.0,
-            "positives": 14.0,
-            "auprc": 0.8940312663526949,
-            "auroc": 0.9510204081632654,
-            "recall@fpr=0.01": 0.35714285714285715,
+            "n": 56.0,
+            "positives": 16.0,
+            "auprc": 0.8247770345596432,
+            "auroc": 0.9312499999999999,
+            "recall@fpr=0.01": 0.0,
             "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.2857142857142857,
+            "recall@fpr=0.001": 0.0,
             "fpr@fpr=0.001": 0.0
           },
           "tool_metadata": {
             "n": 72.0,
             "positives": 18.0,
-            "auprc": 0.4795985777932025,
-            "auroc": 0.6851851851851852,
-            "recall@fpr=0.01": 0.5,
-            "fpr@fpr=0.01": 0.3333333333333333,
-            "recall@fpr=0.001": 0.5,
-            "fpr@fpr=0.001": 0.3148148148148148
+            "auprc": 0.5636774870115036,
+            "auroc": 0.7448559670781892,
+            "recall@fpr=0.01": 0.0,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.0,
+            "fpr@fpr=0.001": 0.0
           },
           "tool_response": {
-            "n": 66.0,
-            "positives": 21.0,
-            "auprc": 0.8290057432416237,
-            "auroc": 0.8730158730158729,
-            "recall@fpr=0.01": 0.6190476190476191,
-            "fpr@fpr=0.01": 0.06666666666666667,
-            "recall@fpr=0.001": 0.5714285714285714,
-            "fpr@fpr=0.001": 0.044444444444444446
+            "n": 75.0,
+            "positives": 24.0,
+            "auprc": 0.8330872740724437,
+            "auroc": 0.8480392156862745,
+            "recall@fpr=0.01": 0.041666666666666664,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.041666666666666664,
+            "fpr@fpr=0.001": 0.0
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 187.0,
-            "positives": 53.0,
-            "auprc": 0.6800298960206536,
-            "auroc": 0.8134328358208955,
-            "recall@fpr=0.01": 0.5094339622641509,
-            "fpr@fpr=0.01": 0.15671641791044777,
-            "recall@fpr=0.001": 0.4716981132075472,
-            "fpr@fpr=0.001": 0.1417910447761194
+            "n": 203.0,
+            "positives": 58.0,
+            "auprc": 0.6972605759520917,
+            "auroc": 0.8041617122473246,
+            "recall@fpr=0.01": 0.017241379310344827,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.017241379310344827,
+            "fpr@fpr=0.001": 0.0
           }
         },
         "per_attack_recall": {
           "fpr=0.01": {
-            "content_manipulation": 0.7777777777777778,
-            "content_manipulation__support": 9.0,
-            "exfiltration": 0.2,
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 27.0,
+            "exfiltration": 0.0,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.5416666666666666,
-            "meta_instruction__support": 24.0,
-            "metadata_poisoning": 0.3333333333333333,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 16.0,
+            "metadata_poisoning": 0.0,
             "metadata_poisoning__support": 6.0,
-            "obfuscation": 0.4444444444444444,
-            "obfuscation__support": 9.0
+            "obfuscation": 0.25,
+            "obfuscation__support": 4.0
           },
           "fpr=0.001": {
-            "content_manipulation": 0.6666666666666666,
-            "content_manipulation__support": 9.0,
-            "exfiltration": 0.2,
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 27.0,
+            "exfiltration": 0.0,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.5,
-            "meta_instruction__support": 24.0,
-            "metadata_poisoning": 0.3333333333333333,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 16.0,
+            "metadata_poisoning": 0.0,
             "metadata_poisoning__support": 6.0,
-            "obfuscation": 0.4444444444444444,
-            "obfuscation__support": 9.0
+            "obfuscation": 0.25,
+            "obfuscation__support": 4.0
           }
         },
         "confusion": {
           "fpr=0.01": {
-            "tp": 27,
-            "fp": 21,
-            "tn": 113,
-            "fn": 26
+            "tp": 1,
+            "fp": 0,
+            "tn": 145,
+            "fn": 57
           },
           "fpr=0.001": {
-            "tp": 25,
-            "fp": 19,
-            "tn": 115,
-            "fn": 28
+            "tp": 1,
+            "fp": 0,
+            "tn": 145,
+            "fn": 57
           }
         },
         "latency_ms": {},
         "ci": {},
         "notes": [
-          "threshold for fpr=0.01 taken from dev: 0.397848",
-          "threshold for fpr=0.001 taken from dev: 0.418631"
+          "threshold for fpr=0.01 taken from dev: 0.938354",
+          "threshold for fpr=0.001 taken from dev: 0.938354"
         ],
-        "warnings": [
-          "fpr=0.01: realised FPR 0.1567 exceeds the 0.01 budget (21 false positives on 134 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
-          "fpr=0.001: realised FPR 0.1418 exceeds the 0.001 budget (19 false positives on 134 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
-        ]
+        "warnings": []
       },
       "ood": {
         "system": "tfidf-word+char",
@@ -1136,104 +1012,101 @@
         "n": 1379,
         "positives": 600,
         "negatives": 779,
-        "auprc": 0.6102230302052029,
-        "auroc": 0.6906354300385109,
+        "auprc": 0.5805633712570599,
+        "auroc": 0.6667736414206248,
         "positive_rate": 0.43509789702683105,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.6333333333333333,
-          "fpr=0.001": 0.5833333333333334
+          "fpr=0.01": 0.0016666666666666668,
+          "fpr=0.001": 0.0016666666666666668
         },
         "thresholds": {
-          "fpr=0.01": 0.39784791970541994,
-          "fpr=0.001": 0.418630641370128
+          "fpr=0.01": 0.9383540965404032,
+          "fpr=0.001": 0.9383540965404032
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.28241335044929394,
-          "fpr=0.001": 0.24261874197689345
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
-          "fpr=0.01": true,
-          "fpr=0.001": true
+          "fpr=0.01": false,
+          "fpr=0.001": false
         },
         "hard_negative_fpr": {},
         "per_channel": {
           "rag_document": {
             "n": 1379.0,
             "positives": 600.0,
-            "auprc": 0.6102230302052029,
-            "auroc": 0.6906354300385109,
-            "recall@fpr=0.01": 0.6333333333333333,
-            "fpr@fpr=0.01": 0.28241335044929394,
-            "recall@fpr=0.001": 0.5833333333333334,
-            "fpr@fpr=0.001": 0.24261874197689345
+            "auprc": 0.5805633712570599,
+            "auroc": 0.6667736414206248,
+            "recall@fpr=0.01": 0.0016666666666666668,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.0016666666666666668,
+            "fpr@fpr=0.001": 0.0
           }
         },
         "per_dataset": {
           "bipia": {
             "n": 1379.0,
             "positives": 600.0,
-            "auprc": 0.6102230302052029,
-            "auroc": 0.6906354300385109,
-            "recall@fpr=0.01": 0.6333333333333333,
-            "fpr@fpr=0.01": 0.28241335044929394,
-            "recall@fpr=0.001": 0.5833333333333334,
-            "fpr@fpr=0.001": 0.24261874197689345
+            "auprc": 0.5805633712570599,
+            "auroc": 0.6667736414206248,
+            "recall@fpr=0.01": 0.0016666666666666668,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.0016666666666666668,
+            "fpr@fpr=0.001": 0.0
           }
         },
         "per_attack_recall": {
           "fpr=0.01": {
-            "action_hijack": 0.85,
+            "action_hijack": 0.0,
             "action_hijack__support": 20.0,
-            "content_manipulation": 0.5375,
+            "content_manipulation": 0.0,
             "content_manipulation__support": 160.0,
-            "exfiltration": 0.725,
+            "exfiltration": 0.0,
             "exfiltration__support": 40.0,
-            "meta_instruction": 0.45,
+            "meta_instruction": 0.0,
             "meta_instruction__support": 20.0,
-            "obfuscation": 0.7625,
+            "obfuscation": 0.0,
             "obfuscation__support": 80.0,
-            "unknown": 0.6357142857142857,
+            "unknown": 0.0035714285714285713,
             "unknown__support": 280.0
           },
           "fpr=0.001": {
-            "action_hijack": 0.8,
+            "action_hijack": 0.0,
             "action_hijack__support": 20.0,
-            "content_manipulation": 0.48125,
+            "content_manipulation": 0.0,
             "content_manipulation__support": 160.0,
-            "exfiltration": 0.7,
+            "exfiltration": 0.0,
             "exfiltration__support": 40.0,
-            "meta_instruction": 0.3,
+            "meta_instruction": 0.0,
             "meta_instruction__support": 20.0,
-            "obfuscation": 0.7125,
+            "obfuscation": 0.0,
             "obfuscation__support": 80.0,
-            "unknown": 0.5928571428571429,
+            "unknown": 0.0035714285714285713,
             "unknown__support": 280.0
           }
         },
         "confusion": {
           "fpr=0.01": {
-            "tp": 380,
-            "fp": 220,
-            "tn": 559,
-            "fn": 220
+            "tp": 1,
+            "fp": 0,
+            "tn": 779,
+            "fn": 599
           },
           "fpr=0.001": {
-            "tp": 350,
-            "fp": 189,
-            "tn": 590,
-            "fn": 250
+            "tp": 1,
+            "fp": 0,
+            "tn": 779,
+            "fn": 599
           }
         },
         "latency_ms": {},
         "ci": {},
         "notes": [
-          "threshold for fpr=0.01 taken from dev: 0.397848",
-          "threshold for fpr=0.001 taken from dev: 0.418631"
+          "threshold for fpr=0.01 taken from dev: 0.938354",
+          "threshold for fpr=0.001 taken from dev: 0.938354"
         ],
-        "warnings": [
-          "fpr=0.01: realised FPR 0.2824 exceeds the 0.01 budget (220 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
-          "fpr=0.001: realised FPR 0.2426 exceeds the 0.001 budget (189 false positives on 779 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
-        ]
+        "warnings": []
       },
       "ood_support": {
         "n": 1379,
@@ -1243,14 +1116,14 @@
       },
       "ood_auprc_informative": true,
       "ood_recall_at_dev_thresholds": {
-        "fpr=0.01": 0.6333333333333333,
-        "fpr=0.001": 0.5833333333333334
+        "fpr=0.01": 0.0016666666666666668,
+        "fpr=0.001": 0.0016666666666666668
       },
       "ood_realised_fpr": {
-        "fpr=0.01": 0.28241335044929394,
-        "fpr=0.001": 0.24261874197689345
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
       },
-      "shift_auprc": -0.0698
+      "shift_auprc": -0.1167
     },
     {
       "system": "rules-only",
@@ -1261,6 +1134,7 @@
         "rules": [
           "meta_instruction.v1",
           "secrecy_directive.v1",
+          "answer_shaping.v1",
           "assistant_address.v1",
           "obfuscation.v1",
           "exfiltration.v1",
@@ -1271,10 +1145,10 @@
         ],
         "disabled_families": [],
         "disabled_rules": [],
-        "feature_count": 46,
+        "feature_count": 49,
         "strict": false,
         "errors": {
-          "units_scored": 1272,
+          "units_scored": 1306,
           "rule_failures": {},
           "total_failures": 0,
           "failure_rate": 0.0,
@@ -1284,22 +1158,22 @@
       "dev": {
         "system": "rules-only",
         "split": "dev",
-        "n": 190,
-        "positives": 53,
-        "negatives": 137,
-        "auprc": 0.7762545006606076,
-        "auroc": 0.8969838865170087,
-        "positive_rate": 0.2789473684210526,
+        "n": 208,
+        "positives": 58,
+        "negatives": 150,
+        "auprc": 0.7923065042859103,
+        "auroc": 0.9072988505747126,
+        "positive_rate": 0.27884615384615385,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.41509433962264153,
-          "fpr=0.001": 0.018867924528301886
+          "fpr=0.01": 0.4482758620689655,
+          "fpr=0.001": 0.0
         },
         "thresholds": {
           "fpr=0.01": 0.833969,
-          "fpr=0.001": 0.941668
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
-          "fpr=0.01": 0.0072992700729927005,
+          "fpr=0.01": 0.006666666666666667,
           "fpr=0.001": 0.0
         },
         "fpr_budget_exceeded": {
@@ -1307,19 +1181,17 @@
           "fpr=0.001": false
         },
         "hard_negative_fpr": {
-          "fpr=0.01": 0.016666666666666666,
+          "fpr=0.01": 0.012345679012345678,
           "fpr=0.001": 0.0
         },
         "per_channel": {
           "rag_document": {
-            "n": 54.0,
-            "positives": 14.0,
+            "n": 63.0,
+            "positives": 16.0,
             "auprc": 1.0,
             "auroc": 1.0,
-            "recall@fpr=0.01": 0.5714285714285714,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.07142857142857142,
-            "fpr@fpr=0.001": 0.0
+            "recall@fpr=0.01": 0.5625,
+            "fpr@fpr=0.01": 0.0
           },
           "tool_metadata": {
             "n": 62.0,
@@ -1327,67 +1199,51 @@
             "auprc": 0.6568162155481398,
             "auroc": 0.7550505050505052,
             "recall@fpr=0.01": 0.1111111111111111,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.0,
-            "fpr@fpr=0.001": 0.0
+            "fpr@fpr=0.01": 0.0
           },
           "tool_response": {
-            "n": 74.0,
-            "positives": 21.0,
-            "auprc": 0.8425119853691283,
-            "auroc": 0.9487870619946092,
-            "recall@fpr=0.01": 0.5714285714285714,
-            "fpr@fpr=0.01": 0.018867924528301886,
-            "recall@fpr=0.001": 0.0,
-            "fpr@fpr=0.001": 0.0
+            "n": 83.0,
+            "positives": 24.0,
+            "auprc": 0.8650793650793651,
+            "auroc": 0.9540960451977402,
+            "recall@fpr=0.01": 0.625,
+            "fpr@fpr=0.01": 0.01694915254237288
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 190.0,
-            "positives": 53.0,
-            "auprc": 0.7762545006606076,
-            "auroc": 0.8969838865170087,
-            "recall@fpr=0.01": 0.41509433962264153,
-            "fpr@fpr=0.01": 0.0072992700729927005,
-            "recall@fpr=0.001": 0.018867924528301886,
-            "fpr@fpr=0.001": 0.0
+            "n": 208.0,
+            "positives": 58.0,
+            "auprc": 0.7923065042859103,
+            "auroc": 0.9072988505747126,
+            "recall@fpr=0.01": 0.4482758620689655,
+            "fpr@fpr=0.01": 0.006666666666666667
           }
         },
         "per_attack_recall": {
           "fpr=0.01": {
             "exfiltration": 0.0,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.06666666666666667,
-            "meta_instruction__support": 15.0,
+            "meta_instruction": 0.0625,
+            "meta_instruction__support": 16.0,
             "metadata_poisoning": 0.15384615384615385,
             "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.95,
-            "obfuscation__support": 20.0
-          },
-          "fpr=0.001": {
-            "exfiltration": 0.0,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.0,
-            "meta_instruction__support": 15.0,
-            "metadata_poisoning": 0.0,
-            "metadata_poisoning__support": 13.0,
-            "obfuscation": 0.05,
-            "obfuscation__support": 20.0
+            "obfuscation": 0.9583333333333334,
+            "obfuscation__support": 24.0
           }
         },
         "confusion": {
           "fpr=0.01": {
-            "tp": 22,
+            "tp": 26,
             "fp": 1,
-            "tn": 136,
-            "fn": 31
+            "tn": 149,
+            "fn": 32
           },
           "fpr=0.001": {
-            "tp": 1,
+            "tp": 0,
             "fp": 0,
-            "tn": 137,
-            "fn": 52
+            "tn": 150,
+            "fn": 58
           }
         },
         "latency_ms": {},
@@ -1398,19 +1254,19 @@
       "test": {
         "system": "rules-only",
         "split": "test",
-        "n": 187,
-        "positives": 53,
-        "negatives": 134,
-        "auprc": 0.7980236335175293,
-        "auroc": 0.8481413686285554,
-        "positive_rate": 0.28342245989304815,
+        "n": 203,
+        "positives": 58,
+        "negatives": 145,
+        "auprc": 0.7136156679900237,
+        "auroc": 0.7694411414982165,
+        "positive_rate": 0.2857142857142857,
         "tpr_at_fpr": {
-          "fpr=0.01": 0.49056603773584906,
-          "fpr=0.001": 0.1320754716981132
+          "fpr=0.01": 0.41379310344827586,
+          "fpr=0.001": 0.0
         },
         "thresholds": {
           "fpr=0.01": 0.833969,
-          "fpr=0.001": 0.941668
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
           "fpr=0.01": 0.0,
@@ -1426,14 +1282,12 @@
         },
         "per_channel": {
           "rag_document": {
-            "n": 49.0,
-            "positives": 14.0,
-            "auprc": 0.846938775510204,
-            "auroc": 0.8653061224489795,
-            "recall@fpr=0.01": 0.5,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.2857142857142857,
-            "fpr@fpr=0.001": 0.0
+            "n": 56.0,
+            "positives": 16.0,
+            "auprc": 0.6081349206349207,
+            "auroc": 0.6468750000000001,
+            "recall@fpr=0.01": 0.25,
+            "fpr@fpr=0.01": 0.0
           },
           "tool_metadata": {
             "n": 72.0,
@@ -1441,78 +1295,60 @@
             "auprc": 0.7121218786659964,
             "auroc": 0.8132716049382717,
             "recall@fpr=0.01": 0.3888888888888889,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.05555555555555555,
-            "fpr@fpr=0.001": 0.0
+            "fpr@fpr=0.01": 0.0
           },
           "tool_response": {
-            "n": 66.0,
-            "positives": 21.0,
-            "auprc": 0.8447204968944099,
-            "auroc": 0.8793650793650793,
-            "recall@fpr=0.01": 0.5714285714285714,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.09523809523809523,
-            "fpr@fpr=0.001": 0.0
+            "n": 75.0,
+            "positives": 24.0,
+            "auprc": 0.8133333333333334,
+            "auroc": 0.8357843137254902,
+            "recall@fpr=0.01": 0.5416666666666666,
+            "fpr@fpr=0.01": 0.0
           }
         },
         "per_dataset": {
           "builtin": {
-            "n": 187.0,
-            "positives": 53.0,
-            "auprc": 0.7980236335175293,
-            "auroc": 0.8481413686285554,
-            "recall@fpr=0.01": 0.49056603773584906,
-            "fpr@fpr=0.01": 0.0,
-            "recall@fpr=0.001": 0.1320754716981132,
-            "fpr@fpr=0.001": 0.0
+            "n": 203.0,
+            "positives": 58.0,
+            "auprc": 0.7136156679900237,
+            "auroc": 0.7694411414982165,
+            "recall@fpr=0.01": 0.41379310344827586,
+            "fpr@fpr=0.01": 0.0
           }
         },
         "per_attack_recall": {
           "fpr=0.01": {
-            "content_manipulation": 0.0,
-            "content_manipulation__support": 9.0,
+            "content_manipulation": 0.2962962962962963,
+            "content_manipulation__support": 27.0,
             "exfiltration": 0.0,
             "exfiltration__support": 5.0,
-            "meta_instruction": 0.7083333333333334,
-            "meta_instruction__support": 24.0,
+            "meta_instruction": 0.8125,
+            "meta_instruction__support": 16.0,
             "metadata_poisoning": 0.0,
             "metadata_poisoning__support": 6.0,
-            "obfuscation": 1.0,
-            "obfuscation__support": 9.0
-          },
-          "fpr=0.001": {
-            "content_manipulation": 0.0,
-            "content_manipulation__support": 9.0,
-            "exfiltration": 0.0,
-            "exfiltration__support": 5.0,
-            "meta_instruction": 0.041666666666666664,
-            "meta_instruction__support": 24.0,
-            "metadata_poisoning": 0.0,
-            "metadata_poisoning__support": 6.0,
-            "obfuscation": 0.6666666666666666,
-            "obfuscation__support": 9.0
+            "obfuscation": 0.75,
+            "obfuscation__support": 4.0
           }
         },
         "confusion": {
           "fpr=0.01": {
-            "tp": 26,
+            "tp": 24,
             "fp": 0,
-            "tn": 134,
-            "fn": 27
+            "tn": 145,
+            "fn": 34
           },
           "fpr=0.001": {
-            "tp": 7,
+            "tp": 0,
             "fp": 0,
-            "tn": 134,
-            "fn": 46
+            "tn": 145,
+            "fn": 58
           }
         },
         "latency_ms": {},
         "ci": {},
         "notes": [
           "threshold for fpr=0.01 taken from dev: 0.833969",
-          "threshold for fpr=0.001 taken from dev: 0.941668"
+          "threshold for fpr=0.001 taken from dev: inf"
         ],
         "warnings": []
       },
@@ -1531,7 +1367,7 @@
         },
         "thresholds": {
           "fpr=0.01": 0.833969,
-          "fpr=0.001": 0.941668
+          "fpr=0.001": Infinity
         },
         "fpr_achieved": {
           "fpr=0.01": 0.021822849807445442,
@@ -1549,9 +1385,7 @@
             "auprc": 0.4689275106675224,
             "auroc": 0.5547068891741549,
             "recall@fpr=0.01": 0.05,
-            "fpr@fpr=0.01": 0.021822849807445442,
-            "recall@fpr=0.001": 0.0,
-            "fpr@fpr=0.001": 0.0
+            "fpr@fpr=0.01": 0.021822849807445442
           }
         },
         "per_dataset": {
@@ -1561,9 +1395,7 @@
             "auprc": 0.4689275106675224,
             "auroc": 0.5547068891741549,
             "recall@fpr=0.01": 0.05,
-            "fpr@fpr=0.01": 0.021822849807445442,
-            "recall@fpr=0.001": 0.0,
-            "fpr@fpr=0.001": 0.0
+            "fpr@fpr=0.01": 0.021822849807445442
           }
         },
         "per_attack_recall": {
@@ -1579,20 +1411,6 @@
             "obfuscation": 0.0,
             "obfuscation__support": 80.0,
             "unknown": 0.08928571428571429,
-            "unknown__support": 280.0
-          },
-          "fpr=0.001": {
-            "action_hijack": 0.0,
-            "action_hijack__support": 20.0,
-            "content_manipulation": 0.0,
-            "content_manipulation__support": 160.0,
-            "exfiltration": 0.0,
-            "exfiltration__support": 40.0,
-            "meta_instruction": 0.0,
-            "meta_instruction__support": 20.0,
-            "obfuscation": 0.0,
-            "obfuscation__support": 80.0,
-            "unknown": 0.0,
             "unknown__support": 280.0
           }
         },
@@ -1614,7 +1432,7 @@
         "ci": {},
         "notes": [
           "threshold for fpr=0.01 taken from dev: 0.833969",
-          "threshold for fpr=0.001 taken from dev: 0.941668"
+          "threshold for fpr=0.001 taken from dev: inf"
         ],
         "warnings": [
           "fpr=0.01: realised FPR 0.0218 exceeds the 0.01 budget (17 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split"
@@ -1635,7 +1453,7 @@
         "fpr=0.01": 0.021822849807445442,
         "fpr=0.001": 0.0
       },
-      "shift_auprc": -0.3291
+      "shift_auprc": -0.2447
     }
   ]
 }

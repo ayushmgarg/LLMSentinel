@@ -1,0 +1,82 @@
+[
+  {
+    "key": "majority|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:53:54+00:00",
+    "forced": false
+  },
+  {
+    "key": "keyword|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:53:54+00:00",
+    "forced": false
+  },
+  {
+    "key": "tfidf-word|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:53:55+00:00",
+    "forced": false
+  },
+  {
+    "key": "tfidf-word+char|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:53:59+00:00",
+    "forced": false
+  },
+  {
+    "key": "rules-only|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:54:03+00:00",
+    "forced": false
+  },
+  {
+    "key": "majority|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T11:54:04+00:00",
+    "forced": false
+  },
+  {
+    "key": "keyword|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T11:54:05+00:00",
+    "forced": false
+  },
+  {
+    "key": "tfidf-word|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T11:54:06+00:00",
+    "forced": false
+  },
+  {
+    "key": "tfidf-word+char|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T11:54:09+00:00",
+    "forced": false
+  },
+  {
+    "key": "rules-only|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T11:54:18+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250909)|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T11:58:45+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250910)|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T12:03:50+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250911)|injecagent|444a988f2b69cac5|59a18622de216194",
+    "timestamp": "2026-09-16T12:09:30+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250909)|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T12:11:54+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250910)|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T12:14:18+00:00",
+    "forced": false
+  },
+  {
+    "key": "transformer(seed=20250911)|bipia|7bf9438e69e90000|ce9096695512a1fa",
+    "timestamp": "2026-09-16T12:16:43+00:00",
+    "forced": false
+  }
+]

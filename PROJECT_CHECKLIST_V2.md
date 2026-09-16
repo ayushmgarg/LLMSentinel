@@ -289,13 +289,16 @@ result worth reporting.
 - [x] Thicken the `tool_metadata` channel so dev/test have measurable positive
       support (currently ~5 test positives), not just an indicative number.
       *(opt-in `data/seed/hardening/`: 18 test positives / 72)*
-- [ ] Retrain (multi-seed, GPU) on the harder corpus and re-run the once-only test
+- [x] Retrain (multi-seed, GPU) on the harder corpus and re-run the once-only test
       protocol; do not tune on the OOD set.
-      *(kit ready: `scripts/hardening_kit.ps1` / `.sh`; waiting on the GPU run)*
-- [ ] Report OOD AUPRC / TPR@FPR next to the in-distribution numbers, and state
+      *(2026-09-16: 3 seeds × 2 held-out sources on CUDA, every set scored once, no forced
+      runs; canonical corpus also reproduced on the same machine — test AUPRC 0.986 vs
+      committed 0.984)*
+- [x] Report OOD AUPRC / TPR@FPR next to the in-distribution numbers, and state
       plainly whether performance holds or drops — the drop is the finding.
-      *(baselines reported: rules-only 0.798 → 0.469 on held-out BIPIA; recall ≤ 0.022
-      on held-out InjecAgent; transformer rows pending the GPU run)*
+      *(held-out BIPIA: transformer 0.861 in-dist → 0.673 OOD, still above every
+      baseline; dev thresholds catch 0–9% OOD; soft-claim content manipulation not
+      solved by retraining — `docs/ood_evaluation.md`, report §6a)*
 - [x] Keep this clearly separate from the in-distribution results and never quote
       an OOD number as if it were in-distribution (or vice versa).
 

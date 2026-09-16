@@ -1223,3 +1223,57 @@ browser; same tokens, so contrast rules are unchanged). The six references in
 lists match; venues added for [2] NeurIPS 2022 ML Safety Workshop, [3] KDD 2025,
 [4] Findings of ACL 2024; [1]'s abstract page lists no venue, so it stays a preprint;
 [5] MCP site (spec dated 2026-07-28 when checked); [6] "LLM01:2025 Prompt Injection".
+
+## 2026-09-16 · GPU delivery: canonical reproduction and §16a transformer OOD run
+
+**Provenance.** Both kits (`train_and_eval.ps1`, `hardening_kit.ps1`) run from a fresh
+`a1` download at `4bba97a` on a second machine: Windows, Python 3.10, NVIDIA GPU with
+torch 2.5.1+cu121, transformers 5.17.0. Every seed logged `cuda`. The canonical ledger
+shows one unforced test scoring of digest `0311c325`, and the OOD ledger shows 16
+unforced entries, one per system × held-out source. Raw delivery kept unmodified
+outside git (`LLMSentinel-delivery/`, gitignored); integrated copies, UTF-8 logs and
+both ledgers are in `artifacts/results/gpu_rerun_2026-09-16/`, figures in
+`artifacts/figures/gpu_rerun_2026-09-16/`. Nothing was deleted: the earlier-digest
+OOD baselines moved to `artifacts/results/ood/pre_answer_shaping_2026-09-16/`.
+
+**Canonical reproduction.** Seeds 20250909/10/11 dev AUPRC 0.9645 / 0.9372 / 0.9464
+→ **0.9494 ± 0.0113** (committed run: 0.9515 ± 0.011). Canonical-seed test AUPRC
+**0.986** (committed 0.984); TPR 0.930 at realised test FPR 0.0411 (committed: 0.920
+at 0.0274); hybrid test 0.985 (0.981); rules-only test 0.579 (0.574: the one test
+positive matched by `answer_shaping.v1`). Baselines identical. The committed canonical
+files stay in place because their thresholds belong to the released checkpoint; the
+re-run is kept as a reproduction.
+
+**Reporting errors found and corrected in `docs/report.md`.**
+1. The headline "test TPR@1%FPR 0.920" omitted that the dev threshold admits 4 / 146
+   test negatives (2.74%), which is over the 1% budget. The flag was always in
+   `results_test.json`; the report table did not carry it.
+2. The same table listed the TF-IDF hard-negative FPR as 0.000; the results say 0.164
+   (word) and 0.127 (word+char).
+
+**§16a transformer results (3 seeds, scored once).**
+
+| held out | dev AUPRC | in-dist test AUPRC | OOD AUPRC | OOD recall @ dev 1% |
+|---|---|---|---|---|
+| BIPIA | 0.694 ± 0.031 | 0.861 ± 0.021 | 0.673 ± 0.038 | 0.044 ± 0.030 |
+| InjecAgent | 0.959 ± 0.013 | 0.980 ± 0.007 | 0.993 (n/i) | 0.000 (all seeds) |
+
+Best OOD baseline on held-out BIPIA: tfidf-word+char 0.581; rules-only 0.469.
+
+**Findings.**
+- The transformer loses 0.187 ± 0.023 AUPRC when BIPIA is held out, but remains above
+  every baseline.
+- Dev operating points do not transfer across sources (recall 0–9%), even where the
+  ranking looks strong.
+- `tool_metadata` (18 test positives): transformer 0.905–0.920 (InjecAgent held out),
+  0.663–0.742 (BIPIA held out); rules-only 0.712.
+- **The soft-claim gap is not closed by retraining.** Content-manipulation recall at the
+  dev 1% threshold on 27 test positives: 0.222 / 0.481 / 0.370 (InjecAgent held out),
+  0.222 / 0.037 / 0.222 (BIPIA held out). The grouped split put `answer_shaping_claim`
+  entirely in train and `assert_over_source` entirely in test. On those 9 test records
+  the released canonical checkpoint scores at most 0.344 (0 / 9 flagged at 0.9954);
+  `answer_shaping.v1` fires on 9 / 9; the 11 style-guide hard negatives in test are
+  flagged by neither. Hardened checkpoints were not returned, so their per-family
+  recall is unmeasured.
+
+§16a is complete: retrain and report items ticked.

@@ -1,0 +1,1641 @@
+{
+  "generated": "2026-09-15T09:28:05+00:00",
+  "held_out": "bipia",
+  "digests": {
+    "indist": "2d6b2599574215a6",
+    "ood": "ce9096695512a1fa"
+  },
+  "sizes": {
+    "dev": 190,
+    "ood": 1379,
+    "test": 187,
+    "train": 1918
+  },
+  "ood_support": {
+    "negatives": 779,
+    "positives": 600,
+    "prevalence": 0.4351
+  },
+  "results": [
+    {
+      "system": "majority",
+      "seed": null,
+      "config": {
+        "name": "majority",
+        "type": "MajorityBaseline",
+        "prior": 0.678310740354536
+      },
+      "dev": {
+        "system": "majority",
+        "split": "dev",
+        "n": 190,
+        "positives": 53,
+        "negatives": 137,
+        "auprc": 0.2789473684210526,
+        "auroc": 0.5,
+        "positive_rate": 0.2789473684210526,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 54.0,
+            "positives": 14.0,
+            "auprc": 0.25925925925925924,
+            "auroc": 0.5
+          },
+          "tool_metadata": {
+            "n": 62.0,
+            "positives": 18.0,
+            "auprc": 0.2903225806451613,
+            "auroc": 0.5
+          },
+          "tool_response": {
+            "n": 74.0,
+            "positives": 21.0,
+            "auprc": 0.28378378378378377,
+            "auroc": 0.5
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 190.0,
+            "positives": 53.0,
+            "auprc": 0.2789473684210526,
+            "auroc": 0.5
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 137,
+            "fn": 53
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 137,
+            "fn": 53
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [],
+        "warnings": []
+      },
+      "test": {
+        "system": "majority",
+        "split": "test",
+        "n": 187,
+        "positives": 53,
+        "negatives": 134,
+        "auprc": 0.28342245989304815,
+        "auroc": 0.5,
+        "positive_rate": 0.28342245989304815,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 49.0,
+            "positives": 14.0,
+            "auprc": 0.2857142857142857,
+            "auroc": 0.5
+          },
+          "tool_metadata": {
+            "n": 72.0,
+            "positives": 18.0,
+            "auprc": 0.25,
+            "auroc": 0.5
+          },
+          "tool_response": {
+            "n": 66.0,
+            "positives": 21.0,
+            "auprc": 0.3181818181818182,
+            "auroc": 0.5
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 187.0,
+            "positives": 53.0,
+            "auprc": 0.28342245989304815,
+            "auroc": 0.5
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 134,
+            "fn": 53
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 134,
+            "fn": 53
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
+        ],
+        "warnings": []
+      },
+      "ood": {
+        "system": "majority",
+        "split": "ood:bipia",
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "auprc": 0.43509789702683105,
+        "auroc": 0.5,
+        "positive_rate": 0.43509789702683105,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {},
+        "per_channel": {
+          "rag_document": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.43509789702683105,
+            "auroc": 0.5
+          }
+        },
+        "per_dataset": {
+          "bipia": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.43509789702683105,
+            "auroc": 0.5
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
+        ],
+        "warnings": []
+      },
+      "ood_support": {
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "prevalence": 0.4351
+      },
+      "ood_auprc_informative": true,
+      "ood_recall_at_dev_thresholds": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "ood_realised_fpr": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "shift_auprc": 0.1517
+    },
+    {
+      "system": "keyword",
+      "seed": null,
+      "config": {
+        "name": "keyword",
+        "type": "KeywordBaseline",
+        "patterns": 25,
+        "saturate_at": 2
+      },
+      "dev": {
+        "system": "keyword",
+        "split": "dev",
+        "n": 190,
+        "positives": 53,
+        "negatives": 137,
+        "auprc": 0.2686196623634558,
+        "auroc": 0.46598264701831704,
+        "positive_rate": 0.2789473684210526,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 54.0,
+            "positives": 14.0,
+            "auprc": 0.25793650793650796,
+            "auroc": 0.4964285714285714
+          },
+          "tool_metadata": {
+            "n": 62.0,
+            "positives": 18.0,
+            "auprc": 0.2903225806451613,
+            "auroc": 0.3522727272727273
+          },
+          "tool_response": {
+            "n": 74.0,
+            "positives": 21.0,
+            "auprc": 0.3035430388371565,
+            "auroc": 0.5390835579514824
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 190.0,
+            "positives": 53.0,
+            "auprc": 0.2686196623634558,
+            "auroc": 0.46598264701831704
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 137,
+            "fn": 53
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 137,
+            "fn": 53
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [],
+        "warnings": []
+      },
+      "test": {
+        "system": "keyword",
+        "split": "test",
+        "n": 187,
+        "positives": 53,
+        "negatives": 134,
+        "auprc": 0.40886220697541453,
+        "auroc": 0.638200506899465,
+        "positive_rate": 0.28342245989304815,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 49.0,
+            "positives": 14.0,
+            "auprc": 0.5153061224489797,
+            "auroc": 0.75
+          },
+          "tool_metadata": {
+            "n": 72.0,
+            "positives": 18.0,
+            "auprc": 0.25,
+            "auroc": 0.5
+          },
+          "tool_response": {
+            "n": 66.0,
+            "positives": 21.0,
+            "auprc": 0.4642857142857143,
+            "auroc": 0.6714285714285715
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 187.0,
+            "positives": 53.0,
+            "auprc": 0.40886220697541453,
+            "auroc": 0.638200506899465
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 134,
+            "fn": 53
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 134,
+            "fn": 53
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
+        ],
+        "warnings": []
+      },
+      "ood": {
+        "system": "keyword",
+        "split": "ood:bipia",
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "auprc": 0.43509789702683105,
+        "auroc": 0.5,
+        "positive_rate": 0.43509789702683105,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": Infinity,
+          "fpr=0.001": Infinity
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {},
+        "per_channel": {
+          "rag_document": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.43509789702683105,
+            "auroc": 0.5
+          }
+        },
+        "per_dataset": {
+          "bipia": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.43509789702683105,
+            "auroc": 0.5
+          }
+        },
+        "per_attack_recall": {},
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: inf",
+          "threshold for fpr=0.001 taken from dev: inf"
+        ],
+        "warnings": []
+      },
+      "ood_support": {
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "prevalence": 0.4351
+      },
+      "ood_auprc_informative": true,
+      "ood_recall_at_dev_thresholds": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "ood_realised_fpr": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "shift_auprc": 0.0262
+    },
+    {
+      "system": "tfidf-word",
+      "seed": null,
+      "config": {
+        "name": "tfidf-word",
+        "type": "TfidfBaseline",
+        "char_ngrams": false,
+        "C": 4.0,
+        "seed": 0
+      },
+      "dev": {
+        "system": "tfidf-word",
+        "split": "dev",
+        "n": 190,
+        "positives": 53,
+        "negatives": 137,
+        "auprc": 0.7904659728368084,
+        "auroc": 0.8690263049166781,
+        "positive_rate": 0.2789473684210526,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.49056603773584906,
+          "fpr=0.001": 0.49056603773584906
+        },
+        "thresholds": {
+          "fpr=0.01": 0.45228415125521737,
+          "fpr=0.001": 0.45228415125521737
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 54.0,
+            "positives": 14.0,
+            "auprc": 0.6863420487558419,
+            "auroc": 0.8321428571428571,
+            "recall@fpr=0.01": 0.14285714285714285,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.14285714285714285,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 62.0,
+            "positives": 18.0,
+            "auprc": 0.8890879515062522,
+            "auroc": 0.9368686868686869,
+            "recall@fpr=0.01": 0.5555555555555556,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.5555555555555556,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_response": {
+            "n": 74.0,
+            "positives": 21.0,
+            "auprc": 0.840286407540721,
+            "auroc": 0.8876909254267744,
+            "recall@fpr=0.01": 0.6666666666666666,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.6666666666666666,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 190.0,
+            "positives": 53.0,
+            "auprc": 0.7904659728368084,
+            "auroc": 0.8690263049166781,
+            "recall@fpr=0.01": 0.49056603773584906,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.49056603773584906,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "exfiltration": 1.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.3333333333333333,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.38461538461538464,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.55,
+            "obfuscation__support": 20.0
+          },
+          "fpr=0.001": {
+            "exfiltration": 1.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.3333333333333333,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.38461538461538464,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.55,
+            "obfuscation__support": 20.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 26,
+            "fp": 0,
+            "tn": 137,
+            "fn": 27
+          },
+          "fpr=0.001": {
+            "tp": 26,
+            "fp": 0,
+            "tn": 137,
+            "fn": 27
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [],
+        "warnings": []
+      },
+      "test": {
+        "system": "tfidf-word",
+        "split": "test",
+        "n": 187,
+        "positives": 53,
+        "negatives": 134,
+        "auprc": 0.6400764224539233,
+        "auroc": 0.8035764573359617,
+        "positive_rate": 0.28342245989304815,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.39622641509433965,
+          "fpr=0.001": 0.39622641509433965
+        },
+        "thresholds": {
+          "fpr=0.01": 0.45228415125521737,
+          "fpr=0.001": 0.45228415125521737
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.09701492537313433,
+          "fpr=0.001": 0.09701492537313433
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": true,
+          "fpr=0.001": true
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.14084507042253522,
+          "fpr=0.001": 0.14084507042253522
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 49.0,
+            "positives": 14.0,
+            "auprc": 0.7887611274829319,
+            "auroc": 0.9040816326530612,
+            "recall@fpr=0.01": 0.21428571428571427,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.21428571428571427,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 72.0,
+            "positives": 18.0,
+            "auprc": 0.499969592687953,
+            "auroc": 0.7304526748971194,
+            "recall@fpr=0.01": 0.4444444444444444,
+            "fpr@fpr=0.01": 0.24074074074074073,
+            "recall@fpr=0.001": 0.4444444444444444,
+            "fpr@fpr=0.001": 0.24074074074074073
+          },
+          "tool_response": {
+            "n": 66.0,
+            "positives": 21.0,
+            "auprc": 0.8107582311741072,
+            "auroc": 0.8624338624338624,
+            "recall@fpr=0.01": 0.47619047619047616,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.47619047619047616,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 187.0,
+            "positives": 53.0,
+            "auprc": 0.6400764224539233,
+            "auroc": 0.8035764573359617,
+            "recall@fpr=0.01": 0.39622641509433965,
+            "fpr@fpr=0.01": 0.09701492537313433,
+            "recall@fpr=0.001": 0.39622641509433965,
+            "fpr@fpr=0.001": 0.09701492537313433
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "content_manipulation": 0.7777777777777778,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.2,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.2916666666666667,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.5,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 0.3333333333333333,
+            "obfuscation__support": 9.0
+          },
+          "fpr=0.001": {
+            "content_manipulation": 0.7777777777777778,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.2,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.2916666666666667,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.5,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 0.3333333333333333,
+            "obfuscation__support": 9.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 21,
+            "fp": 13,
+            "tn": 121,
+            "fn": 32
+          },
+          "fpr=0.001": {
+            "tp": 21,
+            "fp": 13,
+            "tn": 121,
+            "fn": 32
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.452284",
+          "threshold for fpr=0.001 taken from dev: 0.452284"
+        ],
+        "warnings": [
+          "fpr=0.01: realised FPR 0.0970 exceeds the 0.01 budget (13 false positives on 134 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
+          "fpr=0.001: realised FPR 0.0970 exceeds the 0.001 budget (13 false positives on 134 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
+        ]
+      },
+      "ood": {
+        "system": "tfidf-word",
+        "split": "ood:bipia",
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "auprc": 0.5977484863527364,
+        "auroc": 0.6482327770646128,
+        "positive_rate": 0.43509789702683105,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.6966666666666667,
+          "fpr=0.001": 0.6966666666666667
+        },
+        "thresholds": {
+          "fpr=0.01": 0.45228415125521737,
+          "fpr=0.001": 0.45228415125521737
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.5096277278562259,
+          "fpr=0.001": 0.5096277278562259
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": true,
+          "fpr=0.001": true
+        },
+        "hard_negative_fpr": {},
+        "per_channel": {
+          "rag_document": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.5977484863527364,
+            "auroc": 0.6482327770646128,
+            "recall@fpr=0.01": 0.6966666666666667,
+            "fpr@fpr=0.01": 0.5096277278562259,
+            "recall@fpr=0.001": 0.6966666666666667,
+            "fpr@fpr=0.001": 0.5096277278562259
+          }
+        },
+        "per_dataset": {
+          "bipia": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.5977484863527364,
+            "auroc": 0.6482327770646128,
+            "recall@fpr=0.01": 0.6966666666666667,
+            "fpr@fpr=0.01": 0.5096277278562259,
+            "recall@fpr=0.001": 0.6966666666666667,
+            "fpr@fpr=0.001": 0.5096277278562259
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "action_hijack": 0.85,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.61875,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.75,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.45,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.7875,
+            "obfuscation__support": 80.0,
+            "unknown": 0.7142857142857143,
+            "unknown__support": 280.0
+          },
+          "fpr=0.001": {
+            "action_hijack": 0.85,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.61875,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.75,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.45,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.7875,
+            "obfuscation__support": 80.0,
+            "unknown": 0.7142857142857143,
+            "unknown__support": 280.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 418,
+            "fp": 397,
+            "tn": 382,
+            "fn": 182
+          },
+          "fpr=0.001": {
+            "tp": 418,
+            "fp": 397,
+            "tn": 382,
+            "fn": 182
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.452284",
+          "threshold for fpr=0.001 taken from dev: 0.452284"
+        ],
+        "warnings": [
+          "fpr=0.01: realised FPR 0.5096 exceeds the 0.01 budget (397 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
+          "fpr=0.001: realised FPR 0.5096 exceeds the 0.001 budget (397 false positives on 779 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
+        ]
+      },
+      "ood_support": {
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "prevalence": 0.4351
+      },
+      "ood_auprc_informative": true,
+      "ood_recall_at_dev_thresholds": {
+        "fpr=0.01": 0.6966666666666667,
+        "fpr=0.001": 0.6966666666666667
+      },
+      "ood_realised_fpr": {
+        "fpr=0.01": 0.5096277278562259,
+        "fpr=0.001": 0.5096277278562259
+      },
+      "shift_auprc": -0.0423
+    },
+    {
+      "system": "tfidf-word+char",
+      "seed": null,
+      "config": {
+        "name": "tfidf-word+char",
+        "type": "TfidfCharBaseline",
+        "char_ngrams": true,
+        "C": 4.0,
+        "seed": 0
+      },
+      "dev": {
+        "system": "tfidf-word+char",
+        "split": "dev",
+        "n": 190,
+        "positives": 53,
+        "negatives": 137,
+        "auprc": 0.8483649095872731,
+        "auroc": 0.9091034292797135,
+        "positive_rate": 0.2789473684210526,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.5094339622641509,
+          "fpr=0.001": 0.49056603773584906
+        },
+        "thresholds": {
+          "fpr=0.01": 0.39784791970541994,
+          "fpr=0.001": 0.418630641370128
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0072992700729927005,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 54.0,
+            "positives": 14.0,
+            "auprc": 0.7618811128663345,
+            "auroc": 0.8517857142857144,
+            "recall@fpr=0.01": 0.21428571428571427,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.14285714285714285,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 62.0,
+            "positives": 18.0,
+            "auprc": 0.92160298070784,
+            "auroc": 0.962121212121212,
+            "recall@fpr=0.01": 0.6111111111111112,
+            "fpr@fpr=0.01": 0.022727272727272728,
+            "recall@fpr=0.001": 0.6111111111111112,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_response": {
+            "n": 74.0,
+            "positives": 21.0,
+            "auprc": 0.864432984754788,
+            "auroc": 0.89937106918239,
+            "recall@fpr=0.01": 0.6190476190476191,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.6190476190476191,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 190.0,
+            "positives": 53.0,
+            "auprc": 0.8483649095872731,
+            "auroc": 0.9091034292797135,
+            "recall@fpr=0.01": 0.5094339622641509,
+            "fpr@fpr=0.01": 0.0072992700729927005,
+            "recall@fpr=0.001": 0.49056603773584906,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "exfiltration": 1.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.4,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.46153846153846156,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.5,
+            "obfuscation__support": 20.0
+          },
+          "fpr=0.001": {
+            "exfiltration": 1.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.3333333333333333,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.46153846153846156,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.5,
+            "obfuscation__support": 20.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 27,
+            "fp": 1,
+            "tn": 136,
+            "fn": 26
+          },
+          "fpr=0.001": {
+            "tp": 26,
+            "fp": 0,
+            "tn": 137,
+            "fn": 27
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [],
+        "warnings": []
+      },
+      "test": {
+        "system": "tfidf-word+char",
+        "split": "test",
+        "n": 187,
+        "positives": 53,
+        "negatives": 134,
+        "auprc": 0.6800298960206536,
+        "auroc": 0.8134328358208955,
+        "positive_rate": 0.28342245989304815,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.5094339622641509,
+          "fpr=0.001": 0.4716981132075472
+        },
+        "thresholds": {
+          "fpr=0.01": 0.39784791970541994,
+          "fpr=0.001": 0.418630641370128
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.15671641791044777,
+          "fpr=0.001": 0.1417910447761194
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": true,
+          "fpr=0.001": true
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.23943661971830985,
+          "fpr=0.001": 0.22535211267605634
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 49.0,
+            "positives": 14.0,
+            "auprc": 0.8940312663526949,
+            "auroc": 0.9510204081632654,
+            "recall@fpr=0.01": 0.35714285714285715,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.2857142857142857,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 72.0,
+            "positives": 18.0,
+            "auprc": 0.4795985777932025,
+            "auroc": 0.6851851851851852,
+            "recall@fpr=0.01": 0.5,
+            "fpr@fpr=0.01": 0.3333333333333333,
+            "recall@fpr=0.001": 0.5,
+            "fpr@fpr=0.001": 0.3148148148148148
+          },
+          "tool_response": {
+            "n": 66.0,
+            "positives": 21.0,
+            "auprc": 0.8290057432416237,
+            "auroc": 0.8730158730158729,
+            "recall@fpr=0.01": 0.6190476190476191,
+            "fpr@fpr=0.01": 0.06666666666666667,
+            "recall@fpr=0.001": 0.5714285714285714,
+            "fpr@fpr=0.001": 0.044444444444444446
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 187.0,
+            "positives": 53.0,
+            "auprc": 0.6800298960206536,
+            "auroc": 0.8134328358208955,
+            "recall@fpr=0.01": 0.5094339622641509,
+            "fpr@fpr=0.01": 0.15671641791044777,
+            "recall@fpr=0.001": 0.4716981132075472,
+            "fpr@fpr=0.001": 0.1417910447761194
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "content_manipulation": 0.7777777777777778,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.2,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.5416666666666666,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.3333333333333333,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 0.4444444444444444,
+            "obfuscation__support": 9.0
+          },
+          "fpr=0.001": {
+            "content_manipulation": 0.6666666666666666,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.2,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.5,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.3333333333333333,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 0.4444444444444444,
+            "obfuscation__support": 9.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 27,
+            "fp": 21,
+            "tn": 113,
+            "fn": 26
+          },
+          "fpr=0.001": {
+            "tp": 25,
+            "fp": 19,
+            "tn": 115,
+            "fn": 28
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.397848",
+          "threshold for fpr=0.001 taken from dev: 0.418631"
+        ],
+        "warnings": [
+          "fpr=0.01: realised FPR 0.1567 exceeds the 0.01 budget (21 false positives on 134 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
+          "fpr=0.001: realised FPR 0.1418 exceeds the 0.001 budget (19 false positives on 134 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
+        ]
+      },
+      "ood": {
+        "system": "tfidf-word+char",
+        "split": "ood:bipia",
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "auprc": 0.6102230302052029,
+        "auroc": 0.6906354300385109,
+        "positive_rate": 0.43509789702683105,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.6333333333333333,
+          "fpr=0.001": 0.5833333333333334
+        },
+        "thresholds": {
+          "fpr=0.01": 0.39784791970541994,
+          "fpr=0.001": 0.418630641370128
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.28241335044929394,
+          "fpr=0.001": 0.24261874197689345
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": true,
+          "fpr=0.001": true
+        },
+        "hard_negative_fpr": {},
+        "per_channel": {
+          "rag_document": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.6102230302052029,
+            "auroc": 0.6906354300385109,
+            "recall@fpr=0.01": 0.6333333333333333,
+            "fpr@fpr=0.01": 0.28241335044929394,
+            "recall@fpr=0.001": 0.5833333333333334,
+            "fpr@fpr=0.001": 0.24261874197689345
+          }
+        },
+        "per_dataset": {
+          "bipia": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.6102230302052029,
+            "auroc": 0.6906354300385109,
+            "recall@fpr=0.01": 0.6333333333333333,
+            "fpr@fpr=0.01": 0.28241335044929394,
+            "recall@fpr=0.001": 0.5833333333333334,
+            "fpr@fpr=0.001": 0.24261874197689345
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "action_hijack": 0.85,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.5375,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.725,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.45,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.7625,
+            "obfuscation__support": 80.0,
+            "unknown": 0.6357142857142857,
+            "unknown__support": 280.0
+          },
+          "fpr=0.001": {
+            "action_hijack": 0.8,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.48125,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.7,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.3,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.7125,
+            "obfuscation__support": 80.0,
+            "unknown": 0.5928571428571429,
+            "unknown__support": 280.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 380,
+            "fp": 220,
+            "tn": 559,
+            "fn": 220
+          },
+          "fpr=0.001": {
+            "tp": 350,
+            "fp": 189,
+            "tn": 590,
+            "fn": 250
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.397848",
+          "threshold for fpr=0.001 taken from dev: 0.418631"
+        ],
+        "warnings": [
+          "fpr=0.01: realised FPR 0.2824 exceeds the 0.01 budget (220 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split",
+          "fpr=0.001: realised FPR 0.2426 exceeds the 0.001 budget (189 false positives on 779 negatives); the reported TPR is not a 0.001-FPR operating point on this split"
+        ]
+      },
+      "ood_support": {
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "prevalence": 0.4351
+      },
+      "ood_auprc_informative": true,
+      "ood_recall_at_dev_thresholds": {
+        "fpr=0.01": 0.6333333333333333,
+        "fpr=0.001": 0.5833333333333334
+      },
+      "ood_realised_fpr": {
+        "fpr=0.01": 0.28241335044929394,
+        "fpr=0.001": 0.24261874197689345
+      },
+      "shift_auprc": -0.0698
+    },
+    {
+      "system": "rules-only",
+      "seed": null,
+      "config": {
+        "name": "rules-only",
+        "type": "RulesScorer",
+        "rules": [
+          "meta_instruction.v1",
+          "secrecy_directive.v1",
+          "assistant_address.v1",
+          "obfuscation.v1",
+          "exfiltration.v1",
+          "tool_invocation.v1",
+          "destructive_action.v1",
+          "tool_metadata.v1",
+          "task_conflict.v1"
+        ],
+        "disabled_families": [],
+        "disabled_rules": [],
+        "feature_count": 46,
+        "strict": false,
+        "errors": {
+          "units_scored": 1272,
+          "rule_failures": {},
+          "total_failures": 0,
+          "failure_rate": 0.0,
+          "healthy": true
+        }
+      },
+      "dev": {
+        "system": "rules-only",
+        "split": "dev",
+        "n": 190,
+        "positives": 53,
+        "negatives": 137,
+        "auprc": 0.7762545006606076,
+        "auroc": 0.8969838865170087,
+        "positive_rate": 0.2789473684210526,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.41509433962264153,
+          "fpr=0.001": 0.018867924528301886
+        },
+        "thresholds": {
+          "fpr=0.01": 0.833969,
+          "fpr=0.001": 0.941668
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0072992700729927005,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.016666666666666666,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 54.0,
+            "positives": 14.0,
+            "auprc": 1.0,
+            "auroc": 1.0,
+            "recall@fpr=0.01": 0.5714285714285714,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.07142857142857142,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 62.0,
+            "positives": 18.0,
+            "auprc": 0.6568162155481398,
+            "auroc": 0.7550505050505052,
+            "recall@fpr=0.01": 0.1111111111111111,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.0,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_response": {
+            "n": 74.0,
+            "positives": 21.0,
+            "auprc": 0.8425119853691283,
+            "auroc": 0.9487870619946092,
+            "recall@fpr=0.01": 0.5714285714285714,
+            "fpr@fpr=0.01": 0.018867924528301886,
+            "recall@fpr=0.001": 0.0,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 190.0,
+            "positives": 53.0,
+            "auprc": 0.7762545006606076,
+            "auroc": 0.8969838865170087,
+            "recall@fpr=0.01": 0.41509433962264153,
+            "fpr@fpr=0.01": 0.0072992700729927005,
+            "recall@fpr=0.001": 0.018867924528301886,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "exfiltration": 0.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.06666666666666667,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.15384615384615385,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.95,
+            "obfuscation__support": 20.0
+          },
+          "fpr=0.001": {
+            "exfiltration": 0.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 15.0,
+            "metadata_poisoning": 0.0,
+            "metadata_poisoning__support": 13.0,
+            "obfuscation": 0.05,
+            "obfuscation__support": 20.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 22,
+            "fp": 1,
+            "tn": 136,
+            "fn": 31
+          },
+          "fpr=0.001": {
+            "tp": 1,
+            "fp": 0,
+            "tn": 137,
+            "fn": 52
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [],
+        "warnings": []
+      },
+      "test": {
+        "system": "rules-only",
+        "split": "test",
+        "n": 187,
+        "positives": 53,
+        "negatives": 134,
+        "auprc": 0.7980236335175293,
+        "auroc": 0.8481413686285554,
+        "positive_rate": 0.28342245989304815,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.49056603773584906,
+          "fpr=0.001": 0.1320754716981132
+        },
+        "thresholds": {
+          "fpr=0.01": 0.833969,
+          "fpr=0.001": 0.941668
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": false,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {
+          "fpr=0.01": 0.0,
+          "fpr=0.001": 0.0
+        },
+        "per_channel": {
+          "rag_document": {
+            "n": 49.0,
+            "positives": 14.0,
+            "auprc": 0.846938775510204,
+            "auroc": 0.8653061224489795,
+            "recall@fpr=0.01": 0.5,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.2857142857142857,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_metadata": {
+            "n": 72.0,
+            "positives": 18.0,
+            "auprc": 0.7121218786659964,
+            "auroc": 0.8132716049382717,
+            "recall@fpr=0.01": 0.3888888888888889,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.05555555555555555,
+            "fpr@fpr=0.001": 0.0
+          },
+          "tool_response": {
+            "n": 66.0,
+            "positives": 21.0,
+            "auprc": 0.8447204968944099,
+            "auroc": 0.8793650793650793,
+            "recall@fpr=0.01": 0.5714285714285714,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.09523809523809523,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "builtin": {
+            "n": 187.0,
+            "positives": 53.0,
+            "auprc": 0.7980236335175293,
+            "auroc": 0.8481413686285554,
+            "recall@fpr=0.01": 0.49056603773584906,
+            "fpr@fpr=0.01": 0.0,
+            "recall@fpr=0.001": 0.1320754716981132,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.7083333333333334,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.0,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 1.0,
+            "obfuscation__support": 9.0
+          },
+          "fpr=0.001": {
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 9.0,
+            "exfiltration": 0.0,
+            "exfiltration__support": 5.0,
+            "meta_instruction": 0.041666666666666664,
+            "meta_instruction__support": 24.0,
+            "metadata_poisoning": 0.0,
+            "metadata_poisoning__support": 6.0,
+            "obfuscation": 0.6666666666666666,
+            "obfuscation__support": 9.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 26,
+            "fp": 0,
+            "tn": 134,
+            "fn": 27
+          },
+          "fpr=0.001": {
+            "tp": 7,
+            "fp": 0,
+            "tn": 134,
+            "fn": 46
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.833969",
+          "threshold for fpr=0.001 taken from dev: 0.941668"
+        ],
+        "warnings": []
+      },
+      "ood": {
+        "system": "rules-only",
+        "split": "ood:bipia",
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "auprc": 0.4689275106675224,
+        "auroc": 0.5547068891741549,
+        "positive_rate": 0.43509789702683105,
+        "tpr_at_fpr": {
+          "fpr=0.01": 0.05,
+          "fpr=0.001": 0.0
+        },
+        "thresholds": {
+          "fpr=0.01": 0.833969,
+          "fpr=0.001": 0.941668
+        },
+        "fpr_achieved": {
+          "fpr=0.01": 0.021822849807445442,
+          "fpr=0.001": 0.0
+        },
+        "fpr_budget_exceeded": {
+          "fpr=0.01": true,
+          "fpr=0.001": false
+        },
+        "hard_negative_fpr": {},
+        "per_channel": {
+          "rag_document": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.4689275106675224,
+            "auroc": 0.5547068891741549,
+            "recall@fpr=0.01": 0.05,
+            "fpr@fpr=0.01": 0.021822849807445442,
+            "recall@fpr=0.001": 0.0,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_dataset": {
+          "bipia": {
+            "n": 1379.0,
+            "positives": 600.0,
+            "auprc": 0.4689275106675224,
+            "auroc": 0.5547068891741549,
+            "recall@fpr=0.01": 0.05,
+            "fpr@fpr=0.01": 0.021822849807445442,
+            "recall@fpr=0.001": 0.0,
+            "fpr@fpr=0.001": 0.0
+          }
+        },
+        "per_attack_recall": {
+          "fpr=0.01": {
+            "action_hijack": 0.0,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.125,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.0,
+            "obfuscation__support": 80.0,
+            "unknown": 0.08928571428571429,
+            "unknown__support": 280.0
+          },
+          "fpr=0.001": {
+            "action_hijack": 0.0,
+            "action_hijack__support": 20.0,
+            "content_manipulation": 0.0,
+            "content_manipulation__support": 160.0,
+            "exfiltration": 0.0,
+            "exfiltration__support": 40.0,
+            "meta_instruction": 0.0,
+            "meta_instruction__support": 20.0,
+            "obfuscation": 0.0,
+            "obfuscation__support": 80.0,
+            "unknown": 0.0,
+            "unknown__support": 280.0
+          }
+        },
+        "confusion": {
+          "fpr=0.01": {
+            "tp": 30,
+            "fp": 17,
+            "tn": 762,
+            "fn": 570
+          },
+          "fpr=0.001": {
+            "tp": 0,
+            "fp": 0,
+            "tn": 779,
+            "fn": 600
+          }
+        },
+        "latency_ms": {},
+        "ci": {},
+        "notes": [
+          "threshold for fpr=0.01 taken from dev: 0.833969",
+          "threshold for fpr=0.001 taken from dev: 0.941668"
+        ],
+        "warnings": [
+          "fpr=0.01: realised FPR 0.0218 exceeds the 0.01 budget (17 false positives on 779 negatives); the reported TPR is not a 0.01-FPR operating point on this split"
+        ]
+      },
+      "ood_support": {
+        "n": 1379,
+        "positives": 600,
+        "negatives": 779,
+        "prevalence": 0.4351
+      },
+      "ood_auprc_informative": true,
+      "ood_recall_at_dev_thresholds": {
+        "fpr=0.01": 0.05,
+        "fpr=0.001": 0.0
+      },
+      "ood_realised_fpr": {
+        "fpr=0.01": 0.021822849807445442,
+        "fpr=0.001": 0.0
+      },
+      "shift_auprc": -0.3291
+    }
+  ]
+}

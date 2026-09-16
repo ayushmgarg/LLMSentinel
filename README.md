@@ -34,7 +34,7 @@ Plan: [PROJECT_PLAN_V2.md](PROJECT_PLAN_V2.md) · Checklist:
 | Analysis, figures, report (§15) | done — [docs/report.md](docs/report.md), [docs/error_analysis.md](docs/error_analysis.md), [docs/demo_script.md](docs/demo_script.md), `artifacts/figures/` (final numbers; demo screenshots + citation-ID verification are the only pre-submission leftovers) |
 | LLMSentinel Studio: live with/without-Sentinel console, replaces the Streamlit page | done — [studio/README.md](studio/README.md) |
 | Product framing (§16) | done — Studio landing page (research prototype, users, capabilities, limits) |
-| Harder / out-of-distribution evaluation (§16a) | protocol, hardened data, baselines done — [docs/ood_evaluation.md](docs/ood_evaluation.md); transformer OOD run pending (GPU kit) |
+| Harder / out-of-distribution evaluation (§16a) | done — [docs/ood_evaluation.md](docs/ood_evaluation.md): held-out BIPIA transformer 0.861 → 0.673 AUPRC (above all baselines); dev thresholds do not transfer (OOD recall 0–9%) |
 | Analyst workflow (§17+) | not started |
 
 ### Corpus and results status
@@ -45,7 +45,9 @@ InjecAgent** (both MIT, cloned locally under `data/raw/`, never redistributed):
 is not integrated — no verifiable release was located; the `tool_metadata` channel
 is thin, which the corpus card flags.
 
-Headline: **transformer test AUPRC 0.984** (dev 0.951 ± 0.011 over three seeds);
+Headline: **transformer test AUPRC 0.984** (dev 0.951 ± 0.011 over three seeds;
+reproduced on a second machine at 0.986). Its dev 1%-FPR threshold gives test recall
+0.920 at a realised test FPR of 2.74%, over the 1% budget;
 the transformer is the recommended detector (fusion matches its AUPRC but its
 operating point transfers poorly). Full numbers, per-source/per-channel
 breakdowns, seed variance and error analysis are in

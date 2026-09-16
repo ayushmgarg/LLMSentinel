@@ -102,6 +102,9 @@ def load_evidence(results_dir: Path = RESULTS_DIR) -> dict[str, float]:
                 recall = (metrics.get("tpr_at_fpr") or {}).get("fpr=0.01")
                 if recall is not None:
                     evidence["test_tpr_at_1pct_fpr"] = float(recall)
+                realised = (metrics.get("fpr_achieved") or {}).get("fpr=0.01")
+                if realised is not None:
+                    evidence["test_realised_fpr_at_1pct"] = float(realised)
         except (ValueError, TypeError, AttributeError):
             pass
     variance_path = Path(results_dir) / "seed_variance.json"

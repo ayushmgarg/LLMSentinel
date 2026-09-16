@@ -30,3 +30,6 @@ artifacts/results/streamlit.log
 artifacts/results/test_runs.json
 artifacts/results/ood/test_runs.json
 src/*.egg-info/
+
+# Raw GPU delivery as received (integrated copies live under artifacts/)
+LLMSentinel-delivery/

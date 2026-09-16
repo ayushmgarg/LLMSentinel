@@ -132,15 +132,29 @@ Source-stratified corpus (digest `0311c325`, 1960 records; InjecAgent train-only
 baselines and rules are deterministic. Held-out **test**: 246 records, 100
 injection. See Fig. `model_comparison.png`, `pr_curve.png`.
 
-| system | dev AUPRC | test AUPRC | test TPR@1%FPR | test hard-neg FPR |
+| system | dev AUPRC | test AUPRC | test TPR at dev 1%-FPR threshold (realised test FPR) | test hard-neg FPR |
 |---|---|---|---|---|
-| majority | 0.340 | 0.407 | 0.000 | 0.000 |
-| keyword | 0.338 | 0.450 | 0.000 | 0.000 |
-| tfidf-word | 0.684 | 0.657 | 0.280 | 0.000 |
-| tfidf-word+char | 0.632 | 0.664 | 0.280 | 0.000 |
-| rules-only | 0.683 | 0.574 | 0.200 | 0.000 |
-| transformer | 0.964 | **0.984** | **0.920** | 0.000 |
-| hybrid | 0.873 | 0.981 | 0.240 | 0.000 |
+| majority | 0.340 | 0.407 | 0.000 (0.0000) | 0.000 |
+| keyword | 0.338 | 0.450 | 0.000 (0.0000) | 0.000 |
+| tfidf-word | 0.684 | 0.657 | 0.280 (0.0685, over budget) | 0.164 |
+| tfidf-word+char | 0.632 | 0.664 | 0.280 (0.0548, over budget) | 0.127 |
+| rules-only | 0.683 | 0.574 | 0.200 (0.0068) | 0.000 |
+| transformer | 0.964 | **0.984** | **0.920 (0.0274, over budget)** | 0.000 |
+| hybrid | 0.873 | 0.981 | 0.240 (0.0000) | 0.000 |
+
+*Correction (2026-09-16).* Earlier versions of this table gave the transformer's test
+recall without its realised FPR, and listed the TF-IDF hard-negative FPR as 0.000;
+both are corrected here from `results_test.json`. The transformer's dev-selected 1%
+threshold admits **4 false positives on 146 test negatives (2.74%)**, so 0.920 is
+recall at that threshold, not a 1%-FPR operating point on test.
+
+**Independent reproduction (second machine, RTX GPU, 2026-09-16).** Retraining the
+same corpus and seeds with torch 2.5.1+cu121 / transformers 5.17.0 gave dev AUPRC
+0.9494 ± 0.0113 across seeds and canonical-seed test AUPRC **0.986**, TPR 0.930 at a
+realised test FPR of 0.0411 (6 / 146). The ranking reproduces within 0.002 AUPRC; the
+threshold transfer to test is again over budget. Files:
+`artifacts/results/gpu_rerun_2026-09-16/`. The canonical files above are kept because
+they match the released checkpoint.
 
 **Seed variance (3 seeds, dev):** transformer AUPRC **0.951 ± 0.011**
 (0.937–0.964), AUROC 0.965 ± 0.010, TPR@1%FPR 0.758 ± 0.052. The single-seed
@@ -161,6 +175,37 @@ critique is answered: spread is small.
   leans on the authored builtin data and drops on the real BIPIA split.
 - Per-channel AUPRC in Fig. `per_channel.png`; the reliability diagram
   (`calibration.png`) is descriptive only.
+
+### 6a. Out-of-distribution evaluation (§16a)
+
+Full protocol and tables: `docs/ood_evaluation.md`. One whole source is held out; the
+rest is split with the same grouped, leakage-free splitter; thresholds come from dev
+and are reused unchanged on test and on the held-out source; each set is scored once.
+Transformer rows are the mean ± std over three seeds.
+
+| held out | system | in-dist test AUPRC | OOD AUPRC | OOD recall at dev 1% threshold |
+|---|---|---|---|---|
+| BIPIA (600 inj / 779 benign) | transformer | 0.861 ± 0.021 | **0.673 ± 0.038** | 0.044 ± 0.030 |
+| BIPIA | tfidf-word+char | 0.697 | 0.581 | 0.002 |
+| BIPIA | rules-only | 0.714 | 0.469 | 0.050 |
+| InjecAgent (1,054 inj / 16 benign) | transformer | 0.980 ± 0.007 | 0.993 (not informative) | **0.000** |
+| InjecAgent | rules-only | 0.538 | 0.986 (not informative) | 0.000 |
+
+- **Performance drops under source shift, and the drop is the finding.** On a
+  benchmark it never saw, the transformer loses 0.19 AUPRC (it still ranks better
+  than every baseline).
+- **Operating points do not transfer.** At the threshold chosen on dev the transformer
+  catches 4% of held-out BIPIA injections and none of held-out InjecAgent's, although
+  its ranking of InjecAgent looks high. A deployment would need calibration on data
+  from the target source.
+- **In-distribution `tool_metadata` is now measured** (18 test positives): transformer
+  AUPRC 0.905–0.920 when InjecAgent is held out, 0.663–0.742 when BIPIA is.
+- **Soft-claim content manipulation is still missed.** Retraining with the answer-shaping
+  families did not make content manipulation reliably caught at the strict threshold:
+  recall on 27 content-manipulation test positives was 0.22–0.48 (InjecAgent held out)
+  and 0.04–0.22 (BIPIA held out). The released checkpoint flags 0 of the 9 held-out
+  `assert_over_source` records (highest score 0.34, threshold 0.9954), while the
+  answer-shaping rule fires on all 9.
 
 ## 7. Robustness (§12)
 
@@ -214,10 +259,16 @@ scoring into the aggregate).
   with the transformer, under its 0.9954 operating point, while a blatantly
   self-contradicting version scored 0.9998. `answer_shaping.v1` and two opt-in seed
   families were added on 2026-09-16; the rule fires on the shape but its rules-only
-  aggregate (0.75–0.78) stays below the 0.8340 operating point, so the fix depends on
-  retraining with those families, which is pending. The rule's weight is a prior: it
-  fires on one record in the canonical corpus, so dev gives it no support (dev metrics
-  were byte-identical before and after adding it).
+  aggregate (0.75–0.78) stays below the 0.8340 operating point. The retraining that was
+  expected to close the gap did not (§6a): content-manipulation recall at the strict
+  threshold stayed at 0.04–0.48, and a family held out of training
+  (`assert_over_source`) scored at most 0.34. The rule's weight is a prior: it fires on
+  one record in the canonical corpus, so dev gives it no support (dev metrics were
+  byte-identical before and after adding it).
+- **Dev thresholds do not survive a change of source.** In-distribution the
+  transformer's dev 1% threshold already over-admits on test (2.74%); on a held-out
+  benchmark it catches 0–9% of injections. Any real deployment would need to calibrate
+  its operating point on data from the source it will face.
 - **One-sided framing is out of scope by definition.** Prose that argues a position
   without instructing the assistant is benign under `docs/annotation_guideline.md`,
   and the detector scores it near zero. Detecting slanted-but-passive content is a

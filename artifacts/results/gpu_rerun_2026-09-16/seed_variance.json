@@ -1,0 +1,52 @@
+{
+  "seeds": [
+    20250909,
+    20250910,
+    20250911
+  ],
+  "canonical_seed": 20250909,
+  "per_seed": [
+    {
+      "seed": 20250909,
+      "auprc": 0.9645,
+      "auroc": 0.9765,
+      "tpr@1%fpr": 0.825,
+      "minutes": 2.5,
+      "device": "cuda"
+    },
+    {
+      "seed": 20250910,
+      "auprc": 0.9372,
+      "auroc": 0.9527,
+      "tpr@1%fpr": 0.6875,
+      "minutes": 2.4,
+      "device": "cuda"
+    },
+    {
+      "seed": 20250911,
+      "auprc": 0.9464,
+      "auroc": 0.9612,
+      "tpr@1%fpr": 0.75,
+      "minutes": 2.9,
+      "device": "cuda"
+    }
+  ],
+  "dev_auprc": {
+    "mean": 0.9494,
+    "std": 0.0113,
+    "min": 0.9372,
+    "max": 0.9645
+  },
+  "dev_auroc": {
+    "mean": 0.9635,
+    "std": 0.0098,
+    "min": 0.9527,
+    "max": 0.9765
+  },
+  "dev_tpr_at_1pct_fpr": {
+    "mean": 0.7542,
+    "std": 0.0562,
+    "min": 0.6875,
+    "max": 0.825
+  }
+}

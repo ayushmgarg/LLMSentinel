@@ -1,9 +1,12 @@
 # Harder / out-of-distribution evaluation (checklist §16a)
 
-**Status (2026-09-15).** Protocol, hardened data and baseline results are done and
-scored once. The transformer OOD run needs a GPU and is packaged as a kit
-(`scripts/hardening_kit.ps1` / `.sh`, see [TRAINING_HANDOFF.md](TRAINING_HANDOFF.md));
-its numbers will be added here when they come back.
+**Status (2026-09-16): complete.** Protocol, hardened data, baselines and the
+three-seed transformer run are all scored once on the current hardened sets
+(in-dist digests `444a988f` / `7bf9438e`). The GPU run came from
+`scripts/hardening_kit.ps1` on a second machine (CUDA, torch 2.5.1+cu121,
+transformers 5.17.0); its raw logs and ledgers are in
+`artifacts/results/gpu_rerun_2026-09-16/`. Results supersede the earlier baseline
+table, which was scored on the previous sets and is kept below as recorded.
 
 > **Keep separate.** Nothing on this page is an in-distribution number. The project
 > headline (transformer test AUPRC 0.984) is the canonical corpus result
@@ -161,7 +164,71 @@ Command: `python scripts/ood_eval.py eval --held-out both --systems baselines`
 * **`tool_metadata` now has measurable support** (18 test positives); rules-only
   reaches 0.712 there, the lexical baselines 0.41–0.50.
 
-## Pending: transformer
+## Results on the current hardened sets (2026-09-16, scored once)
+
+Baselines were re-scored on the rebuilt sets by the same kit; the transformer rows
+are three seeds (`20250909/10/11`). JSON: `artifacts/results/ood/<held_out>/`
+(`ood_baselines.json`, `ood_transformer.json`); the earlier-digest baselines are
+archived in `artifacts/results/ood/pre_answer_shaping_2026-09-16/`.
+
+**Held out BIPIA** (OOD 600 injection / 779 benign: AUPRC informative)
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | OOD recall @ dev 1% | OOD realised FPR |
+|---|---|---|---|---|---|
+| majority | 0.279 | 0.286 | 0.435 | 0.000 | 0.0000 |
+| keyword | 0.279 | 0.293 | 0.435 | 0.000 | 0.0000 |
+| tfidf-word | 0.656 | 0.660 | 0.564 | 0.000 | 0.0000 |
+| tfidf-word+char | 0.663 | 0.697 | 0.581 | 0.002 | 0.0000 |
+| rules-only | 0.792 | 0.714 | 0.469 | 0.050 | 0.0218 (over) |
+| transformer seed 09 | 0.726 | 0.890 | 0.719 | 0.087 | 0.0077 |
+| transformer seed 10 | 0.653 | 0.845 | 0.676 | 0.027 | 0.0000 |
+| transformer seed 11 | 0.703 | 0.846 | 0.626 | 0.020 | 0.0026 |
+| **transformer mean ± std** | 0.694 ± 0.031 | 0.861 ± 0.021 | **0.673 ± 0.038** | 0.044 ± 0.030 | — |
+
+**Held out InjecAgent** (OOD 1,054 injection / 16 benign: AUPRC not informative)
+
+| system | dev AUPRC | in-dist test AUPRC | OOD AUPRC | OOD recall @ dev 1% |
+|---|---|---|---|---|
+| majority | 0.396 | 0.314 | 0.985 (n/i) | 0.000 |
+| keyword | 0.389 | 0.316 | 0.985 (n/i) | 0.000 |
+| tfidf-word | 0.589 | 0.591 | 0.996 (n/i) | 0.000 |
+| tfidf-word+char | 0.553 | 0.582 | 0.995 (n/i) | 0.000 |
+| rules-only | 0.564 | 0.538 | 0.986 (n/i) | 0.000 |
+| transformer seed 09 | 0.941 | 0.972 | 0.994 (n/i) | 0.000 |
+| transformer seed 10 | 0.965 | 0.982 | 0.994 (n/i) | 0.000 |
+| transformer seed 11 | 0.972 | 0.987 | 0.992 (n/i) | 0.000 |
+| **transformer mean ± std** | 0.959 ± 0.013 | 0.980 ± 0.007 | 0.993 (n/i) | **0.000** |
+
+**In-distribution breakdowns (test, at the dev 1% threshold)**
+
+| held out | system | `tool_metadata` AUPRC (18 pos / 72) | content-manipulation recall (27 pos) |
+|---|---|---|---|
+| InjecAgent | rules-only | 0.712 | 0.000 |
+| InjecAgent | transformer seeds 09 / 10 / 11 | 0.920 / 0.917 / 0.905 | 0.222 / 0.481 / 0.370 |
+| BIPIA | rules-only | 0.712 | 0.296 |
+| BIPIA | transformer seeds 09 / 10 / 11 | 0.742 / 0.663 / 0.672 | 0.222 / 0.037 / 0.222 |
+
+### What this says
+
+1. **The transformer degrades under source shift, but less than anything else.** With
+   BIPIA held out it loses 0.187 ± 0.023 AUPRC against its own in-distribution test,
+   yet stays above every baseline (best baseline 0.581).
+2. **The operating point is what breaks.** A dev-chosen 1% threshold catches 4.4% of
+   held-out BIPIA injections and 0% of held-out InjecAgent's, although InjecAgent's
+   positives are ranked high. Ranking transfers far better than calibration; a
+   deployment facing a new source must recalibrate on that source.
+3. **The thin channel is now measurable.** `tool_metadata` has 18 test positives, and
+   the transformer reaches 0.905–0.920 AUPRC there when trained with BIPIA in the pool.
+4. **Soft-claim content manipulation is not solved by retraining.** Recall on 27
+   content-manipulation positives stays low at the strict threshold. The grouped
+   splitter placed `answer_shaping_claim` wholly in train and `assert_over_source`
+   wholly in test, so the test measures generalisation to an unseen phrasing family:
+   the released canonical checkpoint flags **0 / 9** of those records (highest 0.344
+   against 0.9954), while `answer_shaping.v1` fires on **9 / 9**, and 0 of the 11
+   style-guide hard negatives in test are flagged by either. The hardened checkpoints
+   were not returned, so per-family recall for the retrained models is not available.
+
+## Transformer run (kit, for reference)
 
 `scripts/hardening_kit.ps1` / `.sh` trains three seeds per direction on the hardened
 train split (checkpoint `artifacts/models/transformer_hardening_<held_out>`,

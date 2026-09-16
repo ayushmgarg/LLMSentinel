@@ -210,6 +210,12 @@ function applyEvidence(evidence) {
   };
   set("#stat-test-auprc", evidence.test_auprc);
   set("#stat-test-recall", evidence.test_tpr_at_1pct_fpr);
+  const recallLabel = $("#stat-test-recall-label");
+  if (recallLabel && evidence.test_realised_fpr_at_1pct !== undefined && evidence.test_realised_fpr_at_1pct !== null) {
+    const realised = Number(evidence.test_realised_fpr_at_1pct);
+    const over = realised > 0.01 ? ", over budget" : "";
+    recallLabel.textContent = `test recall at the dev 1%-FPR threshold (realised test FPR ${(realised * 100).toFixed(1)}%${over})`;
+  }
   // The seed mean is stored as 0.9515; rounding it to three places would print a
   // different number from the one the docs quote, so show the stored precision.
   const exact = (value) => Number(value).toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
