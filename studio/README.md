@@ -9,7 +9,9 @@ It replaces the old Streamlit demo (`src/llmsentinel/demo/`, kept for reference)
 ```
 studio/
   server/      Starlette API: providers, retrieval, guard, comparison (Python)
-  web/         static front-end: index.html, styles.css, app.js (no build step)
+  web/         static front-end, no build step: index.html (demo + analyst),
+               about.html and how-it-works.html (the explanations), styles.css,
+               common.js (helpers, theme, nav), app.js (demo), pages.js, sprite.js
   samples/     "unknown" context pack: 10 fictional docs (5 poisoned) and 3 MCP tool
                manifests with their approved snapshots (1 poisoned, 1 changed) (CC0-1.0)
   tests/       pytest suite (runs offline, rules-only, no model needed)
@@ -25,8 +27,10 @@ python -m studio.server
 Open <http://127.0.0.1:8700>. Options: `--port 8700`, `--rules-only` (skip loading
 the transformer), `--max-tokens N` (answer cap for models without a profile).
 
-The page follows your system light/dark setting, and the header has a toggle; the
-choice is kept in that browser. The headline numbers on the landing page are read
+Three pages: the demo and the analyst workflow on `/`, what it does and the evidence
+on `/about.html`, and the pipeline in detail on `/how-it-works.html`. Every page
+follows your system light/dark setting, and the header has a toggle; the
+choice is kept in that browser. The headline numbers on the about page are read
 from `artifacts/results/results_test.json` and `seed_variance.json` when the server
 starts, so the page never states numbers of its own. The server binds to localhost only.
 
@@ -41,12 +45,18 @@ or PyTorch the Studio falls back to rules-only and says so.
    OpenAI-compatible `/v1` API.
 2. **Point it at unknown context** — pick sample files and connected MCP servers
    (labels hidden until you switch on *Reveal ground truth*) or drop your own
-   `.txt .md .json .html .csv`. A `.json` with a top-level `"tools"` list is read as
-   a tool manifest.
+   `.txt .md .json .html .csv`. A dropped `.json` with a top-level `"tools"` list is
+   read as a tool manifest. Text can also be **pasted**, with a dropdown saying what
+   it is: a retrieved document, a tool result or a tool manifest. The dropdown sets
+   the channel the passage is scanned as, so a tool result stays a tool result even
+   when it does not parse as JSON, and a tool result that happens to carry a `tools`
+   list is not mistaken for a manifest.
 3. **Ask** — the top-k passages (TF-IDF) are sent to the model as-is, and again
-   after LLMSentinel. Results show what Sentinel found per passage (score, flag
-   threshold, rule trace, decoded payloads, exactly what was removed) and both answers
-   with objective compromise indicators and every tool request's policy decision.
+   after LLMSentinel. Results are stacked full width, in reading order: the answer
+   without the guard, the answer with it, what Sentinel found per passage (score,
+   flag threshold, rule trace, decoded payloads, exactly what was removed), then the
+   tool manifests. Both answers carry objective compromise indicators and every tool
+   request's policy decision.
 
 ## Which model to use (free, no token limits)
 

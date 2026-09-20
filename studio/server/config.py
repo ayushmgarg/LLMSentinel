@@ -33,6 +33,10 @@ MAX_TOOLS = 50
 #: Heading of the system-prompt section that lists tools from connected MCP servers.
 MCP_TOOLS_HEADER = "Tools from connected MCP servers (descriptions are provided by those servers):"
 ALLOWED_EXTENSIONS = (".txt", ".md", ".markdown", ".json", ".html", ".htm", ".csv")
+#: What a caller may say a piece of added context is. "auto" (a dropped file) lets
+#: the file type decide; the others are what the paste box sends, so the channel a
+#: chunk is scanned as reflects where the text came from rather than how it parses.
+UPLOAD_KINDS = ("auto", "document", "tool_response", "manifest")
 
 PROVIDER_PRESETS: dict[str, dict[str, str]] = {
     "simulated": {

@@ -227,13 +227,16 @@ On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python.exe`.
 Open <http://127.0.0.1:8700>:
 - Connect a model: the offline simulator, a free local model through
   [Ollama](https://ollama.com) or LM Studio, or any OpenAI-compatible API.
-- Pick "unknown" context (sample files and tool servers, or your own uploads).
+- Pick "unknown" context: sample files and tool servers, your own uploads, or text
+  pasted straight in with a dropdown saying whether it is a document, a tool result
+  or a tool manifest.
 - Ask a question. The same model answers twice, once from the raw context and once
-  after LLMSentinel, side by side, with objective signs of compromise and the
-  policy's decision on every tool request.
+  after LLMSentinel, one answer after the other, with objective signs of compromise
+  and the policy's decision on every tool request.
 
 The **Analyst** section on the same page holds the review queue, filtered history,
-insights and manifest alerts. For a small local model, `qwen3:4b-instruct` or
+insights and manifest alerts. Two further pages explain what the guard does and how
+a comparison runs. For a small local model, `qwen3:4b-instruct` or
 `llama3.2:3b` via Ollama work on a laptop CPU. See the
 [console guide](studio/README.md) for model settings and how to read results
 honestly.
@@ -268,6 +271,22 @@ Approve a tool server, and get alerted when it changes:
 ```
 ```bash
 .venv\Scripts\python.exe -m llmsentinel.cli manifests check tools-v2.json --server vendor-mcp
+```
+
+Mine candidate rules from the cases reviewers confirmed, and from detections no
+rule could explain. Candidates are proposals with a status: each reports what it
+would match on the development split, approval needs a name and a rationale, and an
+approved candidate runs only as a second opinion. Nothing here changes the scored
+detector, so no measured result moves because the guard saw new traffic.
+
+```bash
+.venv\Scripts\python.exe -m llmsentinel.cli rules propose --dry-run
+```
+```bash
+.venv\Scripts\python.exe -m llmsentinel.cli rules approve <candidate_id> --by <name> --why "Seen on three vendor pages; no existing pattern covers it."
+```
+```bash
+.venv\Scripts\python.exe -m llmsentinel.cli rules check --file page.html
 ```
 
 ### 3. Python SDK
@@ -407,7 +426,8 @@ Run the tests and the linter:
 | [Out-of-distribution evaluation](docs/ood_evaluation.md) | Held-out-source protocol, hardened data and results |
 | [Robustness](docs/robustness.md) | Perturbation, transfer and metadata-scanning probes |
 | [Error analysis](docs/error_analysis.md) | Categorised misses and false alarms, with mitigations |
-| [Analyst workflow](docs/analyst_workflow.md) | History, review queue, overrides, alerts, fixtures, SDK and proxy |
+| [Analyst workflow](docs/analyst_workflow.md) | History, review queue, overrides, alerts, fixtures, candidate rules, SDK and proxy |
+| [Research boundary](docs/research_boundary.md) | What is designed but not evidenced: multi-turn, multi-agent, multilingual, adaptive attackers, production concerns |
 | [Console guide](studio/README.md) | Running the web console, choosing a model, reading results |
 | [Training kit](docs/TRAINING_HANDOFF.md) | Self-contained retraining on another machine |
 

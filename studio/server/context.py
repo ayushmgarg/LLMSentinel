@@ -57,6 +57,10 @@ class Document:
     kind: str
     text: str
     origin: str  # "sample" | "upload"
+    #: Channel its chunks are scanned as. ``None`` lets the file type decide;
+    #: pasted text sets it explicitly, because "a tool returned this" is a fact
+    #: about where the text came from, not about whether it parses as JSON.
+    channel: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -74,7 +78,7 @@ class Chunk:
         return f"{self.source} · {self.json_path}" if self.json_path else self.source
 
 
-def document_from_upload(name: str, content: str) -> Document:
+def document_from_upload(name: str, content: str, channel: str | None = None) -> Document:
     ext = Path(name).suffix.lower()
     if ext not in _KIND:
         raise ContextError(f"{name}: unsupported file type (allowed: {', '.join(ALLOWED_EXTENSIONS)}).")
@@ -83,7 +87,9 @@ def document_from_upload(name: str, content: str) -> Document:
     if not content.strip():
         raise ContextError(f"{name}: the file is empty.")
     digest = hashlib.sha1(f"{name}\n{content}".encode()).hexdigest()[:10]
-    return Document(doc_id=f"upload-{digest}", name=Path(name).name, kind=_KIND[ext], text=content, origin="upload")
+    return Document(
+        doc_id=f"upload-{digest}", name=Path(name).name, kind=_KIND[ext], text=content, origin="upload", channel=channel
+    )
 
 
 def _json_leaves(node: Any, path: str = "$") -> Iterator[tuple[str, str]]:
@@ -108,7 +114,7 @@ def chunk_document(doc: Document) -> list[Chunk]:
             leaves = list(_json_leaves(data))
             if leaves:
                 return [
-                    Chunk(f"{doc.doc_id}#{i}", doc.doc_id, doc.name, "tool_response", path, value, i)
+                    Chunk(f"{doc.doc_id}#{i}", doc.doc_id, doc.name, doc.channel or "tool_response", path, value, i)
                     for i, (path, value) in enumerate(leaves)
                 ]
 
@@ -124,7 +130,7 @@ def chunk_document(doc: Document) -> list[Chunk]:
     if buffer:
         merged.append(buffer)
     return [
-        Chunk(f"{doc.doc_id}#{i}", doc.doc_id, doc.name, "rag_document", None, text, i)
+        Chunk(f"{doc.doc_id}#{i}", doc.doc_id, doc.name, doc.channel or "rag_document", None, text, i)
         for i, text in enumerate(merged)
     ]
 

@@ -30,6 +30,7 @@ from .config import (
     MAX_UPLOADS,
     MIN_ANSWER_TOKENS,
     PROVIDER_PRESETS,
+    UPLOAD_KINDS,
     WEB_DIR,
     StudioSettings,
     load_evidence,
@@ -184,7 +185,11 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 "default_max_tokens": settings.max_tokens,
                 "questions": questions,
                 "pack": pack,
-                "limits": {"max_uploads": MAX_UPLOADS, "max_question_chars": MAX_QUESTION_CHARS},
+                "limits": {
+                    "max_uploads": MAX_UPLOADS,
+                    "max_question_chars": MAX_QUESTION_CHARS,
+                    "upload_kinds": list(UPLOAD_KINDS),
+                },
                 "history": {"enabled": store is not None, "labels": list(LABELS), "stats_keys": sorted(STATS_KEYS)},
             }
         )
@@ -261,11 +266,20 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 if not isinstance(upload, dict):
                     continue
                 name, content = str(upload.get("name") or "upload.txt"), str(upload.get("content") or "")
-                # A JSON file with a top-level "tools" list is an MCP tool manifest.
-                if name.lower().endswith(".json") and is_manifest_json(content):
+                kind = str(upload.get("kind") or "auto")
+                if kind not in UPLOAD_KINDS:
+                    return _bad(f"{name}: unknown kind {kind!r}.", f"Use one of: {', '.join(UPLOAD_KINDS)}.")
+                # "auto" is what a dropped file gets: a JSON file with a top-level
+                # "tools" list is an MCP manifest, anything else is a document.
+                # Pasted text says what it is, so a tool result that happens to
+                # carry a "tools" list is not mistaken for a manifest.
+                if kind == "manifest" or (kind == "auto" and name.lower().endswith(".json") and is_manifest_json(content)):
+                    if not is_manifest_json(content):
+                        return _bad(f"{name}: this is not a tool manifest.", 'A manifest is a JSON object with a top-level "tools" list.')
                     manifests.append(manifest_from_upload(name, content))
                 else:
-                    documents.append(document_from_upload(name, content))
+                    channel = "tool_response" if kind == "tool_response" else None
+                    documents.append(document_from_upload(name, content, channel))
         except ContextError as exc:
             return _bad(str(exc))
         if not documents and not manifests:

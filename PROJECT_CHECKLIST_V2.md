@@ -315,14 +315,23 @@ result worth reporting.
 
 ## 18. Longer-term research boundary
 
-- [ ] Design multi-turn attack representation and multi-agent trust/provenance tracking.
-- [ ] Collect sufficient data for multi-turn/multi-agent evaluation.
-- [ ] Study multilingual and multimodal prompt injection separately with suitable benchmarks.
-- [ ] Study adaptive/white-box attacker robustness under an approved safe protocol.
-- [ ] Design production proxy concerns: authentication, streaming, tenant isolation, availability, fail-open/fail-closed behaviour.
-- [ ] Investigate authorised secret redaction, network egress restriction, server-side authorisation, and sandboxing as separate security-engineering work.
-- [ ] Design privacy-preserving monitoring and conduct broader annotation/human-review studies before production claims.
-- [ ] Establish evidence required for certifications, SLAs, and any commercial security claim.
+Written up in `docs/research_boundary.md`. Design items are ticked; every item that
+needs data, a study or a measurement stays open, with the required evidence stated.
+
+- [x] Design multi-turn attack representation and multi-agent trust/provenance tracking. (§1–2: conversation-level labels with per-turn spans and bounded carry-over state; non-increasing trust along a provenance chain, gate decides on the minimum.)
+- [ ] Collect sufficient data for multi-turn/multi-agent evaluation. (Requirements stated in §3; nothing collected.)
+- [ ] Study multilingual and multimodal prompt injection separately with suitable benchmarks. (§4 scopes it: English corpus, English encoder, text-only pipeline; per-language thresholds required, no data.)
+- [ ] Study adaptive/white-box attacker robustness under an approved safe protocol. (Protocol designed in §5 — threat tiers, query budget, safety rules, success criterion, pre-fixed thresholds — but no study has been run.)
+- [x] Design production proxy concerns: authentication, streaming, tenant isolation, availability, fail-open/fail-closed behaviour. (§6, per-concern table; fail-open/closed decided per action class.)
+- [x] Investigate authorised secret redaction, network egress restriction, server-side authorisation, and sandboxing as separate security-engineering work. (§7: scoped out of this project, with the reason the gate decides requests and not effects.)
+- [ ] Design privacy-preserving monitoring and conduct broader annotation/human-review studies before production claims. (§8: monitoring design done; the multi-annotator study is not — `docs/annotation_study.md` is self-agreement, not inter-annotator agreement.)
+- [x] Establish evidence required for certifications, SLAs, and any commercial security claim. (§9: the list, and the statement that none of it exists.)
+
+Related mechanism, built rather than designed: candidate rules mined from reviewed
+cases (`llmsentinel rules propose|approve|check`). Advisory only — an approved
+candidate never enters `default_rules()` or the fusion feature vector, so no
+reported number can move because of it. See `docs/research_boundary.md`, last
+section, and `docs/analyst_workflow.md`.
 
 ## 19. Final completion criteria
 

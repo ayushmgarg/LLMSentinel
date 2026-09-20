@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How LLMSentinel works</title>
+  <meta name="description" content="What the guard inspects, when it flags, what isolation removes, and how an action is decided.">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script src="sprite.js" defer></script>
+  <script src="common.js" defer></script>
+  <script src="pages.js" defer></script>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <a class="skip-link" href="#pipeline">Skip to the pipeline</a>
+
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html" aria-label="LLMSentinel Studio, demo">
+        <span class="brand__mark"><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg></span>
+        <span class="brand__name">LLMSentinel <span class="brand__sub">Studio</span></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="index.html">Demo</a>
+        <a href="about.html">What it does</a>
+        <a href="how-it-works.html">How it works</a>
+      </nav>
+      <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch theme"></button>
+      <span class="pill pill--proto"><span class="dot" aria-hidden="true"></span>Research prototype</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="container page-head">
+      <div>
+        <p class="eyebrow">How it works</p>
+        <h1>Inspect the context, isolate what is aimed at the model, decide the action.</h1>
+        <p class="lede">Nothing here is a judgement about the answer the model gives. The guard works on the text that reaches the model and on the tool calls that come back, and every step leaves a trace you can read.</p>
+      </div>
+      <div class="page-head__links">
+        <a class="btn btn--primary" href="index.html"><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>Open the console</a>
+        <a class="btn btn--ghost" href="about.html">What it does</a>
+      </div>
+    </section>
+
+    <section class="container section" id="pipeline" aria-labelledby="pipeline-title">
+      <h2 class="section__title" id="pipeline-title">How a comparison runs</h2>
+      <ol class="timeline">
+        <li><span class="timeline__n">01</span><h3>Retrieve</h3><p>Files are split into passages (JSON by string leaf, keeping its path), and the passages that best match the question are retrieved with TF-IDF.</p></li>
+        <li><span class="timeline__n">02</span><h3>Inspect</h3><p>Each passage and every tool description from connected servers is normalised and scored. The span-aware transformer decides at its dev 1%-FPR threshold; the rule engine explains, decodes hidden payloads and also flags at its 0.1%-FPR band. Each tool's declaration is also compared with the digest pinned when it was approved.</p></li>
+        <li><span class="timeline__n">03</span><h3>Isolate</h3><p>Flagged sentences, hidden comments and encoded blobs are removed; if what remains is still suspicious, the whole passage is withheld. A tool whose description is flagged, or that changed after approval, is quarantined.</p></li>
+        <li><span class="timeline__n">04</span><h3>Answer and gate</h3><p>The same system prompt and question go to your model twice. Tool requests are classified; with Sentinel, the capability policy allows, confirms or blocks them.</p></li>
+      </ol>
+      <p class="fine muted" id="detector-note" role="status" aria-live="polite">Checking which detector is running on this machine&hellip;</p>
+    </section>
+
+    <section class="container section" aria-labelledby="channels-title">
+      <h2 class="section__title" id="channels-title">What counts as untrusted</h2>
+      <p class="muted">Three surfaces reach the model without anyone on your team writing them, and each is scanned as its own channel, because the same sentence means different things depending on where it arrived from.</p>
+      <div class="cards">
+        <article class="card">
+          <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg></span>
+          <h3>Retrieved documents</h3>
+          <p>Wiki pages, tickets, files, web pages. Split into passages; the passages that match your question are what the model actually reads.</p>
+        </article>
+        <article class="card">
+          <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-braces"/></svg></span>
+          <h3>Tool results</h3>
+          <p>Whatever a tool returned. JSON is split by string leaf and each leaf keeps its JSON path, so a finding points at a field and not at a blob.</p>
+        </article>
+        <article class="card">
+          <span class="card__icon"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg></span>
+          <h3>Tool manifests</h3>
+          <p>The names, descriptions and parameter descriptions an MCP server advertises. The agent reads them before any question is asked, which is what makes them worth poisoning.</p>
+        </article>
+      </div>
+      <p class="fine muted">In the console, a dropped file is read by its type, and pasted text says what it is: the dropdown sets the channel, so a tool result stays a tool result even when it does not parse as JSON.</p>
+    </section>
+
+    <section class="container section" aria-labelledby="flag-title">
+      <h2 class="section__title" id="flag-title">When it flags</h2>
+      <div class="split">
+        <article class="panel">
+          <h3>Two components, one rule</h3>
+          <p class="muted">A passage is flagged when the fine-tuned classifier crosses its threshold, or when the rule engine crosses a stricter one. The transformer generalises to wording the rules never saw; the rules explain themselves, decode hidden payloads, and hold the line where the classifier is unsure.</p>
+          <p class="muted">Both thresholds were selected on the development split at a fixed false-positive budget and are never re-tuned per run. The values in force on this machine are printed above.</p>
+        </article>
+        <article class="panel">
+          <h3>What a finding carries</h3>
+          <ul class="plain-list">
+            <li>the source, channel and JSON path it came from;</li>
+            <li>the exact span that fired, in the normalised text;</li>
+            <li>the rule trace, as <code>[family/rule score] explanation</code>;</li>
+            <li>evidence from normalisation: zero-width characters, bidi controls, HTML comments, decoded base64.</li>
+          </ul>
+          <p class="fine muted">If the detector itself degraded, the finding says so, and the decision is taken one step stricter rather than being trusted.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section" aria-labelledby="isolate-title">
+      <h2 class="section__title" id="isolate-title">What isolation removes</h2>
+      <p class="muted">Isolation is not redaction of everything suspicious: the useful half of a poisoned page is usually still the answer to your question. The guard removes the least it can, and then checks its own work.</p>
+      <ol class="timeline">
+        <li><span class="timeline__n">01</span><h3>Segment</h3><p>The passage is split into sentences, HTML comments and encoded blobs.</p></li>
+        <li><span class="timeline__n">02</span><h3>Cut the worst first</h3><p>The most suspicious segment is removed, and what remains is scanned again &mdash; under a stricter criterion than the one used to flag it.</p></li>
+        <li><span class="timeline__n">03</span><h3>Repeat, or withhold</h3><p>Cutting continues until the remainder is clean. If it never becomes clean, the whole passage is withheld rather than forwarded.</p></li>
+        <li><span class="timeline__n">04</span><h3>Mark the gap</h3><p>The model sees a marker where text was removed, so it knows something was withheld. The marker is excluded from re-scanning, so the guard never flags its own annotation.</p></li>
+      </ol>
+      <p class="fine muted">A tool whose description is flagged, or whose declaration changed after it was approved, is quarantined instead: it is left out of the guarded run entirely.</p>
+    </section>
+
+    <section class="container section" aria-labelledby="gate-title">
+      <h2 class="section__title" id="gate-title">How an action is decided</h2>
+      <p class="muted">The detector is probabilistic and advisory. The gate is a deterministic table: a tool is classified by its worst possible effect, the context&rsquo;s risk selects a column, and the cell is the outcome. Risk chooses the column; it never changes what the column says. Nothing in the project executes a tool &mdash; the decision is an object, and the console shows it.</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <caption class="fine muted">The shipped policy, which is data a reviewer can read without reading any code.</caption>
+          <thead><tr><th scope="col">Action class</th><th scope="col">Low risk</th><th scope="col">Elevated</th><th scope="col">High</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">read only</th><td>allow</td><td>isolate</td><td>isolate</td></tr>
+            <tr><th scope="row">sensitive read</th><td>confirm</td><td>confirm</td><td>block</td></tr>
+            <tr><th scope="row">external send</th><td>confirm</td><td>block</td><td>block</td></tr>
+            <tr><th scope="row">write</th><td>confirm</td><td>confirm</td><td>block</td></tr>
+            <tr><th scope="row">destructive</th><td>block</td><td>block</td><td>block</td></tr>
+            <tr><th scope="row">privilege escalation</th><td>block</td><td>block</td><td>block</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fine muted">A tool nobody classified counts as a sensitive read, not as read-only: an unknown tool is an unreviewed tool. A destructive action is blocked at risk 0.0, because a detector&rsquo;s false negative should not be the only thing standing between a document and a deletion. A degraded detector escalates every outcome one step.</p>
+    </section>
+
+    <section class="container section" aria-labelledby="after-title">
+      <h2 class="section__title" id="after-title">What happens after the verdict</h2>
+      <div class="split">
+        <article class="panel">
+          <h3>Review, not rewriting</h3>
+          <p class="muted">Every scan is recorded locally in an append-only history. A reviewer who disagrees with the guard adds a label and a rationale beside the original verdict; the verdict itself is never edited, because a record that can be rewritten is not evidence. Uncertain cases land in a queue, and a reviewed case can become a regression fixture &mdash; sanitised, with hosts rewritten to reserved <code>.invalid</code> names and secret-shaped tokens redacted.</p>
+        </article>
+        <article class="panel">
+          <h3>Candidate rules, proposed not applied</h3>
+          <p class="muted">Phrases that keep appearing in confirmed injections, or in detections no rule could explain, are mined into candidate rules. Each candidate reports what it would match on the development split before anyone approves it, and an approved candidate runs as a second opinion in a separate advisory engine.</p>
+          <p class="fine muted">It is not part of the scored detector, so no measured number moves because the guard saw new traffic. Promoting a candidate means rebuilding the corpus and re-running the evaluation: the loop shortens finding a rule, never accepting one.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="container section" aria-labelledby="honest-title">
+      <h2 class="section__title" id="honest-title">Reading a run honestly</h2>
+      <div class="notice notice--quiet">
+        <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+        <div>
+          <p><strong>Reading results honestly</strong></p>
+          <ul class="plain-list">
+            <li>The simulator is not a language model. It obeys planted instructions by pattern, so it shows how the pipeline works, not how accurate the detector is.</li>
+            <li>Small local models do not always follow injections. An unguarded answer with no compromise is a real outcome, not a broken demo.</li>
+            <li>Attack success is judged by objective signs: a leaked confidential code, a reserved <code>.invalid</code> attacker address, a dangerous tool request, or a planted claim in the answer.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p><strong>LLMSentinel Studio</strong> · research prototype · defence in depth, not a guarantee.</p>
+      <p class="muted">Everything runs on this machine. Documents are sent only to the model endpoint you configure.</p>
+    </div>
+  </footer>
+
+  <div class="toasts" id="toast-region" role="region" aria-live="assertive" aria-label="Notifications"></div>
+</body>
+</html>
