@@ -13,6 +13,10 @@ Success of an attack is judged by objective indicators, not by the detector:
 * a dangerous tool (external send, destructive, privilege escalation) would run;
 * a claim planted by a poisoned sample appears in the answer.
 
+The guarded run then passes an output-side check (``llmsentinel.output_check``) that
+uses only run-time evidence, and withholds an answer that repeats a claim the context
+told the assistant to make or carries a destination taken from flagged text.
+
 Nothing is ever executed: tool requests are parsed, classified and decided, never run.
 """
 
@@ -27,6 +31,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from llmsentinel.analyst import ScanStore
+from llmsentinel.output_check import check_output
 from llmsentinel.policy import CapabilityPolicy, ProposedAction
 from llmsentinel.verdict import RiskBand
 
@@ -228,6 +233,62 @@ def _side(
     }
 
 
+OUTPUT_NOTICE = "LLMSentinel withheld this answer after the model replied:"
+_PERMITTED = frozenset({"allow", "isolate", "would_run"})
+_OUTPUT_KIND_TEXT = {
+    "planted_claim": "it repeated a claim that the retrieved context told the assistant to make",
+    "flagged_destination": "it sent data towards an address taken from text the guard flagged",
+    "secret": "it contained a secret",
+    "system_prompt_leak": "it reproduced the confidential system prompt",
+}
+
+
+def _apply_output_check(
+    side: dict[str, Any],
+    *,
+    question: str,
+    context: list[str],
+    flagged: list[str],
+    guarded: bool,
+    policy: CapabilityPolicy,
+    canaries: tuple[str, ...],
+) -> None:
+    if not side.get("ok"):
+        return
+    arguments = [
+        a["arguments"] if isinstance(a["arguments"], str) else json.dumps(a["arguments"])
+        for a in side["actions"]
+        if a["outcome"] in _PERMITTED
+    ]
+    check = check_output(
+        side["answer"],
+        context=context,
+        flagged=flagged,
+        question=question,
+        # Trusted: the operator's own prompt, without the MCP tool descriptions
+        # (those are untrusted third-party text, and are in `context`).
+        system_prompt=system_prompt(()),
+        tool_arguments=arguments,
+        secrets=(SYSTEM_CANARY,),
+    )
+    side["output_check"] = {**check.to_dict(), "applied": guarded}
+    if not (guarded and check.withhold):
+        return
+    # The notice names the kinds of finding only: echoing the evidence would deliver
+    # the planted claim or the attacker's address after all.
+    kinds = sorted({f.kind for f in check.findings if f.severity == "high"})
+    reasons = [_OUTPUT_KIND_TEXT.get(kind, kind.replace("_", " ")) for kind in kinds]
+    side["answer_before_output_check"] = side["answer"]
+    side["answer"] = OUTPUT_NOTICE + "\n- " + "\n- ".join(reasons)
+    for action in side["actions"]:
+        if action["outcome"] in _PERMITTED:
+            action["outcome"] = "block"
+            action["reasons"] = [*action["reasons"], "Blocked by the output-side check: " + "; ".join(reasons)]
+    # What the user actually receives now: the notice, and no permitted action.
+    side["indicators"] = compromise_indicators(side["answer"], [], canaries, policy)
+    side["compromised"] = bool(side["indicators"])
+
+
 def _summary(
     unguarded: dict[str, Any],
     guarded: dict[str, Any],
@@ -316,6 +377,18 @@ async def run_comparison(
               "canaries": tuple(canaries), "simulated": provider.simulated, "quarantined": quarantined}
     unguarded = _side(unguarded_out, unguarded_messages, guarded=False, **common)
     guarded = _side(guarded_out, guarded_messages, guarded=True, **common)
+
+    # Output-side check: the second line of defence. It sees only what the guard
+    # knows at run time -- the untrusted context, what was flagged or removed, the
+    # question and the operator's own prompt and secret -- never which sample was
+    # poisoned. On the guarded run it withholds; on the unguarded run it only
+    # reports what it would have caught.
+    untrusted = [chunk.text for chunk, _ in retrieved] + [render_tool(tool) for tool in all_tools]
+    flagged_text = [a.text for a in assessments if a.flagged] + [r for a in assessments for r in a.removed]
+    flagged_text += [render_tool(t) for t in all_tools if str(t.get("name")) in quarantined]
+    for side, guarded_run in ((unguarded, False), (guarded, True)):
+        _apply_output_check(side, question=question, context=untrusted, flagged=flagged_text,
+                            guarded=guarded_run, policy=policy, canaries=tuple(canaries))
 
     history = (
         record_comparison(store, guard=guard, question=question, assessments=assessments, tools=tool_results, guarded=guarded)

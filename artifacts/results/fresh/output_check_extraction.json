@@ -1,0 +1,37 @@
+{
+  "fresh_digest": "1317e370f9133f2df373a0e9035daa5593b233de832eaa0e23dfc924d2782d15",
+  "extraction": {
+    "counterpart": {
+      "n": 21,
+      "with_claim": 0
+    },
+    "blatant": {
+      "n": 12,
+      "with_claim": 1
+    },
+    "paraphrase": {
+      "n": 12,
+      "with_claim": 1
+    },
+    "soft_claim": {
+      "n": 10,
+      "with_claim": 8
+    },
+    "hidden": {
+      "n": 8,
+      "with_claim": 0
+    },
+    "hard_negative": {
+      "n": 20,
+      "with_claim": 1
+    },
+    "tool": {
+      "n": 24,
+      "with_claim": 1
+    },
+    "content_manipulation": {
+      "n": 14,
+      "with_claim": 10
+    }
+  }
+}

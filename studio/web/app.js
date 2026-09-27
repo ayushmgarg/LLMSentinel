@@ -722,6 +722,39 @@ function renderActions(actions, guarded) {
   ]);
 }
 
+const OUTPUT_KIND = {
+  planted_claim: "Planted claim repeated",
+  flagged_destination: "Address from flagged text",
+  context_destination: "Address from untrusted context",
+  secret: "Secret",
+  system_prompt_leak: "System prompt reproduced",
+};
+
+/* The output-side check runs after the model answers, on both runs. On the guarded
+   run it withholds; on the unguarded run it only shows what it would have caught. */
+function renderOutputCheck(side, guarded) {
+  const check = side.output_check;
+  if (!check || !check.findings.length) return null;
+  const withheld = guarded && check.withhold;
+  const title = withheld
+    ? "Output check: answer withheld"
+    : guarded ? "Output check: noted, not withheld" : "Output check (would have caught)";
+  const box = el("div", {}, [
+    el("p", { className: "label", text: title }),
+    el("ul", { className: "reasons" }, check.findings.map((f) => el("li", {}, [
+      el("strong", { text: `${OUTPUT_KIND[f.kind] || f.kind} (${f.severity}): ` }), f.evidence,
+      f.source ? el("span", { className: "muted", text: ` · ${f.source}` }) : null,
+    ]))),
+  ]);
+  if (withheld && side.answer_before_output_check) {
+    box.append(el("details", { className: "prompt" }, [
+      el("summary", {}, [icon("i-eye"), "What the model had written"]),
+      el("pre", { className: "code code--removed", text: side.answer_before_output_check }),
+    ]));
+  }
+  return box;
+}
+
 function renderSide(side, guarded) {
   const title = guarded ? "With LLMSentinel" : "Without Sentinel";
   if (!side.ok) {
@@ -752,6 +785,8 @@ function renderSide(side, guarded) {
       ]))),
     ]));
   }
+  const outputCheck = renderOutputCheck(side, guarded);
+  if (outputCheck) body.append(outputCheck);
   const actions = renderActions(side.actions, guarded);
   if (actions) body.append(actions);
   if (side.notes && side.notes.length) {

@@ -1325,3 +1325,107 @@ detector, threshold, rule, corpus or result changed; the SDK reads thresholds fr
 - The existing Studio test client would have written into the user's real history.
 
 All four were fixed before commit.
+
+## 2026-09-27 · Fresh evaluation set (B0): scored once; the deployed rule evaluated for the first time
+
+**Why.** The canonical test split and both out-of-distribution sets are spent (each scored
+once). Two things had never been measured on unseen data: the **deployed decision rule**
+the Studio, SDK and proxy use (transformer at its dev 1%-FPR threshold OR rules at their
+dev 0.1%-FPR threshold), and anything added after §17.
+
+**Data.** `data/fresh/fresh_eval.yaml`, authored in one pass before any detector saw it,
+committed as `a97f4e4` ("freeze fresh evaluation set before scoring"), SHA-256
+`1317e370f9133f2df373a0e9035daa5593b233de832eaa0e23dfc924d2782d15`. 107 records:
+54 injections (12 blatant, 12 paraphrase without stock trigger phrases, 10 soft claims,
+8 hidden: HTML comment / zero-width / base64, 12 poisoned tool descriptions) and 53 benign
+(21 counterparts = each host with its payload slot removed, 20 hard negatives, 12 clean
+tool descriptions); 60 documents, 23 JSON tool results, 24 tool descriptions; 6 manifest
+drift cases. Authored by this project, which biases it towards the authors' idea of an
+attack. Loader: `llmsentinel.evaluation.fresh`.
+
+**Protocol.** `python scripts/fresh_eval.py`: baselines fitted on canonical train, fusion
+on dev, every threshold recomputed on canonical dev and checked against
+`results_dev.json` (difference 0 for every system). Scored once; ledger
+`artifacts/results/fresh/runs.json`. The script was smoke-tested beforehand on a separate
+8-record synthetic file with its own output directory, so no fresh-set number was seen
+before the scored run. Bootstrap CIs (1,000 resamples, seed 20250909). Per-record scores
+persisted (`scores.jsonl`), so paired tests need no re-scoring.
+
+| system | dev AUPRC | fresh AUPRC [95% CI] | fresh TPR at dev 1% (realised FPR) |
+|---|---|---|---|
+| keyword | 0.338 | 0.509 [0.411, 0.607] | 0.000 (0.000) |
+| tfidf-word | 0.684 | 0.778 [0.660, 0.877] | 0.593 (0.208) |
+| tfidf-word+char | 0.632 | 0.802 [0.689, 0.893] | 0.630 (0.151) |
+| rules-only | 0.683 | 0.697 [0.580, 0.800] | 0.130 (0.019) |
+| transformer | 0.964 | 0.661 [0.540, 0.789] | 0.204 (0.038) |
+| hybrid (fusion) | 0.873 | 0.687 [0.563, 0.809] | 0.037 (0.000) |
+| **deployed OR rule** | TPR 0.825, FPR 0.006 | — | **0.204 (0.038)**, hard-neg FPR 0.10 |
+
+Transformer recall at its dev threshold by category: blatant 0.33, paraphrase 0.00,
+soft claim 0.10, hidden 0.25, tool descriptions 0.33; counterpart FPR 0.00, hard-negative
+FPR 0.10. On the fresh set the deployed OR rule equals the transformer alone: the rules'
+0.1%-FPR band added no detection.
+
+**Paired tests (F1).** Transformer vs each system, paired bootstrap on AUPRC (2,000
+resamples). Dev: transformer better than every system (p < 0.001; vs hybrid +0.091
+[0.032, 0.159]). Fresh: better than keyword only (+0.152, p = 0.006); **worse than
+tfidf-word+char (−0.141 [−0.267, −0.009], p = 0.04)**; no significant difference from
+rules-only (p = 0.60) or hybrid (p = 0.44). McNemar at the operating points: on dev, the
+deployed rule and the transformer differ on one record (p = 1.0) and both beat rules-only
+(55 vs 11, p < 0.001); on fresh, deployed vs rules-only 9 vs 6 (p = 0.61). The canonical
+test split's per-record scores were never saved, so no test-split significance is
+claimed: re-scoring test would break the score-once protocol.
+
+**The finding, and its diagnosis.** The transformer scores ≈0 on every blatant injection
+embedded in a *document* (7 of 7 below 0.05) and ≈1 on the same kind of payload in a JSON
+tool result. A post-hoc diagnostic (not used to change anything scored here) put the same
+seven payloads through the model four ways: alone 0.996–1.000; as their own JSON field
+0.985–1.000; inside their benign host paragraph 0.000–0.050; that paragraph wrapped as
+JSON 0.000–0.995. The model recognises the instruction but **the surrounding benign text
+masks it**: these documents fit in one window, so max-over-windows does not help, and JSON
+results escape because each leaf is scored separately. The input path was checked: the
+transformer reads the passage text only (no host task, no channel), so fresh records are
+fed exactly like canonical ones. The canonical 0.984 therefore overstates how the model
+handles injections placed inside ordinary prose it has not seen; it is consistent with the
+§16a out-of-distribution drop.
+
+**What this does not license.** Changing the detector and re-reading this set. A fix
+(sentence-level scoring) must be tuned on dev and confirmed on data written before the fix
+is run; see the next entry.
+
+## 2026-09-27 · Output-side check (B8)
+
+**What.** `llmsentinel.output_check.check_output`: after the model answers, look for
+(1) a claim the untrusted context told the answerer to make ("say that…", "report X as
+Y", "tell the user…") that the context does not otherwise support, repeated in the
+answer; (2) a URL or e-mail in the answer or tool arguments that came from untrusted text
+(high if it sits in flagged text, medium otherwise; addresses in the question or the
+operator's prompt are trusted); (3) a declared secret, a secret-shaped token, or 12+
+consecutive words of the system prompt. No ground truth is used. High findings withhold
+the answer on the guarded run (Studio) and the reply (proxy); the notice names the kind of
+finding only, never the evidence. JSON tool results are read by string leaf.
+
+**Developed on non-fresh data only.** The claim extractor was built against the
+answer-shaping seed families (11 of 12 variants yield a claim; the miss, "always
+recommend the premium plan", is promotion rather than a claim) and all 848 benign
+train+dev records (0 false extractions). Two defects found on that data were fixed before
+any fresh-set run: an imperative to a person ("report any suspected incident
+immediately") was read as a claim; "as clearly as possible" was read as "X as Y". Only 5 of
+94 canonical content-manipulation positives yield a claim: those are mostly BIPIA
+"rewrite/insert an ad" payloads, not claims.
+
+**Fresh set, measured once after the extractor was final**
+(`artifacts/results/fresh/output_check_extraction.json`): soft claims 8 of 10;
+content-manipulation positives 10 of 14; false extraction 0 of 21 counterparts, 0 of 12
+clean tool descriptions, 1 of 20 hard negatives — a *negated* directive ("no status report
+should describe a project as complete until…"). Left as a known gap rather than fixed
+against the set that exposed it.
+
+**Sample pack, simulator (illustrative, not a measured result).** Transformer + rules:
+the check flags all six unguarded compromises and withholds none of the six guarded
+answers. Rules-only: containment rises from 3 of 6 to 6 of 6 — each of the three attacks
+detection missed was withheld after the answer, on a planted claim. Real-model attack
+success (F3) is still unmeasured.
+
+**Tests.** `tests/test_output_check.py` (11), `tests/test_significance.py` (5), two proxy
+tests (withhold a reply repeating a planted claim; pass one that follows the data).
