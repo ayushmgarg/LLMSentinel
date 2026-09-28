@@ -25,7 +25,15 @@ python -m studio.server
 ```
 
 Open <http://127.0.0.1:8700>. Options: `--port 8700`, `--rules-only` (skip loading
-the transformer), `--max-tokens N` (answer cap for models without a profile).
+the transformer), `--max-tokens N` (answer cap for models without a profile),
+`--retriever dense|tfidf` (semantic retrieval with `all-MiniLM-L6-v2`, the default, or
+TF-IDF; dense falls back to TF-IDF with a note if the model cannot load), and
+`--passage-scoring` (score whole passages only; the default also scores each sentence,
+see `docs/fresh_evaluation.md`).
+
+After the model answers, the guarded run passes an **output-side check**: an answer that
+repeats a claim the context told the assistant to make, or carries an address taken from
+flagged text, is withheld (the unguarded run shows what the check would have caught).
 
 Three pages: the demo and the analyst workflow on `/`, what it does and the evidence
 on `/about.html`, and the pipeline in detail on `/how-it-works.html`. Every page

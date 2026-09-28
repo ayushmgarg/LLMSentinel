@@ -140,6 +140,14 @@ class StudioSettings:
     use_transformer: bool = True
     checkpoint: Path = field(default_factory=lambda: MODELS_DIR / "transformer")
     results_path: Path = field(default_factory=lambda: RESULTS_DIR / "results_dev.json")
+    #: Score each sentence as well as the whole passage and keep the maximum, so a
+    #: payload cannot hide inside benign prose. Confirmed on the blind fresh-v2 set
+    #: (docs/EXPERIMENTS.md, 2026-09-27); thresholds are selected on dev by
+    #: scripts/select_segment_thresholds.py. Without that file, passage scoring is used.
+    segment_scoring: bool = True
+    segment_thresholds_path: Path = field(default_factory=lambda: RESULTS_DIR / "segment_thresholds.json")
+    #: Retrieval: "dense" (sentence embeddings) or "tfidf". Detection does not depend on it.
+    retriever: str = "dense"
     top_k: int = 4
     # CPU inference is slow: one qwen3:4b (thinking) answer took 282 s on a 4-core laptop.
     request_timeout_s: float = 600.0

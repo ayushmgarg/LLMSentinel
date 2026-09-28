@@ -1,0 +1,61 @@
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 1468.53it/s]
+segment (deployed) [transformer + rules, segment]
+  all benign       {'n': 41, 'flagged': 0.073, 'mean_benign_removed': 0.037}
+  all injections   {'n': 42, 'flagged': 0.357, 'contained': 0.357, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.986, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 12, 'flagged': 0.75, 'contained': 0.75, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.977, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 21, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 20, 'flagged': 0.15, 'mean_benign_removed': 0.076}
+  hidden           {'n': 8, 'flagged': 0.5, 'contained': 0.5, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 12, 'flagged': 0.0, 'contained': 0.0}
+  soft_claim       {'n': 10, 'flagged': 0.2, 'contained': 0.2, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 1456.80it/s]
+passage (before 2026-09-27) [transformer + rules, passage]
+  all benign       {'n': 41, 'flagged': 0.024, 'mean_benign_removed': 0.012}
+  all injections   {'n': 42, 'flagged': 0.071, 'contained': 0.071, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.972, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 12, 'flagged': 0.167, 'contained': 0.167, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.959, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 21, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 20, 'flagged': 0.05, 'mean_benign_removed': 0.025}
+  hidden           {'n': 8, 'flagged': 0.125, 'contained': 0.125, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 12, 'flagged': 0.0, 'contained': 0.0}
+  soft_claim       {'n': 10, 'flagged': 0.0, 'contained': 0.0}
+rules-only [rules-only, rules]
+  all benign       {'n': 41, 'flagged': 0.024, 'mean_benign_removed': 0.014}
+  all injections   {'n': 42, 'flagged': 0.119, 'contained': 0.071, 'contained_when_flagged': 0.6, 'host_kept_when_flagged': 0.949, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 12, 'flagged': 0.333, 'contained': 0.167, 'contained_when_flagged': 0.5, 'host_kept_when_flagged': 0.987, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 21, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 20, 'flagged': 0.05, 'mean_benign_removed': 0.029}
+  hidden           {'n': 8, 'flagged': 0.125, 'contained': 0.125, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.8, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 12, 'flagged': 0.0, 'contained': 0.0}
+  soft_claim       {'n': 10, 'flagged': 0.0, 'contained': 0.0}
+wrote artifacts/results/fresh/isolation.json
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 1163.42it/s]
+segment (deployed) [transformer + rules, segment]
+  all benign       {'n': 28, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  all injections   {'n': 24, 'flagged': 0.458, 'contained': 0.458, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.977, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 8, 'flagged': 0.75, 'contained': 0.75, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 14, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 14, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hidden           {'n': 4, 'flagged': 0.75, 'contained': 0.75, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 6, 'flagged': 0.167, 'contained': 0.167, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.75, 'withheld_when_flagged': 0.0}
+  soft_claim       {'n': 6, 'flagged': 0.167, 'contained': 0.167, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 1533.42it/s]
+passage (before 2026-09-27) [transformer + rules, passage]
+  all benign       {'n': 28, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  all injections   {'n': 24, 'flagged': 0.208, 'contained': 0.208, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.95, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 8, 'flagged': 0.375, 'contained': 0.375, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 14, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 14, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hidden           {'n': 4, 'flagged': 0.25, 'contained': 0.25, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 6, 'flagged': 0.167, 'contained': 0.167, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 0.75, 'withheld_when_flagged': 0.0}
+  soft_claim       {'n': 6, 'flagged': 0.0, 'contained': 0.0}
+rules-only [rules-only, rules]
+  all benign       {'n': 28, 'flagged': 0.036, 'mean_benign_removed': 0.025}
+  all injections   {'n': 24, 'flagged': 0.083, 'contained': 0.083, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  blatant          {'n': 8, 'flagged': 0.125, 'contained': 0.125, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  counterpart      {'n': 14, 'flagged': 0.0, 'mean_benign_removed': 0.0}
+  hard_negative    {'n': 14, 'flagged': 0.071, 'mean_benign_removed': 0.05}
+  hidden           {'n': 4, 'flagged': 0.25, 'contained': 0.25, 'contained_when_flagged': 1.0, 'host_kept_when_flagged': 1.0, 'withheld_when_flagged': 0.0}
+  paraphrase       {'n': 6, 'flagged': 0.0, 'contained': 0.0}
+  soft_claim       {'n': 6, 'flagged': 0.0, 'contained': 0.0}
+wrote artifacts/results/fresh_v2/isolation.json
+exit 0

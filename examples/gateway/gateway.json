@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "helpdesk": {
+      "command": "python",
+      "args": ["examples/gateway/demo_upstream.py"]
+    }
+  }
+}

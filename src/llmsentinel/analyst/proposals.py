@@ -44,7 +44,6 @@ from ..rules import RuleEngine
 from ..rules.base import Rule, RuleFamily
 from ..rules.pattern_rule import PatternRule
 from ..schema import Label, Split, read_jsonl
-from ..sdk import load_dev_thresholds
 from .families import MODEL_ONLY
 from .store import ScanFilter, ScanStore
 
@@ -62,6 +61,9 @@ __all__ = [
 ]
 
 PROPOSALS_PATH = DATA_DIR / "rules" / "proposals.yaml"
+#: What a decision may set. ``rolled_back`` retires an approved candidate; it stays in
+#: the file with its history, and a rolled-back phrase is never re-proposed.
+DECISION_STATUSES = ("approved", "rejected", "rolled_back")
 
 #: Weight a proposal starts with. Deliberately below every retained pattern: with
 #: the strongest family weight (meta_instruction, 0.95) a lone candidate hit
@@ -301,6 +303,8 @@ def evaluate_candidates(
     negatives = [r for r in records if r.label != Label.INJECTION]
     engine = engine or RuleEngine()
     if threshold is None:
+        from ..sdk import load_dev_thresholds  # local: the SDK imports this package
+
         threshold = load_dev_thresholds("rules-only").get("fpr=0.01")
 
     scores: dict[str, float] = {}
@@ -406,8 +410,8 @@ def decide_proposal(
 ) -> dict[str, Any]:
     """Approve or reject a proposal, keeping the decision trail."""
 
-    if status not in ("approved", "rejected"):
-        raise ValueError("status must be 'approved' or 'rejected'")
+    if status not in DECISION_STATUSES:
+        raise ValueError(f"status must be one of {', '.join(DECISION_STATUSES)}")
     if not reviewer.strip():
         raise ValueError("reviewer is required")
     if len(rationale.strip()) < 15:

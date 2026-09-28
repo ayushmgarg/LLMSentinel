@@ -197,3 +197,17 @@ def test_models_endpoint(client):
     assert client.post("/api/models", json={"kind": "simulated"}).json()["simulated"] is True
     unknown = client.post("/api/models", json={"kind": "nope"}).json()
     assert unknown["ok"] is False and "Unknown provider" in unknown["error"]
+
+
+def test_compare_reports_the_retriever_and_refuses_unknown_ones(client):
+    upload = {"name": "note.txt", "content": "Deleted notes stay in Trash for thirty days before removal."}
+    body = {"question": "How long do deleted notes stay?", "uploads": [upload], "provider": {"kind": "simulated"}}
+    for kind in ("tfidf", "dense"):
+        result = client.post("/api/compare", json={**body, "retriever": kind}).json()
+        assert result["retrieval"]["requested"] == kind
+        # Dense falls back to TF-IDF (with a note) when the embedding model is unavailable.
+        assert result["retrieval"]["method"] in ("dense", "tfidf")
+    bad = client.post("/api/compare", json={**body, "retriever": "bm42"})
+    assert bad.status_code == 400 and "Unknown retriever" in bad.json()["error"]
+    health = client.get("/api/health").json()
+    assert health["retrieval"] == {"options": ["dense", "tfidf"], "default": "dense"}

@@ -14,6 +14,9 @@
     llmsentinel rules proposals                 list candidates and their review state
     llmsentinel rules approve ID ... | reject   decide a candidate (advisory only, never auto-enabled)
     llmsentinel rules check --text ...          run the approved candidates as a second opinion
+    llmsentinel rules shadow                    replay proposed candidates silently over history
+    llmsentinel rules auto-promote [--dry-run]  promote candidates that pass every gate (advisory only)
+    llmsentinel rules rollback ID ...           retire an approved candidate (kept with its history)
 """
 
 from __future__ import annotations
@@ -281,6 +284,42 @@ def cmd_rules_decide(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_rules_shadow(args: argparse.Namespace) -> int:
+    from .promotion import record_shadow, shadow_report
+    from .proposals import load_proposals
+
+    store = _store(args)
+    entries = [e for e in load_proposals(args.path) if e.get("status") == "proposed"]
+    if not entries:
+        print("(no proposed candidates to shadow)")
+    for entry in entries:
+        report = shadow_report(entry, store, limit=args.limit)
+        record_shadow(str(entry["candidate_id"]), report, path=args.path)
+        print(_safe(f"{entry['candidate_id']}  scanned {report['scanned']}  hits {report['hits']}  "
+                    f"false positives {report['false_positives']}  \"{entry.get('phrase')}\""))
+    return 0
+
+
+def cmd_rules_auto_promote(args: argparse.Namespace) -> int:
+    from .promotion import PromotionGate, auto_promote
+
+    gate = PromotionGate(
+        min_sources=args.min_sources,
+        min_shadow_scans=args.min_shadow_scans,
+        max_per_week=args.max_per_week,
+    )
+    results = auto_promote(_store(args), path=args.path, gate=gate, dry_run=args.dry_run)
+    if not results:
+        print("(no proposed candidates)")
+    for result in results:
+        verdict = "PROMOTED" if result["promoted"] else ("would promote" if result["passed"] else "held")
+        print(_safe(f"{result['candidate_id']}  {verdict}  \"{result['phrase']}\""))
+        for check in result["checks"]:
+            print(_safe(f"    [{'x' if check['ok'] else ' '}] {check['check']}: {check['detail']}"))
+    print("promoted candidates run in the advisory engine only; the scored detector is unchanged")
+    return 0
+
+
 def cmd_rules_check(args: argparse.Namespace) -> int:
     from .proposals import advisory_hits
 
@@ -291,7 +330,9 @@ def cmd_rules_check(args: argparse.Namespace) -> int:
         return 0
     for hit in hits:
         print(_safe(f"{hit['rule_id']}  {hit['score']:.3f}  {hit['explanation']}"))
-    print("advisory only: run `llmsentinel scan` for the verdict that counts")
+    from .promotion import advisory_version
+
+    print(f"advisory rule set {advisory_version(args.path)}; run `llmsentinel scan` for the verdict that counts")
     return 0
 
 
@@ -401,7 +442,18 @@ def register_analyst_commands(sub: Any) -> None:
     listing_p.add_argument("--json", action="store_true")
     listing_p.set_defaults(func=cmd_rules_proposals)
 
-    for name, status in (("approve", "approved"), ("reject", "rejected")):
+    shadow = rsub.add_parser("shadow", parents=[history_path, proposals_path], help="run proposed candidates silently over history")
+    shadow.add_argument("--limit", type=int, default=2000, help="how many recent scans to replay")
+    shadow.set_defaults(func=cmd_rules_shadow)
+
+    auto = rsub.add_parser("auto-promote", parents=[history_path, proposals_path], help="promote candidates that pass every gate")
+    auto.add_argument("--dry-run", action="store_true", help="report the gates without promoting")
+    auto.add_argument("--min-sources", type=int, default=3, help="distinct source domains behind a candidate")
+    auto.add_argument("--min-shadow-scans", type=int, default=50, help="scans a candidate must have shadowed")
+    auto.add_argument("--max-per-week", type=int, default=3, help="automatic promotions allowed in 7 days")
+    auto.set_defaults(func=cmd_rules_auto_promote)
+
+    for name, status in (("approve", "approved"), ("reject", "rejected"), ("rollback", "rolled_back")):
         decide = rsub.add_parser(name, parents=[proposals_path], help=f"mark a candidate {status}")
         decide.add_argument("candidate_id")
         decide.add_argument("--by", required=True, help="who decided")

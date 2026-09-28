@@ -2,8 +2,9 @@
 
 Documents are split into retrieval chunks the way a RAG pipeline would: prose by
 paragraphs (merged up to ~700 characters), JSON tool results by string leaf with
-their JSON path kept as provenance. Retrieval is TF-IDF cosine -- deterministic
-and offline, because the demo is about what happens *after* retrieval.
+their JSON path kept as provenance. ``ChunkRetriever`` is TF-IDF cosine --
+deterministic and offline; the dense (sentence-embedding) retriever and the choice
+between them live in ``retrieval.py``.
 """
 
 from __future__ import annotations

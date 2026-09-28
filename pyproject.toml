@@ -36,6 +36,10 @@ demo = [
 semantic = [
     "sentence-transformers>=2.2",
 ]
+# MCP gateway (python -m llmsentinel.gateway); tested with mcp 2.2.
+gateway = [
+    "mcp>=2.2",
+]
 figures = [
     "matplotlib>=3.8",
     "pandas>=2.2",
@@ -45,6 +49,8 @@ studio = [
     "starlette>=1.6",
     "uvicorn>=0.52",
     "httpx>=0.28",
+    # Dense (semantic) retrieval, the Studio default; without it retrieval falls back to TF-IDF.
+    "sentence-transformers>=2.2",
 ]
 dev = [
     "pytest>=8.0",

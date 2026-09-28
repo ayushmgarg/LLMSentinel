@@ -157,8 +157,10 @@ produce a worse version of well-understood security engineering.
 **Today.** History is local by default and can be run with `store_text=False`,
 which keeps the hash and the excerpt but not the text. Promotion to a regression
 fixture sanitises hosts and redacts secret-shaped tokens. `docs/annotation_study.md`
-reports a **self-agreement** study on 50 records — whether the guideline reproduces
-the intended labels — and states plainly that it is not inter-annotator agreement.
+reports a double-annotation study on 50 records by **two independent LLM annotators**
+given only the guideline (binary Cohen's κ = 1.0, 14 of 14 hard negatives kept
+benign). It measures whether the written guideline is enough to reproduce the labels,
+and states plainly that it is not human inter-annotator agreement.
 
 **Design.** Retention with an expiry per record class, redaction at record time
 rather than at promotion time, access control on the history database, and

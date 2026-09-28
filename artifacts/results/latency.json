@@ -1,0 +1,62 @@
+{
+  "machine": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 142 Stepping 11, GenuineIntel",
+    "logical_cpus": 8,
+    "python": "3.14.4",
+    "torch_threads": 4
+  },
+  "passages": 147,
+  "startup_ms": {
+    "rules_only_guard": 15.1,
+    "transformer_guard": 17106.9,
+    "sentence_encoder": 4278.7
+  },
+  "per_passage": {
+    "rules_only_detect": {
+      "n": 147,
+      "mean_ms": 6.34,
+      "p50_ms": 5.88,
+      "p95_ms": 13.34
+    },
+    "transformer_passage_detect": {
+      "n": 147,
+      "mean_ms": 108.3,
+      "p50_ms": 108.85,
+      "p95_ms": 170.57
+    },
+    "transformer_segment_detect": {
+      "n": 147,
+      "mean_ms": 256.43,
+      "p50_ms": 263.48,
+      "p95_ms": 425.58
+    },
+    "transformer_segment_detect_and_isolate": {
+      "n": 147,
+      "mean_ms": 358.02,
+      "p50_ms": 286.87,
+      "p95_ms": 975.66
+    }
+  },
+  "retrieval_top4": {
+    "tfidf": {
+      "n": 18,
+      "mean_ms": 12.64,
+      "p50_ms": 11.41,
+      "p95_ms": 17.56
+    },
+    "dense": {
+      "n": 18,
+      "mean_ms": 703.76,
+      "p50_ms": 703.57,
+      "p95_ms": 742.54
+    },
+    "chunks": 12
+  },
+  "output_check": {
+    "n": 50,
+    "mean_ms": 6.17,
+    "p50_ms": 6.05,
+    "p95_ms": 7.71
+  }
+}

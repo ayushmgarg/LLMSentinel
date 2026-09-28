@@ -190,6 +190,19 @@ lexicon, rebuild the corpus, re-run the frozen protocol, log the run. The loop
 shortens the discovery of a rule, never its acceptance —
 `docs/research_boundary.md` says why.
 
+
+### Gated auto-promotion
+
+`llmsentinel rules shadow` replays each proposed candidate silently over the recorded
+history (excluding the cases that proposed it) and appends a shadow report.
+`llmsentinel rules auto-promote` then promotes a candidate only if every gate holds:
+mined from reviewer-confirmed cases, supported by at least 3 source domains, no benign dev
+match (and dev precision ≥ 0.9 where it matched), at least 50 shadowed scans with no hit on
+reviewer-benign text, and at most 3 automatic promotions in 7 days. `--dry-run` shows the
+gates without promoting; `llmsentinel rules rollback ID` retires a candidate. Promotion
+still reaches the advisory engine only, and the active rule set carries a version
+(`llmsentinel rules check` prints it). Why the gates exist: `docs/research_boundary.md`.
+
 ## Limits
 
 - The review triggers are heuristics built on the dev operating points. They are not

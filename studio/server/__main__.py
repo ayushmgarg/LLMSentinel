@@ -20,6 +20,14 @@ def main() -> None:
         "--max-tokens", type=int, default=None,
         help="default answer-token cap for models without a profile in studio/model_profiles.yaml",
     )
+    parser.add_argument(
+        "--retriever", choices=["dense", "tfidf"], default="dense",
+        help="passage retrieval: sentence embeddings (default) or TF-IDF (reproducible, no model)",
+    )
+    parser.add_argument(
+        "--passage-scoring", action="store_true",
+        help="score whole passages only (the pre-2026-09-27 behaviour); default scores each sentence too",
+    )
     parser.add_argument("--no-history", action="store_true", help="do not record comparisons in the analyst history")
     parser.add_argument("--history", default=None, help="analyst history database (default: artifacts/analyst/history.sqlite3)")
     args = parser.parse_args()
@@ -29,6 +37,8 @@ def main() -> None:
         use_transformer=not args.rules_only,
         record_history=not args.no_history,
         history_path=Path(args.history) if args.history else None,
+        retriever=args.retriever,
+        segment_scoring=not args.passage_scoring,
     )
     if args.max_tokens:
         settings.max_tokens = max(MIN_ANSWER_TOKENS, min(MAX_ANSWER_TOKENS, args.max_tokens))

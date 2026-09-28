@@ -1429,3 +1429,84 @@ success (F3) is still unmeasured.
 
 **Tests.** `tests/test_output_check.py` (11), `tests/test_significance.py` (5), two proxy
 tests (withhold a reply repeating a planted claim; pass one that follows the data).
+
+## 2026-09-27 · Segment-level scoring, confirmed on a blind second fresh set (v2)
+
+**Order of events, which is the point.** (1) v1 exposed the masking failure (previous
+entry). (2) A second set, `data/fresh/fresh_eval_v2.yaml`, was written and committed as
+`ab500e0` ("freeze confirmatory fresh set v2 before the segment-scoring fix"), SHA-256
+`90b09375401f894830ebbbb6ce9a9aa52f6322948bba48129c03780ebcc346a3`: 52 records, 24
+injections (8 blatant, 6 paraphrase, 6 soft claim, 4 hidden) with payloads at the start,
+middle and end of documents, 14 counterparts and 14 hard negatives, several of which
+quote attack sentences. (3) Only then was `llmsentinel.models.segment.SegmentScorer`
+written: max over the passage and each sentence of at least 4 words (JSON: sentences of
+each string leaf), same checkpoint, no retraining. `MIN_WORDS = 4` and the segmentation
+were fixed before any run. (4) Thresholds on canonical dev; v2 scored once
+(`scripts/fresh_eval.py --fresh data/fresh/fresh_eval_v2.yaml --out
+artifacts/results/fresh_v2`), after a smoke test on a separate synthetic file.
+
+| | dev AUPRC | v2 AUPRC [95% CI] | v2 recall at dev 1% (FPR) |
+|---|---|---|---|
+| rules-only | 0.683 | 0.701 [0.526, 0.859] | 0.083 (0.036) |
+| tfidf-word+char | 0.632 | 0.686 [0.510, 0.862] | 0.375 (0.179) |
+| transformer (passage) | 0.964 | 0.748 [0.591, 0.887] | 0.208 (0.000) |
+| **transformer-segment** | 0.938 | **0.865 [0.745, 0.958]** | **0.458 (0.000)** |
+| deployed OR (passage) | recall 0.825, FPR 0.006 | — | 0.208 (0.000) |
+| **deployed OR (segment)** | recall 0.825, FPR 0.000 | — | **0.458 (0.000)** |
+
+Paired bootstrap on v2, transformer − segment: −0.117 [−0.227, −0.027], p = 0.007. On
+dev: +0.026 [0.010, 0.045], p = 0.001 (segment scoring costs a little dev ranking).
+McNemar on v2, deployed with vs without segments: 6 vs 0, p = 0.031; on dev 3 vs 2,
+p = 1.0. Segment recall by category on v2: blatant 0.75, hidden 0.75, paraphrase 0.17,
+soft claim 0.17; hard-negative FPR 0.00.
+
+**Decision.** Segment scoring becomes the deployed default in the Studio guard, the SDK,
+the proxy and the gateway: it was tuned on dev only and confirmed on data written before
+it existed. Thresholds are persisted by `scripts/select_segment_thresholds.py` to
+`artifacts/results/segment_thresholds.json` (fpr=0.01 and fpr=0.001 both 0.999439; dev
+AUPRC 0.9382, identical to the v2 run). `--passage-scoring` / `segment_scoring=False`
+restore the old behaviour. The canonical test numbers in the report are unchanged and
+describe passage scoring; the test split is not re-scored.
+
+## 2026-09-27 · Isolation quality (F5), latency (F2), MCP gateway (C1), rule auto-promotion (B10), dense retrieval (B11)
+
+**Isolation** (`scripts/isolation_eval.py`, v1 and v2, three detector configurations).
+The first run compared delivered text against the raw record and so charged the guard for
+JSON keys and short leaves that retrieval never delivers (clean counterparts showed 13.5%
+"removed" at 0% flagged); the baseline was corrected to the unguarded delivered text and
+both sets re-run. No number from the first run is used. v2, deployed: 45.8% of injections
+contained (passage 20.8%, rules-only 8.3%); when flagged, 100% contained with 97.7% of the
+genuine text kept and nothing withheld whole; benign flagged 0%, benign text removed 0%.
+v1 (post-hoc for segment scoring): contained 35.7% vs 7.1%; hard negatives flagged 3/20 vs
+1/20 — the false-positive cost of scoring sentences out of context.
+
+**Latency** (`scripts/latency_eval.py`, this laptop, Windows 11, 8 logical CPUs, torch 4
+threads, 147 passages). Per passage: rules-only 6.3 ms, transformer passage 108 ms,
+segment 256 ms (p95 426 ms), segment + isolation 358 ms (p95 976 ms). Output check 6.2 ms.
+Top-4 retrieval over 12 passages: TF-IDF 12.6 ms, dense 704 ms (passages re-embedded per
+query; cacheable). Start-up: rules 15 ms, transformer guard 17.1 s, sentence encoder 4.3 s.
+
+**MCP gateway** (`llmsentinel.gateway`, `docs/mcp_gateway.md`). Tests: 7, through the real
+MCP client/server code against an in-process upstream. Stdio smoke run with gateway and
+demo upstream as separate processes (rules-only): poisoned `fast_mailer` not listed; clean
+search unchanged; poisoned search withheld at `$.results[0].body`; `send_email` to the
+address from that result refused before reaching the upstream. Two design decisions made
+before testing: an empty session context is low risk (not "unknown", which would have
+blocked every first sensitive read), and `confirm` outcomes are refused unless
+`--client-confirms` delegates confirmation to the client.
+
+**Gated auto-promotion** (`llmsentinel.analyst.promotion`, `llmsentinel rules shadow |
+auto-promote | rollback`). Gates: human-confirmed provenance, ≥3 source domains, no benign
+dev match and dev precision ≥ 0.9 where matched, a shadow replay over ≥50 other recorded
+scans with no hit on reviewer-benign text, ≤3 automatic promotions per 7 days. Promotion
+reaches the advisory engine only. Tests: 8, each gate shown to block on its own, plus
+dry-run and rollback (which changes the advisory rule-set version).
+
+**Dense retrieval** (`studio/server/retrieval.py`): `all-MiniLM-L6-v2` embeddings by
+default, TF-IDF selectable and the automatic fallback (with a note) when the encoder cannot
+load. Detection numbers do not depend on it.
+
+**Also fixed.** A latent circular import (`analyst.proposals` imported the SDK at module
+level, so `import llmsentinel.sdk` first failed); a regression test now imports the SDK in
+a fresh process. `docs/robustness.md` claimed the transformer placement probe had been run;
+it had not, and the text now says so.

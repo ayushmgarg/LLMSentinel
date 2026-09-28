@@ -36,11 +36,12 @@ from llmsentinel.policy import CapabilityPolicy, ProposedAction
 from llmsentinel.verdict import RiskBand
 
 from .config import MCP_TOOLS_HEADER, TOOL_CATALOG, StudioSettings
-from .context import ChunkRetriever, Document, chunk_document
+from .context import Document, chunk_document
 from .guard import ChunkAssessment, SentinelGuard, max_band
 from .history import record_comparison
 from .manifests import ToolAssessment, ToolManifest, assess_manifests, render_tool
 from .providers import ChatProvider, ChatResult, ProviderError
+from .retrieval import Retrieval, retrieve
 
 __all__ = [
     "GUARD_NOTICE",
@@ -331,11 +332,18 @@ async def run_comparison(
     canaries: tuple[str, ...] | list[str] = (),
     manifests: Sequence[ToolManifest] = (),
     store: ScanStore | None = None,
+    retriever: str | None = None,
 ) -> dict[str, Any]:
     policy = CapabilityPolicy()
     answer_tokens = max_tokens or settings.max_tokens
     chunks = [chunk for doc in documents for chunk in chunk_document(doc)]
-    retrieved = ChunkRetriever(chunks).retrieve(question, top_k or settings.top_k) if chunks else []
+    kind = retriever or settings.retriever
+    retrieval = (
+        await asyncio.to_thread(retrieve, chunks, question, top_k or settings.top_k, kind)
+        if chunks
+        else Retrieval(method=kind, requested=kind)
+    )
+    retrieved = retrieval.passages
 
     started = time.perf_counter()
     assessments = await asyncio.to_thread(guard.assess, retrieved, question) if retrieved else []
@@ -398,6 +406,7 @@ async def run_comparison(
 
     return {
         "question": question,
+        "retrieval": retrieval.to_dict(),
         "history": history,
         "max_tokens": answer_tokens,
         "detector": guard.status(),

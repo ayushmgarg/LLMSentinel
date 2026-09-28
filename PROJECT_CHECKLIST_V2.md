@@ -324,7 +324,7 @@ needs data, a study or a measurement stays open, with the required evidence stat
 - [ ] Study adaptive/white-box attacker robustness under an approved safe protocol. (Protocol designed in §5 — threat tiers, query budget, safety rules, success criterion, pre-fixed thresholds — but no study has been run.)
 - [x] Design production proxy concerns: authentication, streaming, tenant isolation, availability, fail-open/fail-closed behaviour. (§6, per-concern table; fail-open/closed decided per action class.)
 - [x] Investigate authorised secret redaction, network egress restriction, server-side authorisation, and sandboxing as separate security-engineering work. (§7: scoped out of this project, with the reason the gate decides requests and not effects.)
-- [ ] Design privacy-preserving monitoring and conduct broader annotation/human-review studies before production claims. (§8: monitoring design done; the multi-annotator study is not — `docs/annotation_study.md` is self-agreement, not inter-annotator agreement.)
+- [ ] Design privacy-preserving monitoring and conduct broader annotation/human-review studies before production claims. (§8: monitoring design done; no human multi-annotator study — `docs/annotation_study.md` uses two LLM annotators (κ = 1.0), which measures guideline clarity, not human agreement.)
 - [x] Establish evidence required for certifications, SLAs, and any commercial security claim. (§9: the list, and the statement that none of it exists.)
 
 Related mechanism, built rather than designed: candidate rules mined from reviewed
@@ -335,13 +335,13 @@ section, and `docs/analyst_workflow.md`.
 
 ## 19. Final completion criteria
 
-- [ ] Every final result has reproducible command, fixed corpus digest, seed, and log entry.
-- [ ] Test data did not influence design, threshold, retained-rule, or final-report choices.
-- [ ] Public datasets/licences are accurate; synthetic and benchmark results are clearly separated.
-- [ ] Baseline, rules-only, transformer-only, and hybrid comparisons are fair.
-- [ ] Robustness and error analysis include failures as well as successes.
-- [ ] Verdicts preserve provenance, evidence, spans, and degraded state.
-- [ ] Policy decisions are deterministic and simulated.
-- [ ] Fresh setup runs the demo or a tested video fallback exists.
-- [ ] README, dependencies, tests, lint/format checks, and report evidence are current.
-- [ ] Final report explicitly states that LLMSentinel is defence in depth, not complete prompt-injection protection.
+- [x] Every final result has reproducible command, fixed corpus digest, seed, and log entry. (Canonical: digest `0311c325d3ecaa8d`, seed 20250909, `llmsentinel evaluate --test`; OOD: `docs/ood_evaluation.md`; fresh sets: SHA-256 `1317e370…` / `90b09375…` frozen by commit before scoring, `scripts/fresh_eval.py`; isolation, latency and segment thresholds: their scripts. Every run has a `docs/EXPERIMENTS.md` entry.)
+- [x] Test data did not influence design, threshold, retained-rule, or final-report choices. (Test ledger: one unforced scoring of `0311c325`. Thresholds from dev only. Segment scoring was motivated by fresh v1, not the test split, tuned on dev and confirmed on the blind v2; the test split was never re-scored, so the canonical test numbers describe passage scoring.)
+- [x] Public datasets/licences are accurate; synthetic and benchmark results are clearly separated. (BIPIA and InjecAgent MIT, re-checked against the LICENSE/LICENCE files in the local clones on 2026-09-28; authored data and both fresh sets CC0 and labelled as authored in `docs/corpus_card.md` and `docs/fresh_evaluation.md`.)
+- [x] Baseline, rules-only, transformer-only, and hybrid comparisons are fair. (Same splits, fitted on train, thresholds on dev, realised FPR beside the target; paired bootstrap and McNemar on dev and both fresh sets. No significance test on the canonical test split: per-record test scores were never saved and re-scoring is not allowed — stated in the report.)
+- [x] Robustness and error analysis include failures as well as successes. (`docs/robustness.md`, `docs/error_analysis.md`, the OOD drop, and the fresh-set masking failure with its diagnosis; the unrun transformer placement probe is now stated.)
+- [x] Verdicts preserve provenance, evidence, spans, and degraded state. (Source, channel, JSON path, raw-text spans, rule trace and normalisation evidence on every verdict; degraded state escalates the policy. Covered in `tests/test_rules.py`, `test_policy.py`, `test_analyst.py`.)
+- [x] Policy decisions are deterministic and simulated. (`configs/policy.yaml` table; `tests/test_policy.py::test_policy_cannot_execute_anything`; the Studio, proxy and gateway parse and decide tool calls, never execute them — the gateway forwards only calls the policy allows, to servers the user configured.)
+- [ ] Fresh setup runs the demo or a tested video fallback exists. (Not verified: no clean-machine or clean-clone install has been run since the dependency changes of 2026-09-27, and no video fallback exists.)
+- [x] README, dependencies, tests, lint/format checks, and report evidence are current. (As of 2026-09-28: 348 tests, 0 failures, 1 skipped; `ruff check` clean; `studio` extra now includes `sentence-transformers`, new `gateway` extra for `mcp`; README and report updated for the fresh sets, segment scoring, output check, gateway. Formatting is not an enforced check in this project — `ruff format` has never been applied repo-wide.)
+- [x] Final report explicitly states that LLMSentinel is defence in depth, not complete prompt-injection protection. (`docs/report.md` §10 and Scope; README Limitations.)

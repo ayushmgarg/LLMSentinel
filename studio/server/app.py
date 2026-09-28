@@ -41,6 +41,7 @@ from .context import Chunk, ContextError, document_from_upload, load_samples
 from .guard import SentinelGuard
 from .manifests import is_manifest_json, load_manifest_samples, manifest_from_upload
 from .providers import OpenAICompatibleProvider, ProviderError, SimulatedProvider
+from .retrieval import RETRIEVERS
 
 __all__ = ["CSP", "create_app", "make_provider"]
 
@@ -190,6 +191,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                     "max_question_chars": MAX_QUESTION_CHARS,
                     "upload_kinds": list(UPLOAD_KINDS),
                 },
+                "retrieval": {"options": list(RETRIEVERS), "default": settings.retriever},
                 "history": {"enabled": store is not None, "labels": list(LABELS), "stats_keys": sorted(STATS_KEYS)},
             }
         )
@@ -316,6 +318,10 @@ def create_app(settings: StudioSettings | None = None) -> Any:
         except (TypeError, ValueError):
             max_tokens = settings.max_tokens
 
+        retriever = str(body.get("retriever") or settings.retriever)
+        if retriever not in RETRIEVERS:
+            return _bad(f"Unknown retriever {retriever!r}.", f"Use one of: {', '.join(RETRIEVERS)}.")
+
         sentinel = await guard()
         try:
             result = await run_comparison(
@@ -329,6 +335,7 @@ def create_app(settings: StudioSettings | None = None) -> Any:
                 canaries=canaries,
                 manifests=manifests,
                 store=store,
+                retriever=retriever,
             )
         except ContextError as exc:
             return _bad(str(exc))

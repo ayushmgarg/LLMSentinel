@@ -1,0 +1,26 @@
+{
+  "name": "transformer-segment",
+  "checkpoint": "artifacts/models/transformer",
+  "corpus": "data/processed/corpus.jsonl",
+  "min_words": 4,
+  "selected_at": "2026-09-27T15:56:31+00:00",
+  "dev": {
+    "auprc": 0.938241366982844,
+    "auprc_ci": [
+      0.8972336827255168,
+      0.9688337602525945
+    ],
+    "thresholds": {
+      "fpr=0.01": 0.9994387030601501,
+      "fpr=0.001": 0.9994387030601501
+    },
+    "tpr_at_fpr": {
+      "fpr=0.01": 0.8125,
+      "fpr=0.001": 0.8125
+    },
+    "hard_negative_fpr": {
+      "fpr=0.01": 0.0,
+      "fpr=0.001": 0.0
+    }
+  }
+}

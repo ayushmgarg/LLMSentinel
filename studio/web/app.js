@@ -486,10 +486,12 @@ function showSkeleton() {
 
 const TONE_ICON = { success: "i-shield-check", danger: "i-alert", warning: "i-shield", neutral: "i-info" };
 
+const RETRIEVAL_TEXT = { dense: "semantic", tfidf: "keyword" };
+
 function renderBanner(result) {
   const summary = result.summary;
   const bits = [
-    `${plural(summary.retrieved, "passage")} retrieved`,
+    `${plural(summary.retrieved, "passage")} retrieved${result.retrieval ? ` (${RETRIEVAL_TEXT[result.retrieval.method] || result.retrieval.method})` : ""}`,
     `${summary.flagged} flagged`,
     `${summary.stripped} stripped`,
     `${summary.withheld} withheld`,
@@ -497,11 +499,13 @@ function renderBanner(result) {
     `Sentinel ${formatMs(result.sentinel.latency_ms)}`,
     result.detector.detector,
   ].filter(Boolean);
+  const notes = (result.retrieval && result.retrieval.notes) || [];
   return el("div", { className: `banner banner--${summary.tone}`, attrs: { role: "status" } }, [
     icon(TONE_ICON[summary.tone] || "i-info", "icon icon--lg"),
     el("div", {}, [
       el("p", { className: "banner__headline", text: summary.headline }),
       el("p", { className: "banner__meta", text: bits.join(" · ") }),
+      notes.length ? el("p", { className: "banner__meta", text: notes.join(" ") }) : null,
     ]),
   ]);
 }
@@ -856,6 +860,7 @@ async function runComparison() {
       provider: providerConfig(),
       top_k: Number($("#top-k").value),
       max_tokens: Number($("#max-tokens").value) || undefined,
+      retriever: $("#retriever").value,
     });
     renderResults(result);
     $("#results").focus({ preventScroll: true });
@@ -1227,6 +1232,7 @@ async function init() {
     state.defaultMaxTokens = health.default_max_tokens || state.defaultMaxTokens;
     state.questions = health.questions || [];
     state.maxUploads = (health.limits && health.limits.max_uploads) || state.maxUploads;
+    if (health.retrieval && health.retrieval.default) $("#retriever").value = health.retrieval.default;
     state.samples = samples.items || [];
     state.samples.forEach((s) => state.selected.add(s.doc_id));
     state.manifests = samples.manifests || [];

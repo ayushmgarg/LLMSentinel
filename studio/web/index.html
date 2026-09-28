@@ -169,6 +169,13 @@
                 </select>
               </div>
               <div class="field field--inline">
+                <label for="retriever">Retrieval</label>
+                <select id="retriever" title="How passages are matched to the question. Detection does not depend on it.">
+                  <option value="dense" selected>semantic (embeddings)</option>
+                  <option value="tfidf">keyword (TF-IDF)</option>
+                </select>
+              </div>
+              <div class="field field--inline">
                 <label for="max-tokens">Max answer tokens</label>
                 <input id="max-tokens" type="number" min="16" max="8000" step="50" value="400">
               </div>

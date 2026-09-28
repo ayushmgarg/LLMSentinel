@@ -45,6 +45,7 @@ from llmsentinel.models import (  # noqa: E402
     TfidfCharBaseline,
 )
 from llmsentinel.models.fusion import FusionScorer  # noqa: E402
+from llmsentinel.models.segment import SegmentScorer  # noqa: E402
 from llmsentinel.paths import CORPUS_PATH, MODELS_DIR, RESULTS_DIR, relative  # noqa: E402
 
 OUT = RESULTS_DIR / "fresh"
@@ -116,6 +117,9 @@ def main() -> int:
 
         transformer = TransformerScorer.load(Path(args.checkpoint))
         systems.append(transformer)
+        # Segment-level scoring of the same checkpoint (no retraining); added after
+        # fresh v1 exposed the masking failure, confirmed on fresh v2.
+        systems.append(SegmentScorer(transformer))
 
     results: dict[str, Any] = {}
     fresh_scores: dict[str, np.ndarray] = {}
@@ -150,7 +154,7 @@ def main() -> int:
               f"(FPR {fresh_metrics.fpr_achieved['fpr=0.01']:.3f})")
 
     for system in systems:
-        score(system, fit=system is not transformer)
+        score(system, fit=not (system is transformer or isinstance(system, SegmentScorer)))
     fusion = FusionScorer(rules=rules, transformer=transformer)
     fusion.fit(dev)
     score(fusion, fit=False)
@@ -171,6 +175,13 @@ def main() -> int:
         )
         decisions["transformer@1%"] = fresh_scores["transformer"] >= tr_t["fpr=0.01"]
         dev_decisions["transformer@1%"] = dev_scores["transformer"] >= tr_t["fpr=0.01"]
+        seg_t = results["transformer-segment"]["dev"]["thresholds"]
+        decisions["deployed OR (segment)"] = (fresh_scores["transformer-segment"] >= seg_t["fpr=0.01"]) | (
+            fresh_scores["rules-only"] >= rules_t["fpr=0.001"]
+        )
+        dev_decisions["deployed OR (segment)"] = (dev_scores["transformer-segment"] >= seg_t["fpr=0.01"]) | (
+            dev_scores["rules-only"] >= rules_t["fpr=0.001"]
+        )
     dev_labels = np.asarray([r.y for r in dev])
     hard = np.asarray([r.is_hard_negative for r in records])
     decision_report: dict[str, Any] = {}
@@ -199,7 +210,13 @@ def main() -> int:
             tests["paired_bootstrap_auprc"].append({"split": split_name, **result.to_dict()})
     if transformer is not None:
         for split_name, table, y in (("dev", dev_decisions, dev_labels), ("fresh", decisions, labels)):
-            for a, b in (("deployed OR", "transformer@1%"), ("deployed OR", "rules-only@1%"), ("transformer@1%", "rules-only@1%")):
+            pairs = (
+                ("deployed OR (segment)", "deployed OR"),
+                ("deployed OR", "transformer@1%"),
+                ("deployed OR", "rules-only@1%"),
+                ("transformer@1%", "rules-only@1%"),
+            )
+            for a, b in pairs:
                 tests["mcnemar"].append({"split": split_name, **mcnemar(y, table[a], table[b], names=(a, b)).to_dict()})
 
     # ------------------------------------------------------------------ output
