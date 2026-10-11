@@ -156,4 +156,7 @@ class StudioSettings:
     #: History database; ``None`` uses the package default (artifacts/analyst/history.sqlite3).
     history_path: Path | None = None
     max_tokens: int = 400
-    temperature: float = 0.2
+    #: 0 so that both runs are decoded the same way: with identical prompts the two
+    #: answers should then match, and any difference is Sentinel's doing. At 0.2 the
+    #: same prompt gave opposite answers in a manual test (2026-10-11).
+    temperature: float = 0.0

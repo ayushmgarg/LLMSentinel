@@ -729,6 +729,7 @@ function renderActions(actions, guarded) {
 const OUTPUT_KIND = {
   planted_claim: "Planted claim repeated",
   flagged_destination: "Address from flagged text",
+  directed_destination: "Address the context told an AI to send data to",
   context_destination: "Address from untrusted context",
   secret: "Secret",
   system_prompt_leak: "System prompt reproduced",
@@ -736,7 +737,29 @@ const OUTPUT_KIND = {
 
 /* The output-side check runs after the model answers, on both runs. On the guarded
    run it withholds; on the unguarded run it only shows what it would have caught. */
+/* After a repair the delivered answer is the second one; show what was removed and
+   what the first answer said, so the retry is never invisible. */
+function renderRepair(repair) {
+  const box = el("div", {}, [
+    el("p", { className: "label", text: repair.succeeded
+      ? "Output check: the first answer followed an instruction in the context, so LLMSentinel removed it and asked again"
+      : "Output check: removed the instruction and asked again, but the second answer was not clean either" }),
+    el("ul", { className: "reasons" }, repair.removed.map((s) => el("li", {}, [el("strong", { text: "Removed: " }), s]))),
+    el("ul", { className: "reasons" }, repair.first_findings.map((f) => el("li", {}, [
+      el("strong", { text: `${OUTPUT_KIND[f.kind] || f.kind} (${f.severity}): ` }), f.evidence,
+    ]))),
+  ]);
+  if (repair.first_answer) {
+    box.append(el("details", { className: "prompt" }, [
+      el("summary", {}, [icon("i-eye"), "The first answer, before the repair"]),
+      el("pre", { className: "code code--removed", text: repair.first_answer }),
+    ]));
+  }
+  return box;
+}
+
 function renderOutputCheck(side, guarded) {
+  if (guarded && side.output_repair) return renderRepair(side.output_repair);
   const check = side.output_check;
   if (!check || !check.findings.length) return null;
   const withheld = guarded && check.withhold;

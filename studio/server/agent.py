@@ -37,7 +37,7 @@ from llmsentinel.verdict import RiskBand
 
 from .config import MCP_TOOLS_HEADER, TOOL_CATALOG, StudioSettings
 from .context import Document, chunk_document
-from .guard import ChunkAssessment, SentinelGuard, max_band
+from .guard import REMOVED_MARKER, ChunkAssessment, SentinelGuard, max_band
 from .history import record_comparison
 from .manifests import ToolAssessment, ToolManifest, assess_manifests, render_tool
 from .providers import ChatProvider, ChatResult, ProviderError
@@ -239,6 +239,7 @@ _PERMITTED = frozenset({"allow", "isolate", "would_run"})
 _OUTPUT_KIND_TEXT = {
     "planted_claim": "it repeated a claim that the retrieved context told the assistant to make",
     "flagged_destination": "it sent data towards an address taken from text the guard flagged",
+    "directed_destination": "it passed on an address that the context told an AI system to send data to",
     "secret": "it contained a secret",
     "system_prompt_leak": "it reproduced the confidential system prompt",
 }
@@ -290,11 +291,28 @@ def _apply_output_check(
     side["compromised"] = bool(side["indicators"])
 
 
+def _strip_sentences(text: str, sentences: Sequence[str]) -> str:
+    """Remove each sentence (as written, or JSON-escaped inside a tool result)."""
+
+    for sentence in sentences:
+        for form in (sentence, json.dumps(sentence, ensure_ascii=False)[1:-1]):
+            if form and form in text:
+                text = text.replace(form, REMOVED_MARKER)
+                break
+    return text
+
+
+def _caught_after_answer(side: dict[str, Any]) -> bool:
+    return bool(side.get("output_check", {}).get("withhold"))
+
+
 def _summary(
     unguarded: dict[str, Any],
     guarded: dict[str, Any],
     chunks: list[ChunkAssessment],
     tools: list[ToolAssessment],
+    *,
+    identical_prompts: bool = False,
 ) -> dict[str, Any]:
     flagged = sum(c.flagged for c in chunks)
     counts = {
@@ -304,19 +322,42 @@ def _summary(
         "withheld": sum(c.action == "withhold" for c in chunks),
         "tools": len(tools),
         "quarantined": sum(t.quarantined for t in tools),
+        "identical_prompts": identical_prompts,
     }
     if not (unguarded.get("ok") and guarded.get("ok")):
         return {**counts, "tone": "neutral", "headline": "The model could not be reached for one or both runs."}
-    if unguarded["compromised"] and not guarded["compromised"]:
+    # The unguarded run counts as steered when it shows objective signs of compromise
+    # or when the output check finds it repeated what the context told it to say.
+    steered = unguarded["compromised"] or _caught_after_answer(unguarded)
+    repaired = bool(guarded.get("output_repair", {}).get("succeeded"))
+    if guarded["compromised"]:
+        tone = "danger"
+        headline = (
+            "Both runs show signs of compromise: the guard did not fully contain this attack."
+            if steered
+            else "The guarded run shows signs of compromise that the unguarded run did not."
+        )
+    elif repaired:
+        tone, headline = "success", (
+            "The context told the model what to say. Detection missed it, the output check caught the "
+            "answer, and LLMSentinel removed the instruction and asked again."
+        )
+    elif guarded.get("answer_before_output_check"):
+        tone, headline = "warning", (
+            "The output check withheld the guarded answer: it followed an instruction in the context, "
+            "and asking again without it did not produce a clean answer."
+        )
+    elif steered:
         tone, headline = "success", "Injected instructions steered the model without Sentinel, and were contained with it."
-    elif unguarded["compromised"] and guarded["compromised"]:
-        tone, headline = "danger", "Both runs show signs of compromise: the guard did not fully contain this attack."
-    elif guarded["compromised"]:
-        tone, headline = "danger", "The guarded run shows signs of compromise that the unguarded run did not."
     elif flagged or counts["quarantined"]:
         tone, headline = "warning", "Sentinel isolated suspicious context or tools; the model did not act on them in either run."
     else:
         tone, headline = "neutral", "No attack observed: both runs answered from the context."
+    if identical_prompts and not repaired:
+        headline += (
+            " Sentinel changed nothing in what the model saw, so any difference between the two answers "
+            "comes from the model itself, not from Sentinel."
+        )
     return {**counts, "tone": tone, "headline": headline}
 
 
@@ -398,6 +439,46 @@ async def run_comparison(
         _apply_output_check(side, question=question, context=untrusted, flagged=flagged_text,
                             guarded=guarded_run, policy=policy, canaries=tuple(canaries))
 
+    # Repair: when the output check caught the guarded answer and knows which
+    # untrusted sentence caused it, remove that sentence and ask once more. A clean
+    # second answer is delivered (with a note); otherwise the withhold stands.
+    identical_prompts = unguarded_messages == guarded_messages
+    causes = [
+        f["sentence"]
+        for f in guarded.get("output_check", {}).get("findings", [])
+        if f.get("severity") == "high" and f.get("sentence")
+    ]
+    if guarded.get("answer_before_output_check") and causes:
+        causes = list(dict.fromkeys(causes))
+        repaired_blocks = [(label, _strip_sentences(text, causes)) for label, text in guarded_blocks]
+        repaired_messages = [
+            {"role": "system", "content": guarded_system},
+            {"role": "user", "content": user_message(
+                question, repaired_blocks, "\n".join(notices if GUARD_NOTICE in notices else [*notices, GUARD_NOTICE])
+            )},
+        ]
+        try:
+            second: Any = await provider.chat(repaired_messages, max_tokens=answer_tokens, temperature=settings.temperature)
+        except Exception as exc:  # a failed retry keeps the withhold
+            second = exc
+        retry = _side(second, repaired_messages, guarded=True, **common)
+        _apply_output_check(retry, question=question, context=untrusted, flagged=[*flagged_text, *causes],
+                            guarded=True, policy=policy, canaries=tuple(canaries))
+        succeeded = bool(retry.get("ok")) and not retry.get("answer_before_output_check")
+        repair = {
+            "succeeded": succeeded,
+            "removed": causes,
+            "first_answer": guarded["answer_before_output_check"],
+            "first_findings": guarded["output_check"]["findings"],
+        }
+        if succeeded:
+            retry["output_repair"] = repair
+            retry["notes"] = [*retry.get("notes", []),
+                              "The first answer followed an instruction in the context; LLMSentinel removed it and asked again."]
+            guarded = retry
+        else:
+            guarded["output_repair"] = repair
+
     history = (
         record_comparison(store, guard=guard, question=question, assessments=assessments, tools=tool_results, guarded=guarded)
         if store is not None
@@ -419,7 +500,7 @@ async def run_comparison(
         "manifests": {"tools": [t.to_dict() for t in tool_results], "servers": servers},
         "unguarded": unguarded,
         "guarded": guarded,
-        "summary": _summary(unguarded, guarded, assessments, tool_results),
+        "summary": _summary(unguarded, guarded, assessments, tool_results, identical_prompts=identical_prompts),
         "system_prompt": unguarded_system,
         "guarded_system_prompt": guarded_system,
     }

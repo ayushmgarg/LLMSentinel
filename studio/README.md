@@ -34,7 +34,13 @@ see `docs/fresh_evaluation.md`).
 
 After the model answers, the guarded run passes an **output-side check**: an answer that
 repeats a claim the context told the assistant to make, or carries an address taken from
-flagged text, is withheld (the unguarded run shows what the check would have caught).
+flagged text or from an instruction aimed at an AI, is caught. LLMSentinel then removes the
+sentence responsible and **asks the model again** once; the second answer is shown with the
+first one available underneath, and only if the second is caught too is the answer withheld.
+The unguarded run shows what the check would have caught.
+
+Both runs are decoded at temperature 0. When Sentinel changed nothing in what the model saw,
+the banner says so: any difference between the two answers then comes from the model.
 
 Three pages: the demo and the analyst workflow on `/`, what it does and the evidence
 on `/about.html`, and the pipeline in detail on `/how-it-works.html`. Every page
