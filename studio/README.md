@@ -4,7 +4,8 @@ A local web console that shows what LLMSentinel does: **the same model answers t
 same question from the same retrieved context twice — once as retrieved, once after
 LLMSentinel has inspected it — and you see both answers side by side.**
 
-It replaces the old Streamlit demo (`src/llmsentinel/demo/`, kept for reference).
+It replaced the earlier Streamlit demo, which was removed on 2026-10-11 (it is in the git
+history before that date).
 
 ```
 studio/

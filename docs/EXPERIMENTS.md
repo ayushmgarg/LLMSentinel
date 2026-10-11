@@ -869,8 +869,8 @@ Three section-9 gaps closed in code:
 window labelling (default now), on a separate machine via the handoff kit
 (`scripts/train_and_eval.*`). This checkpoint replaces the pre-span-aware one as
 canonical; the previous checkpoint, results and figures are preserved under
-`artifacts/models/transformer_pre_retrain/`, `artifacts/results/pre_retrain_2026-09-11/`
-and `artifacts/figures/pre_retrain_2026-09-11/`.
+`artifacts/models/transformer_pre_retrain/`, `artifacts/archive/results/pre_retrain_2026-09-11/`
+and `artifacts/archive/figures/pre_retrain_2026-09-11/`.
 
 **Config.** `distilroberta-base`, seed 20250909, 3 epochs, max_length 256,
 stride 128, max 8 windows, class-weighted loss, `span_aware_labels=true`.
@@ -896,7 +896,7 @@ kit offers a GPU install path (see the 2026-09-12 device-support change).
 sources are split at the level of connected (payload-family + host) components,
 with components stratified by label within each source; the builtin seed keeps its
 per-key hash. Previous corpus, manifest, results archived under
-`data/processed/pre_stratify_2026-09-12/` and `artifacts/results/pre_stratify_2026-09-12/`.
+`data/processed/pre_stratify_2026-09-12/` and `artifacts/archive/results/pre_stratify_2026-09-12/`.
 
 **Corpus.** 1960 records (was 1669), digest `c00bf177168e58fa`, **0 cross-group
 drops** (components never straddle), leakage checks pass. Every (split, channel)
@@ -1234,7 +1234,7 @@ unforced entries, one per system × held-out source. Raw delivery kept unmodifie
 outside git (`LLMSentinel-delivery/`, gitignored); integrated copies, UTF-8 logs and
 both ledgers are in `artifacts/results/gpu_rerun_2026-09-16/`, figures in
 `artifacts/figures/gpu_rerun_2026-09-16/`. Nothing was deleted: the earlier-digest
-OOD baselines moved to `artifacts/results/ood/pre_answer_shaping_2026-09-16/`.
+OOD baselines moved to `artifacts/archive/results/ood/pre_answer_shaping_2026-09-16/`.
 
 **Canonical reproduction.** Seeds 20250909/10/11 dev AUPRC 0.9645 / 0.9372 / 0.9464
 → **0.9494 ± 0.0113** (committed run: 0.9515 ± 0.011). Canonical-seed test AUPRC
@@ -1510,3 +1510,23 @@ load. Detection numbers do not depend on it.
 level, so `import llmsentinel.sdk` first failed); a regression test now imports the SDK in
 a fresh process. `docs/robustness.md` claimed the transformer placement probe had been run;
 it had not, and the text now says so.
+
+## 2026-10-11 · Repository reorganisation (no results changed)
+
+- **Removed** the superseded Streamlit demo (`src/llmsentinel/demo/`, `tests/test_demo.py`,
+  `scripts/run_demo.py`, `scripts/demo_run.py`, `data/demo/`, the `demo` extra and the
+  `llmsentinel-demo` entry point); the Studio replaced it on 2026-09-15. It remains in the
+  git history before this date.
+- **Archived** superseded runs under `artifacts/archive/` (`results/pre_*`,
+  `results/ood/pre_answer_shaping_2026-09-16`, `figures/pre_*`, and the corpus-`44bff1b4`
+  exports `eval_combined_44bff1b4.txt`, `features_dev_44bff1b4.csv`); paths in this log
+  and in `docs/ood_evaluation.md` were updated. Current evidence stays in
+  `artifacts/results/`.
+- **Moved** the plan, checklist and remaining-work list to `docs/planning/`, and the v1
+  plan/checklist, week reviews, decision record and the old demo transcript to
+  `docs/archive/`. Hand-written test inputs moved to `examples/test_inputs/`.
+- **Deleted** caches, the run logs of 2026-09-27 (progress output only; the numbers are in
+  the result JSON files), and the local Studio sandbox database.
+- Kept on request: the superseded model checkpoints in `artifacts/models/` (not tracked)
+  and the local analyst history.
+- Test suite after the change: 338 tests, 0 failures, 1 skipped; `ruff check` clean.

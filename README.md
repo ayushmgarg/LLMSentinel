@@ -456,6 +456,23 @@ Run the tests and the linter:
 
 ---
 
+## Repository layout
+
+```
+src/llmsentinel/   the package: normalisation, rules, models, evaluation, policy,
+                   analyst workflow, SDK, proxy, MCP gateway, output check
+studio/            the web console (server/, web/, samples/, tests/)
+scripts/           every experiment and training entry point (one script per run type)
+tests/             the test suite for the package (studio/tests/ for the console)
+configs/           the capability policy
+data/              seed data (authored), fresh evaluation sets, processed corpus, raw
+                   benchmark clones (not tracked)
+artifacts/         results, figures, models (not tracked); archive/ holds superseded runs
+docs/              report, experiment log and topic docs; planning/ holds the plan,
+                   checklist and remaining work; archive/ holds superseded documents
+examples/          hand-written test inputs and the MCP gateway demo
+```
+
 ## Documentation
 
 | Document | What it covers |
@@ -474,6 +491,8 @@ Run the tests and the linter:
 | [Analyst workflow](docs/analyst_workflow.md) | History, review queue, overrides, alerts, fixtures, candidate rules, SDK and proxy |
 | [Research boundary](docs/research_boundary.md) | What is designed but not evidenced: multi-turn, multi-agent, multilingual, adaptive attackers, production concerns |
 | [Console guide](studio/README.md) | Running the web console, choosing a model, reading results |
+| [Examples](examples/README.md) | Hand-written test inputs and what each should do |
+| [Plan, checklist, remaining work](docs/planning/) | The project plan, the evidence-based checklist, and what is left |
 | [Training kit](docs/TRAINING_HANDOFF.md) | Self-contained retraining on another machine |
 
 ---

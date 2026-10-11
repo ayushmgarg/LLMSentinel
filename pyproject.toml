@@ -27,9 +27,6 @@ transformer = [
     "transformers>=4.40",
     "datasets>=2.19",
 ]
-demo = [
-    "streamlit>=1.34",
-]
 # Optional neural sentence-embedding backend for the semantic layer. Without it
 # the semantic features fall back to a deterministic lexical similarity proxy, so
 # the package runs and its tests pass offline.
@@ -60,7 +57,6 @@ dev = [
 
 [project.scripts]
 llmsentinel = "llmsentinel.cli:main"
-llmsentinel-demo = "llmsentinel.demo.launch:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

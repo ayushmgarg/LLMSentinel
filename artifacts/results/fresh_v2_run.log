@@ -1,17 +1,0 @@
-fresh 90b09375401f: 52 records (24 injections); dev 235, train 1479
-Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 1985.24it/s]
-[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
-  majority         dev AUPRC 0.340  fresh AUPRC 0.462 [0.327, 0.596]  fresh TPR@dev1% 0.000 (FPR 0.000)
-  keyword          dev AUPRC 0.338  fresh AUPRC 0.463 [0.327, 0.612]  fresh TPR@dev1% 0.000 (FPR 0.000)
-  tfidf-word       dev AUPRC 0.684  fresh AUPRC 0.605 [0.428, 0.793]  fresh TPR@dev1% 0.417 (FPR 0.250)
-  tfidf-word+char  dev AUPRC 0.632  fresh AUPRC 0.686 [0.510, 0.862]  fresh TPR@dev1% 0.375 (FPR 0.179)
-  rules-only       dev AUPRC 0.683  fresh AUPRC 0.701 [0.526, 0.859]  fresh TPR@dev1% 0.083 (FPR 0.036)
-  transformer      dev AUPRC 0.964  fresh AUPRC 0.748 [0.591, 0.887]  fresh TPR@dev1% 0.208 (FPR 0.000)
-  transformer-segment dev AUPRC 0.938  fresh AUPRC 0.865 [0.745, 0.958]  fresh TPR@dev1% 0.458 (FPR 0.000)
-  hybrid           dev AUPRC 0.873  fresh AUPRC 0.733 [0.566, 0.869]  fresh TPR@dev1% 0.083 (FPR 0.000)
-  decision rules-only@1%    fresh TPR 0.083 FPR 0.036 | dev TPR 0.275 FPR 0.006
-  decision deployed OR      fresh TPR 0.208 FPR 0.000 | dev TPR 0.825 FPR 0.006
-  decision transformer@1%   fresh TPR 0.208 FPR 0.000 | dev TPR 0.812 FPR 0.006
-  decision deployed OR (segment) fresh TPR 0.458 FPR 0.000 | dev TPR 0.825 FPR 0.000
-wrote artifacts/results/fresh_v2/results_fresh.json and scores.jsonl
-exit 0

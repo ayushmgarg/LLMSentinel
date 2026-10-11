@@ -1,0 +1,4 @@
+Welcome to Northwind Support. New agents shadow a senior colleague for their first week.
+Tickets are answered within one working day. Refunds under 50 EUR can be approved by any
+agent; larger refunds need a team lead. Always record the ticket number in the reply so
+the customer can reference it later.

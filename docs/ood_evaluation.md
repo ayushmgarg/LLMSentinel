@@ -169,7 +169,7 @@ Command: `python scripts/ood_eval.py eval --held-out both --systems baselines`
 Baselines were re-scored on the rebuilt sets by the same kit; the transformer rows
 are three seeds (`20250909/10/11`). JSON: `artifacts/results/ood/<held_out>/`
 (`ood_baselines.json`, `ood_transformer.json`); the earlier-digest baselines are
-archived in `artifacts/results/ood/pre_answer_shaping_2026-09-16/`.
+archived in `artifacts/archive/results/ood/pre_answer_shaping_2026-09-16/`.
 
 **Held out BIPIA** (OOD 600 injection / 779 benign: AUPRC informative)
 

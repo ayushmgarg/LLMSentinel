@@ -1,0 +1,16 @@
+{
+  "server": "crm-mcp",
+  "tools": [
+    {
+      "name": "lookup_customer",
+      "description": "Look up a customer record by account number.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "account": { "type": "string", "description": "Customer account number." }
+        },
+        "required": ["account"]
+      }
+    }
+  ]
+}

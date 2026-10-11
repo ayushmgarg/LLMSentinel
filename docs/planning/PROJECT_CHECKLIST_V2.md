@@ -220,7 +220,7 @@ Use this with `PROJECT_PLAN_V2.md`. Complete an item only when there is evidence
 > Scope note: the demo runs the **rules-only** detector (no checkpoint, starts
 > offline), so its risk numbers are not the headline transformer/hybrid results
 > and it shows the **rule trace**, not fusion evidence. The recorded fallback is
-> a deterministic **text transcript** (`docs/demo_transcript.txt`), not a
+> a deterministic **text transcript** (`docs/archive/demo_transcript.txt`), not a
 > screen-capture video.
 
 - [x] Choose local UI framework and create page shell.
@@ -343,5 +343,5 @@ section, and `docs/analyst_workflow.md`.
 - [x] Verdicts preserve provenance, evidence, spans, and degraded state. (Source, channel, JSON path, raw-text spans, rule trace and normalisation evidence on every verdict; degraded state escalates the policy. Covered in `tests/test_rules.py`, `test_policy.py`, `test_analyst.py`.)
 - [x] Policy decisions are deterministic and simulated. (`configs/policy.yaml` table; `tests/test_policy.py::test_policy_cannot_execute_anything`; the Studio, proxy and gateway parse and decide tool calls, never execute them — the gateway forwards only calls the policy allows, to servers the user configured.)
 - [ ] Fresh setup runs the demo or a tested video fallback exists. (Not verified: no clean-machine or clean-clone install has been run since the dependency changes of 2026-09-27, and no video fallback exists.)
-- [x] README, dependencies, tests, lint/format checks, and report evidence are current. (As of 2026-09-28: 348 tests, 0 failures, 1 skipped; `ruff check` clean; `studio` extra now includes `sentence-transformers`, new `gateway` extra for `mcp`; README and report updated for the fresh sets, segment scoring, output check, gateway. Formatting is not an enforced check in this project — `ruff format` has never been applied repo-wide.)
+- [x] README, dependencies, tests, lint/format checks, and report evidence are current. (As of 2026-10-11: 338 tests, 0 failures, 1 skipped — 10 fewer than on 2026-09-28 because the superseded Streamlit demo and its tests were removed; `ruff check` clean; `studio` extra now includes `sentence-transformers`, new `gateway` extra for `mcp`; README and report updated for the fresh sets, segment scoring, output check, gateway. Formatting is not an enforced check in this project — `ruff format` has never been applied repo-wide.)
 - [x] Final report explicitly states that LLMSentinel is defence in depth, not complete prompt-injection protection. (`docs/report.md` §10 and Scope; README Limitations.)
