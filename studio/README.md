@@ -66,7 +66,8 @@ or PyTorch the Studio falls back to rules-only and says so.
    the channel the passage is scanned as, so a tool result stays a tool result even
    when it does not parse as JSON, and a tool result that happens to carry a `tools`
    list is not mistaken for a manifest.
-3. **Ask** — the top-k passages (TF-IDF) are sent to the model as-is, and again
+3. **Ask** — the top-k passages (dense MiniLM retrieval by default, TF-IDF with
+   `--retriever tfidf`) are sent to the model as-is, and again
    after LLMSentinel. Results are stacked full width, in reading order: the answer
    without the guard, the answer with it, what Sentinel found per passage (score,
    flag threshold, rule trace, decoded payloads, exactly what was removed), then the
@@ -93,7 +94,7 @@ RAM and no GPU (2026-09-15):
 |---|---|---|
 | `llama3.2:3b` | instruct | one comparison (both runs) in about 70 s; answers normally |
 | `qwen3:4b` | **Qwen3-4B-Thinking-2507** (`ollama show`: finetune *Thinking*) | about 3.8 tokens/s; one answer took 282 s and came back empty because reasoning used the 400-token budget. `think: false`, `reasoning_effort: "none"` and `/no_think` did not stop it reasoning |
-| `qwen3:4b-instruct` | Qwen3-4B-Instruct-2507, same 2.5 GB, no thinking mode | use this instead of `qwen3:4b` (not yet measured here) |
+| `qwen3:4b-instruct` | Qwen3-4B-Instruct-2507, same 2.5 GB, no thinking mode | use this instead of `qwen3:4b`. Used for the manual test cases; on a 4-core CPU one real-model evaluation case (three conditions, up to four answers) took 8–15 minutes |
 
 The Studio reads only a model's final answer. It removes `<think>…</think>` blocks,
 ignores Ollama's separate `reasoning` field, and adds a provider note when the token
@@ -147,7 +148,7 @@ The server clamps the cap to 16–8,000.
 | Detector | Guarded run shows no compromise | Guarded prompt still contains injection text |
 |---|---|---|
 | transformer + rules (default) | 6 / 6 | 0 / 6 |
-| rules-only (`--rules-only`) | 3 / 6 | 5 / 6 |
+| rules-only (`--rules-only`) | 3 / 6 before the output check, 6 / 6 after (3 repaired) | 5 / 6 |
 
 Rules-only misses the planted "plan discontinued" note and the support-ticket
 `delete_file` order (the capability policy still blocks that tool), and leaves the
@@ -157,7 +158,7 @@ text" was checked by searching every guarded prompt for the planted phrases and
 
 This is a hand-made demo pack, not an evaluation: accuracy numbers come from
 `docs/report.md`. Known close call: the clean `sync-guide.md` scores 0.991 with the
-transformer, just under its dev 1%-FPR threshold (0.9954).
+transformer, under the deployed segment threshold (0.99944).
 
 ## How isolation works
 
@@ -207,7 +208,7 @@ The sample servers show what each check is for:
 | `calendar-sync` | `create_event` | silently gained a `backup_copy` parameter defaulting to an outside address; the text reads harmless (field risk ≤ 0.13) | digest drift |
 
 Known limit: on `summarize_url` the transformer alone gives 0.984, under its
-0.9954 flag threshold; the rules catch it. `tool_metadata` was the thinnest channel
+flag threshold (0.99944 with segment scoring); the rules catch it. `tool_metadata` was the thinnest channel
 in training (5 test positives in the canonical corpus).
 
 ## Security notes

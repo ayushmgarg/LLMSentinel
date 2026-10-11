@@ -246,8 +246,9 @@ exposed a failure and *before* the fix for it existed.
   with 97.7% of the genuine text kept and no benign text removed; the limit is how many
   are flagged.
 - **Still open.** Paraphrased injections (1 of 6 on v2) and soft claims (1 of 6) are
-  mostly missed by the model; the output-side check extracts 8 of 10 v1 soft claims and
-  withholds an answer that repeats one.
+  mostly missed by the model; the output-side check extracted 8 of 10 v1 soft claims
+  (extractor before its later fixes), and an answer that repeats one is repaired —
+  the planted sentence removed and the model asked again — or withheld.
 
 ## 7. Robustness (§12)
 

@@ -138,8 +138,10 @@ scored **once**, behind an explicit flag and a ledger that refuses a second run.
   0.998, tool results 0.960, tool metadata 0.683 (only 5 positives, indicative).
 - **Honest caveat:** the dev-selected 1% threshold admits 4 false positives on 146
   test negatives. The 0.920 is recall at that threshold, not at a true 1% FPR on test.
-- **Latency:** about 435 ms per record for the transformer on a 4-core laptop CPU,
-  and about 15 ms on an RTX-class GPU.
+- **Latency:** on a 4-core laptop CPU the transformer averages 435 ms per dev record
+  (median 161 ms; long records dominate the mean), about 15 ms on an RTX-class GPU.
+  Per retrieved passage in the Studio: 108 ms passage scoring, 256 ms segment scoring
+  (the deployed default).
 
 <p align="center">
   <img src="artifacts/figures/model_comparison.png" alt="Test AUPRC by system" width="48%">
@@ -203,7 +205,8 @@ failure and *before* the fix existed, so it confirms the fix blind.
   (1 poisoned, 1 changed after approval), run through the offline simulator:
   - with the transformer, the guarded run shows no sign of compromise on **6 of 6**
     attack questions, and no injection text reaches the model;
-  - the rules alone contain **3 of 6**.
+  - the rules alone contain **3 of 6** by detection and the capability policy, and
+    **6 of 6** once the output check runs (it repairs the other 3; none withheld).
 
   This demonstrates the mechanism, not accuracy.
 

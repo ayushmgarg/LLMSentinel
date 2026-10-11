@@ -3,6 +3,37 @@
 Everything still pending for LLMSentinel, in one place. Written 2026-09-22; the item
 tables below are kept as written, and progress is tracked in the status list.
 
+## Status (2026-10-11)
+
+Details in `docs/EXPERIMENTS.md`, 2026-10-11 entries; the cluster run in `docs/CLUSTER_RUN.md`.
+
+**Done this round:**
+- **Output check and repair** — polarity-aware claims, reply directives, directed
+  destinations, repair-and-retry, temperature 0; then hardened after a code review
+  (clause-scoped negation, negative prefixes, Unicode normalisation, every planting
+  sentence removed on repair).
+- **Fresh set v3** — `data/fresh/fresh_eval_v3.yaml`, frozen in commit `52de9d6` before the
+  augmentation code; reserved for one scoring of the retrained models (cluster step 6).
+- `fresh_eval.py` — global score-once ledger, pre-registered `--compare`, `--extra` checkpoints.
+
+**Partly done:**
+- **B1/F7** — method and CPU rows done (BIPIA: calibration holds the FPR bound but adds no
+  recall for rules-only or TF-IDF). InjecAgent cannot be calibrated this way (no clean page
+  separable from its injected copies). Transformer rows: the cluster kit trains the hardening
+  checkpoints itself (step 3), so nothing is needed from the friend.
+- **B4, redefined** — the measured failure is *position* (277 of 315 train document
+  injections at the end), so B4 is now embedded-position augmentation, not paraphrase
+  retraining: the data is built (`data/processed/augmented/`, digest `9a115633639334e1`);
+  augmented and control models train on the cluster (step 4).
+- **B2/F8** — generator, automatic validation and measurement ready
+  (`scripts/paraphrase_attacks.py`); runs on the cluster with a model server (step 7).
+- **B7/F6, F3, F4** — harness ready (`scripts/real_model_eval.py`: none / prompt-only /
+  Sentinel); smoke-tested on the laptop (too slow there); full run on the cluster (step 8).
+- **D2** — EXPERIMENTS, README, studio README, fresh-evaluation doc and report corrected
+  for this round; the report still needs a pass once the cluster results are in.
+
+**Not started:** A2, A3, A4, B3/F9, B5, B6, B9, B12, B13, D1, D3, F11, F12, F13, F14.
+
 ## Status (2026-09-28)
 
 **Done** (details in `docs/EXPERIMENTS.md`, 2026-09-27):

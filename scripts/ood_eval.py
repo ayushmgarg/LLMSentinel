@@ -1,6 +1,6 @@
 """Section 16a: build the hardening / out-of-distribution sets and evaluate on them.
 
-Two sub-commands:
+Three sub-commands:
 
     python scripts/ood_eval.py build [--held-out injecagent|bipia|both]
         Needs the raw benchmarks in data/raw/. For each held-out source, builds the
@@ -14,6 +14,11 @@ Two sub-commands:
         Needs only the committed hardening files. Fits on train, selects thresholds
         on dev, scores the in-distribution test and the OOD set once each, and writes
         artifacts/results/ood/<held_out>/ood_<systems>.json.
+
+    python scripts/ood_eval.py train --held-out both [--seed 20250909] --device auto
+        GPU job. Trains and saves artifacts/models/transformer_hardening_<held_out>
+        without scoring anything (the held-out sets are spent); per-source
+        calibration (scripts/calibrate_per_source.py --transformer) uses them.
 
 Scoring the same system on the same data digests twice is refused unless
 --force-test is given (and the forced run is recorded).
@@ -168,6 +173,28 @@ def cmd_eval(args: argparse.Namespace) -> int:
     return max(codes) if codes else 1
 
 
+def cmd_train(args: argparse.Namespace) -> int:
+    """Train and save the hardening checkpoints only -- no scoring.
+
+    The held-out sets were scored once in section 16a; per-source calibration
+    (scripts/calibrate_per_source.py) needs the checkpoints, not another scoring.
+    """
+
+    from llmsentinel.models.transformer import TransformerConfig, TransformerScorer, torch_available
+
+    if not torch_available():
+        print("transformer extra not installed; see docs/TRAINING_HANDOFF.md")
+        return 1
+    for held_out in _held_outs(args.held_out):
+        sets = load_hardening_sets(hardening_dir(held_out, args.root))
+        scorer = TransformerScorer(TransformerConfig(seed=args.seed, epochs=args.epochs, device=args.device))
+        scorer.fit(sets.train)
+        path = scorer.save(MODELS_DIR / f"transformer_hardening_{held_out}")
+        print(f"{held_out}: trained on {len(sets.train)} records ({scorer.describe()['resolved_device']}) "
+              f"-> {relative(path)}; held-out set not scored")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -188,6 +215,14 @@ def main() -> int:
     ev.add_argument("--device", default="auto")
     ev.add_argument("--force-test", action="store_true")
     ev.set_defaults(func=cmd_eval)
+
+    tr = sub.add_parser("train", help="train and save transformer_hardening_<source> without scoring")
+    tr.add_argument("--held-out", default="both", choices=choices)
+    tr.add_argument("--root", default=str(HARDENING_DIR))
+    tr.add_argument("--seed", type=int, default=20250909)
+    tr.add_argument("--epochs", type=int, default=3)
+    tr.add_argument("--device", default="auto")
+    tr.set_defaults(func=cmd_train)
 
     args = parser.parse_args()
     return int(args.func(args))

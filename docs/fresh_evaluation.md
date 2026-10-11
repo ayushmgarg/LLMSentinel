@@ -62,7 +62,8 @@ frozen before the scorer existed, then scored once:
 - Still weak on v2: paraphrases 1 of 6, soft claims 1 of 6.
 
 Segment scoring is now the default in the Studio, the SDK, the proxy and the gateway
-(`--passage-scoring` restores the old behaviour).
+(the Studio's `--passage-scoring` flag and the SDK's `segment_scoring=False` restore
+the old behaviour; the proxy and the gateway have no switch).
 
 ## 3. Isolation quality (`scripts/isolation_eval.py`)
 
@@ -86,11 +87,14 @@ used.)
 
 ## 4. Output-side check
 
-Measured once on v1 after being built on non-fresh data: a claim is extracted from 8 of
+Measured once on v1 after being built on non-fresh data, with the extractor as it was
+then (it has since gained polarity, reply directives and directed destinations, not
+re-measured on unseen data): a claim is extracted from 8 of
 10 soft-claim payloads (10 of 14 content-manipulation payloads), and falsely from 0 of 21
 counterparts, 0 of 12 clean tool descriptions and 1 of 20 hard negatives (a negated
 directive). On the sample pack with the simulator, it lifts rules-only containment from
-3/6 to 6/6 without withholding any correct guarded answer — illustrative only; the
+3/6 to 6/6 — it removes the planted sentence and asks again (repair), so the 3 are
+repaired answers, not withheld ones — illustrative only; the
 real-model attack success rate is still unmeasured.
 
 ## 5. Manifest drift

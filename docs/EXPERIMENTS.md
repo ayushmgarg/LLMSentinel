@@ -1565,7 +1565,7 @@ API before any change:
 
 **Validated on development data, not the fresh sets.** Benign train+dev: 0 of 848 with a
 false claim, 0 of 848 with a false directed destination. Seed soft-claim variants: 11 of 12
-(unchanged). The directed-destination rule is narrow: it fires on 0 of 866 corpus injections,
+(unchanged). The directed-destination rule is narrow: it fires on 0 of 866 train+dev injections,
 which are mostly blunt "send X to Y" lines that detection already catches. The fresh-v1
 extraction figures (8 of 10 soft claims) describe the extractor *before* this change; the new
 one has not been measured on unseen data.
@@ -1576,3 +1576,84 @@ rule; plagiarism: the rules without the address; Rahul: an evidence-based "shoul
 appraisal"). Sample pack, simulator: 6/6 contained with the transformer and no repair needed;
 rules-only 6/6, four of them now repaired answers instead of withheld ones. Tests: 344, 0
 failures, 1 skipped.
+
+## 2026-10-11 · Per-source calibration (B1/F7), fresh set v3, augmentation and the cluster kit
+
+**Per-source calibration** (`llmsentinel.evaluation.calibration`,
+`scripts/calibrate_per_source.py`). Each held-out source is split into a calibration half
+and an evaluation half along connected components of shared group *and* shared source
+document (union-find, seed 20250909), so a clean page and an injected copy of the same
+host never straddle the halves. Only the calibration half's *clean* pages choose the
+threshold, by a split-conformal rule: with `n` clean pages, allow
+`k = floor(0.01·(n+1)) − 1` of them above the threshold, which bounds the false-positive
+rate on *new* clean pages by `(k+1)/(n+1) ≤ 1%`. That needs at least 99 clean pages; with
+fewer the output says `guaranteed: false`. Results are on the evaluation half. Post-hoc on
+sets scored once in §16a. Rules-only and TF-IDF now (CPU); transformer rows need the
+hardening checkpoints from the cluster.
+
+| held out | system | eval AUPRC | dev threshold: recall / FPR | calibrated: recall / FPR (bound) |
+|---|---|---|---|---|
+| BIPIA (396 clean calibration pages; eval 643, 260 injections) | rules-only | 0.426 | 0.019 / 0.013 | 0.000 / 0.000 (≤ 0.008) |
+| BIPIA | tfidf-word+char | 0.531 | 0.000 / 0.000 | 0.004 / 0.003 (≤ 0.008) |
+| InjecAgent | — | — | — | not computable |
+
+Calibration keeps the false-positive side within its bound (the dev threshold overshot it
+for rules-only: 1.3%), but it cannot create recall the ranking does not have: with
+evaluation AUPRC 0.43–0.53, recall stays under 1%. The budget curve: 25 or 50 clean pages
+cannot reach the bound at all (`guaranteed: false`, realised FPR 0.5–2.7%); from 100 pages
+the bound holds. **InjecAgent cannot be calibrated this way:** its clean hosts all share
+source documents with injected copies, so the stricter split puts every clean page on the
+evaluation side (calibration half: 0 records). The earlier version of this analysis split
+by `group_id` only and reported InjecAgent numbers; those were leaky and are withdrawn.
+The transformer ranked held-out BIPIA much better (AUPRC 0.673 in §16a), so its rows decide
+whether calibration is worth deploying.
+
+**Fresh set v3** (`data/fresh/fresh_eval_v3.yaml`, SHA-256 `1fb8bc1f5ab2…`, commit
+`52de9d6`): 73 records (10 blatant, 10 paraphrase, 8 soft claim, 6 hidden, 4 poisoned tool
+descriptions; 15 counterparts, 16 hard negatives, 4 clean tool descriptions), new domains,
+frozen before any augmentation code existed. Reserved for one scoring of the retrained
+models. `fresh_eval.py` now keeps a global score-once ledger
+(`artifacts/results/fresh_runs.json`, also reading the older per-folder ledgers): a
+"started" entry is written *before* scoring, so a crashed run cannot be quietly retried;
+`--compare A:B` pre-registers paired tests (bootstrap AUPRC, McNemar on the deployed
+decisions); `--smoke` runs on a scratch set without touching the ledger.
+
+**Why augmentation, from the data.** Position of the injected span in the canonical train
+split: documents 277 at the end (all 250 BIPIA), 24 at the start, 14 in the middle; tool
+results mostly mid-JSON (350 InjecAgent). This is the measured cause of the masking failure.
+`llmsentinel.data.augment.embed_payloads` (train split only; refuses other splits) inserts
+train payloads into train hosts at start / middle / end in equal shares:
+`data/processed/augmented/train_embedded.jsonl`, 900 records with unique IDs, 150 per
+channel × position, digest `9a115633639334e1`, reproducible (`--check`). Diversity is low
+and stated: 125 of the 128 distinct payload texts the train split offers are used, one of
+them up to 30 times; the augmentation teaches positions, not new wordings.
+
+**Output check, after a code review.** Fixed, each with a regression test: negation is read
+per clause (a "nothing else to do" elsewhere no longer flips a repeated claim); a leading
+"No" counts as a negation unless it stands alone ("No, …"); negative prefixes are handled
+generally ("ineligible" against "eligible"), replacing a special case; a sentence-opening
+"Reply"/"Answer" is a directive only when followed by "that", "with", a pronoun, a
+determiner or an audience ("Reply all is disabled" is not); bare "system", "tool" and
+"model" no longer count as an AI addressee; text is NFKC-normalised with invisible format
+characters removed before matching; a claim planted by several sentences records all of
+them, and the Studio's repair removes all of them; a retry that is compromised in another
+way is no longer counted as a repair; non-ASCII tool arguments are compared unescaped.
+Re-validated on train+dev: 0 of 848 benign records yield a claim or a directed destination,
+and none is withheld when echoed as its own answer. Known limit: a genuine support script
+("tell them that orders ship within two days") repeated by the answer is still withheld;
+the repair then removes it and asks again. Sample pack, simulator, after these fixes: with
+the transformer 6/6 contained and no repair needed; rules-only 3/6 by detection and policy,
+6/6 with the output check (3 repaired, none withheld — one fewer repair than before, the
+same containment). Tests: 370 collected, 369 passed, 1 skipped.
+
+**Cluster kit** (`scripts/cluster_kit.sh`, `docs/CLUSTER_RUN.md`): hardening checkpoints
+(new `ood_eval.py train`, no scoring); augmented and control models with the same 3 seeds on
+the same machine (`scripts/train_augmented.py --control`, dev only); calibration with the
+transformer; one scoring of v3 with all checkpoints (`fresh_eval.py --extra`, pre-registered
+augmented-vs-control comparisons); and, with a model server, paraphrase generation and
+validation (`scripts/paraphrase_attacks.py`: rewrites must keep addresses, identifiers,
+numbers, polarity and a share of the content words) and the real-model evaluation
+(`scripts/real_model_eval.py`: none / prompt-only / Sentinel; which cases are judged comes
+from the dataset, not from the model's behaviour; actions the gate blocked do not count as
+success; each case is appended to a `.partial.jsonl` as it finishes). All new scripts were
+smoke-tested on CPU with tiny inputs; no training ran on the laptop.

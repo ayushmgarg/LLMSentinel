@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -50,6 +51,10 @@ from llmsentinel.paths import CORPUS_PATH, MODELS_DIR, RESULTS_DIR, relative  # 
 
 OUT = RESULTS_DIR / "fresh"
 LEDGER = OUT / "runs.json"
+#: One ledger for every fresh set, keyed by digest, whatever --out says. A run is
+#: entered as "started" before any system is scored, so a crash part-way still counts.
+GLOBAL_LEDGER = RESULTS_DIR / "fresh_runs.json"
+_NAME = re.compile(r"^[A-Za-z0-9_.-]+$")
 BOOTSTRAP = 1000
 SEED = 20250909
 
@@ -66,6 +71,32 @@ def _fields(records: list[Any]) -> dict[str, list[Any]]:
 
 def _ledger(path: Path) -> list[dict[str, Any]]:
     return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else []
+
+
+def _already_scored(digest: str) -> list[str]:
+    """Where this digest has been entered before: the global ledger, or any legacy per-folder ledger."""
+
+    places = [f"{relative(GLOBAL_LEDGER)} ({run.get('status', 'completed')})"
+              for run in _ledger(GLOBAL_LEDGER) if run.get("digest") == digest]
+    for legacy in RESULTS_DIR.glob("*/runs.json"):
+        if any(run.get("digest") == digest for run in _ledger(legacy)):
+            places.append(relative(legacy))
+    return places
+
+
+def _enter(entry: dict[str, Any]) -> None:
+    runs = _ledger(GLOBAL_LEDGER)
+    runs.append(entry)
+    GLOBAL_LEDGER.write_text(json.dumps(runs, indent=2), encoding="utf-8")
+
+
+def _mark_completed(started_at: str, digest: str) -> None:
+    runs = _ledger(GLOBAL_LEDGER)
+    for run in runs:
+        if run.get("digest") == digest and run.get("started_at") == started_at:
+            run["status"] = "completed"
+            run["completed_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    GLOBAL_LEDGER.write_text(json.dumps(runs, indent=2), encoding="utf-8")
 
 
 def _recall_by_category(categories: list[str], labels: np.ndarray, flagged: np.ndarray) -> dict[str, dict[str, float]]:
@@ -89,17 +120,59 @@ def main() -> int:
     parser.add_argument("--corpus", default=str(CORPUS_PATH))
     parser.add_argument("--checkpoint", default=str(MODELS_DIR / "transformer"))
     parser.add_argument("--rules-only", action="store_true")
+    parser.add_argument(
+        "--extra", action="append", default=[], metavar="NAME=CHECKPOINT",
+        help="another transformer checkpoint to score in the same once-only run (passage and segment)",
+    )
+    parser.add_argument(
+        "--compare", action="append", default=[], metavar="A:B",
+        help="pre-registered paired tests between two --extra names (passage, segment and deployed rule)",
+    )
     parser.add_argument("--force", action="store_true", help="score a digest again (recorded; breaks score-once)")
     parser.add_argument("--out", default=str(OUT), help="output directory (a smoke test uses its own)")
+    parser.add_argument("--smoke", action="store_true",
+                        help="smoke test on a throwaway file: do not touch the global ledger")
     args = parser.parse_args()
     out = Path(args.out)
     ledger = out / LEDGER.name
 
+    extra_specs: list[tuple[str, str]] = []
+    for spec in args.extra:
+        name, _, path = spec.partition("=")
+        if not _NAME.match(name or "") or not path:
+            raise SystemExit(f"--extra expects NAME=CHECKPOINT with NAME of letters, digits, _ . -: {spec!r}")
+        if name in {n for n, _ in extra_specs} or name in ("segment", ""):
+            raise SystemExit(f"--extra name {name!r} is reserved or used twice")
+        if not Path(path).is_dir():
+            raise SystemExit(f"--extra checkpoint not found: {path}")
+        extra_specs.append((name, path))
+    if args.rules_only and extra_specs:
+        raise SystemExit("--rules-only cannot score --extra transformer checkpoints")
+    if not args.rules_only and not Path(args.checkpoint).is_dir():
+        raise SystemExit(f"canonical checkpoint not found: {args.checkpoint} (copy artifacts/models/transformer here)")
+    comparisons: list[tuple[str, str]] = []
+    for spec in args.compare:
+        a, _, b = spec.partition(":")
+        if a not in {n for n, _ in extra_specs} or b not in {n for n, _ in extra_specs}:
+            raise SystemExit(f"--compare {spec!r}: both names must be --extra names")
+        comparisons.append((a, b))
+
     fresh = load_fresh(args.fresh)
-    runs = _ledger(ledger)
-    if any(run["digest"] == fresh.digest for run in runs) and not args.force:
-        print(f"refusing: fresh set {fresh.digest[:12]} was already scored (see {relative(ledger)}).")
+    previous = [] if args.smoke else _already_scored(fresh.digest)
+    if any(run["digest"] == fresh.digest for run in _ledger(ledger)):
+        previous.append(relative(ledger))
+    if previous and not args.force:
+        print(f"refusing: fresh set {fresh.digest[:12]} was already entered in: {', '.join(sorted(set(previous)))}")
         return 1
+    started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    if not args.smoke:
+        _enter({
+            "digest": fresh.digest, "fresh_path": relative(Path(args.fresh)), "out": relative(out),
+            "started_at": started_at, "status": "started", "forced": bool(args.force),
+            "checkpoint": None if args.rules_only else relative(Path(args.checkpoint)),
+            "extras": [f"{n}={relative(Path(p))}" for n, p in extra_specs],
+            "compare": [f"{a}:{b}" for a, b in comparisons],
+        })
 
     splits = load_splits(args.corpus)
     train, dev = splits["train"], splits["dev"]
@@ -112,6 +185,7 @@ def main() -> int:
     rules = RulesScorer()
     systems: list[Any] = [MajorityBaseline(), KeywordBaseline(), TfidfBaseline(), TfidfCharBaseline(), rules]
     transformer = None
+    extras: list[Any] = []
     if not args.rules_only:
         from llmsentinel.models.transformer import TransformerScorer
 
@@ -120,6 +194,11 @@ def main() -> int:
         # Segment-level scoring of the same checkpoint (no retraining); added after
         # fresh v1 exposed the masking failure, confirmed on fresh v2.
         systems.append(SegmentScorer(transformer))
+        for name, path in extra_specs:
+            extra = TransformerScorer.load(Path(path))
+            extra.name = f"transformer-{name}"
+            extras.append(extra)
+            systems += [extra, SegmentScorer(extra)]
 
     results: dict[str, Any] = {}
     fresh_scores: dict[str, np.ndarray] = {}
@@ -136,10 +215,12 @@ def main() -> int:
             system=system.name, split="fresh", y_score=f, thresholds=dev_metrics.thresholds,
             bootstrap=BOOTSTRAP, seed=SEED, **_fields(records),
         )
-        drift = {
-            key: round(abs(value - reference.get(system.name, {}).get(key, value)), 8)
-            for key, value in dev_metrics.thresholds.items()
-        }
+        # Only systems with a row in results_dev.json have a reference to drift from.
+        drift = (
+            {key: round(abs(value - reference[system.name].get(key, value)), 8)
+             for key, value in dev_metrics.thresholds.items()}
+            if system.name in reference else None
+        )
         flagged = f >= dev_metrics.thresholds["fpr=0.01"]
         results[system.name] = {
             "dev": dev_metrics.to_dict(),
@@ -154,7 +235,7 @@ def main() -> int:
               f"(FPR {fresh_metrics.fpr_achieved['fpr=0.01']:.3f})")
 
     for system in systems:
-        score(system, fit=not (system is transformer or isinstance(system, SegmentScorer)))
+        score(system, fit=not (system is transformer or system in extras or isinstance(system, SegmentScorer)))
     fusion = FusionScorer(rules=rules, transformer=transformer)
     fusion.fit(dev)
     score(fusion, fit=False)
@@ -182,6 +263,15 @@ def main() -> int:
         dev_decisions["deployed OR (segment)"] = (dev_scores["transformer-segment"] >= seg_t["fpr=0.01"]) | (
             dev_scores["rules-only"] >= rules_t["fpr=0.001"]
         )
+        for extra in extras:
+            key = f"{extra.name}-segment"
+            extra_t = results[key]["dev"]["thresholds"]
+            decisions[f"deployed OR ({key})"] = (fresh_scores[key] >= extra_t["fpr=0.01"]) | (
+                fresh_scores["rules-only"] >= rules_t["fpr=0.001"]
+            )
+            dev_decisions[f"deployed OR ({key})"] = (dev_scores[key] >= extra_t["fpr=0.01"]) | (
+                dev_scores["rules-only"] >= rules_t["fpr=0.001"]
+            )
     dev_labels = np.asarray([r.y for r in dev])
     hard = np.asarray([r.is_hard_negative for r in records])
     decision_report: dict[str, Any] = {}
@@ -215,9 +305,24 @@ def main() -> int:
                 ("deployed OR", "transformer@1%"),
                 ("deployed OR", "rules-only@1%"),
                 ("transformer@1%", "rules-only@1%"),
+                *((f"deployed OR ({e.name}-segment)", "deployed OR (segment)") for e in extras),
             )
             for a, b in pairs:
                 tests["mcnemar"].append({"split": split_name, **mcnemar(y, table[a], table[b], names=(a, b)).to_dict()})
+
+    # Pre-registered comparisons between extra checkpoints (e.g. augmented vs control,
+    # same seed): passage and segment AUPRC, and the deployed rule at the operating point.
+    tests["compare"] = []
+    for a, b in comparisons:
+        for suffix in ("", "-segment"):
+            x, z = f"transformer-{a}{suffix}", f"transformer-{b}{suffix}"
+            for split_name, scores, y in (("dev", dev_scores, dev_labels), ("fresh", fresh_scores, labels)):
+                result = paired_bootstrap_delta(y, scores[x], scores[z], names=(x, z), seed=SEED)
+                tests["compare"].append({"split": split_name, "test": "paired_bootstrap_auprc", **result.to_dict()})
+        x, z = f"deployed OR (transformer-{a}-segment)", f"deployed OR (transformer-{b}-segment)"
+        for split_name, table, y in (("dev", dev_decisions, dev_labels), ("fresh", decisions, labels)):
+            tests["compare"].append({"split": split_name, "test": "mcnemar",
+                                     **mcnemar(y, table[x], table[z], names=(x, z)).to_dict()})
 
     # ------------------------------------------------------------------ output
     out.mkdir(parents=True, exist_ok=True)
@@ -227,6 +332,8 @@ def main() -> int:
         "fresh_path": relative(Path(args.fresh)),
         "corpus": relative(Path(args.corpus)),
         "checkpoint": relative(Path(args.checkpoint)) if transformer is not None else None,
+        "extra_checkpoints": [f"{n}={p}" for n, p in extra_specs],
+        "compare": [f"{a}:{b}" for a, b in comparisons],
         "scored_at": stamp,
         "bootstrap": BOOTSTRAP,
         "seed": SEED,
@@ -247,8 +354,12 @@ def main() -> int:
                 "decisions": {name: bool(values[index]) for name, values in decisions.items()},
             }
             handle.write(json.dumps(row) + "\n")
-    runs.append({"digest": fresh.digest, "scored_at": stamp, "forced": bool(args.force), "transformer": transformer is not None})
+    runs = _ledger(ledger)
+    runs.append({"digest": fresh.digest, "scored_at": stamp, "forced": bool(args.force), "transformer": transformer is not None,
+                 "extras": [n for n, _ in extra_specs]})
     ledger.write_text(json.dumps(runs, indent=2), encoding="utf-8")
+    if not args.smoke:
+        _mark_completed(started_at, fresh.digest)
     print(f"wrote {relative(out / 'results_fresh.json')} and scores.jsonl")
     return 0
 
