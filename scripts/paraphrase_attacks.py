@@ -91,14 +91,16 @@ def checks(original: str, rewrite: str) -> dict[str, bool]:
 
 def _payloads(source: str) -> list[dict[str, str]]:
     if source == "train":
-        out = []
+        # Many train records share one payload text (763 records, 128 texts): rewrite each
+        # text once and keep every record id that carries it.
+        by_text: dict[str, list[str]] = {}
         for r in load_splits(CORPUS_PATH)["train"]:
             if r.y and r.injected_spans and r.channel.value != "tool_metadata":
                 span = r.injected_spans[0]
                 text = (r.text_for_field(span.field) or "")[span.start : span.end].strip()
                 if len(text.split()) >= 4:
-                    out.append({"source_id": r.record_id, "original": text})
-        return out
+                    by_text.setdefault(text, []).append(r.record_id)
+        return [{"source_id": ids[0], "source_ids": ids, "original": text} for text, ids in by_text.items()]
     out = []
     for path in FRESH_SETS:
         for case in load_fresh(path, normalise=False).cases:
