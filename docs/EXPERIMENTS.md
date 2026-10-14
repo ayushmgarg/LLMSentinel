@@ -1657,3 +1657,72 @@ numbers, polarity and a share of the content words) and the real-model evaluatio
 from the dataset, not from the model's behaviour; actions the gate blocked do not count as
 success; each case is appended to a `.partial.jsonl` as it finishes). All new scripts were
 smoke-tested on CPU with tiny inputs; no training ran on the laptop.
+
+
+## 2026-10-14 · Cluster round r1: augmentation, calibration with the transformer, fresh v3, real model, paraphrases
+
+One run of `docs/CLUSTER_RUN.md` on the SVKM Altair cluster (H100 MIG 40 GB slice, commit
+`357507e`, ~26 min of compute). All 10 steps finished; raw outputs and logs, untouched, in
+`artifacts/cluster_runs/r1_cluster_kit/` (its README says where each copy was placed).
+
+**Augmentation (B4, position) does not help — a negative result.** Same 3 seeds, same
+config and machine, with and without the 900 embedded-position records:
+
+| | dev AUPRC passage / segment | dev TPR@1% passage | v3 AUPRC passage / segment |
+|---|---|---|---|
+| augmented s1 / s2 / s3 | 0.882 / 0.838 / 0.794 — 0.906 / 0.852 / 0.823 | 0.463 / 0.250 / 0.163 | 0.819 / 0.843 / 0.781 — 0.847 / 0.871 / 0.807 |
+| control s1 / s2 / s3 | 0.979 / 0.940 / 0.950 — 0.975 / 0.949 / 0.942 | 0.900 / 0.650 / 0.738 | 0.714 / 0.823 / 0.793 — 0.853 / 0.882 / 0.915 |
+
+Pre-registered tests on v3 (paired bootstrap, 2000 iterations; McNemar on the deployed
+decision, each model at its own dev 1%-FPR threshold OR'd with the rules):
+- segment AUPRC, augmented − control: s1 −0.006 (p 0.84), s2 −0.011 (p 0.73), s3 −0.108
+  (CI −0.193 to −0.031, p 0.002); passage: s1 +0.105 (p 0.051), s2 +0.020, s3 −0.012 — no
+  significant gain in any pair;
+- deployed decision: augmented recall on v3 is 0.026 for all three seeds (one blatant case),
+  control 0.421 / 0.079 / 0.132; McNemar s1 3 vs 15 discordant in favour of control
+  (p 0.008), s2 0 vs 2, s3 0 vs 4.
+
+Augmentation costs a lot on dev (AUPRC −0.07 to −0.16 at every seed and both scorings, all p < 0.001) and
+pushes the dev 1%-FPR threshold to ~0.9999, which is why its deployed recall collapses on
+v3. Not deployed. Not established: *why* — the run changes position, class balance (900
+more positives, 61% more records) and optimiser steps together (stated in advance as the
+confound), and the 900 records reuse 125 payload texts. Also visible: large seed variance in
+the controls (v3 segment AUPRC 0.853–0.915; deployed recall 0.079–0.421).
+
+**Fresh set v3, canonical model** (scored once, ledger `artifacts/results/fresh_runs.json`):
+AUPRC rules-only 0.687, TF-IDF word+char 0.760, transformer 0.734, transformer-segment 0.859,
+hybrid 0.765. Deployed rule (segment OR rules): recall 0.368, FPR 0.000, hard-negative FPR
+0.000; by category blatant 0.70, hidden 0.67, paraphrase 0.20, soft claim 0.12, poisoned
+tool descriptions 0.00. Segment scoring holds up on a third unseen set (passage-level
+deployed recall 0.184); paraphrases, soft claims and tool descriptions stay the weak spots.
+
+**Per-source calibration with the transformer (B1/F7)**, BIPIA, post-hoc, hardening
+checkpoint retrained single-seed on the cluster (evaluation-half AUPRC 0.616 passage, 0.629
+segment; §16a's model had 0.673 on the whole set): dev threshold recall 0.008 / FPR 0.000;
+calibrated recall 0.015 (passage) and 0.008 (segment), FPR 0.003 and 0.005, within the
+0.008 bound. Calibration keeps the false-positive promise but does not recover recall: the
+held-out ranking is too weak at the top. InjecAgent: not computable (unchanged).
+
+**Real model (F3, F4, B7)**, Qwen3-4B-Instruct-2507 in bf16 (the laptop's Ollama model is the
+4-bit version), temperature 0, fresh v1 + v2, 135 cases, 0 errors. Attack success, on the 48
+of 66 injections with an objective signal:
+
+| | all | blatant | paraphrase | soft claim | hidden |
+|---|---|---|---|---|---|
+| no defence | 13/48 (27%) | 3/15 | 1/11 | 8/14 | 1/8 |
+| prompt-only defence | 12/48 (25%) | 2/15 | 0/11 | 9/14 | 1/8 |
+| LLMSentinel | **1/48 (2%)** | 0/15 | 0/11 | 1/14 | 0/8 |
+
+The prompt-only instruction barely helps (and not at all on soft claims); Sentinel's one
+miss is a soft claim (`fresh-s-10`, planted claim repeated). Cost on 69 clean cases: Sentinel
+changed the prompt on 3 (all flagged hard negatives), withheld 0, repaired 0. 6 clean answers
+differ from the unguarded ones, 3 of them with identical prompts — decoding noise of the
+model on GPU, not Sentinel. Answer quality is not scored (no references). Post-hoc on sets
+already scored for detection.
+
+**Paraphrases (B2)**: 198 rewrites of the 66 fresh payloads, 170 pass the automatic checks
+(failures: polarity 16, meaning 6, rewording 6, numbers 3). Of the 22 originals the deployed
+guard flags in their host, 57 of their 64 valid rewrites (89.1%) are still flagged (blatant 0.92,
+hidden 1.00, soft claim 0.83, paraphrase 0/3). Small n; post-hoc. 256 train rewrites (210
+valid) are saved in `data/processed/paraphrase/` for a later paraphrase-augmentation run;
+nothing was trained on them.

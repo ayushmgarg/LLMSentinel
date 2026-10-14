@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-11T13:34:16+00:00",
+  "generated": "2026-10-13T06:26:23+00:00",
   "target_fpr": 0.01,
   "seed": 20250909,
   "protocol": "Post-hoc analysis on held-out sets already scored once in section 16a. The held-out source is split by group into calibration and evaluation halves; only the clean pages of the calibration half choose the calibrated threshold; results are on the evaluation half.",
@@ -49,7 +49,7 @@
             "fpr_bound_on_new_pages": 0.0076
           },
           "provenance": {
-            "computed_at": "2026-10-11T13:34:45+00:00",
+            "computed_at": "2026-10-13T06:26:31+00:00",
             "seed": 20250909,
             "digests": {
               "indist": "7bf9438e69e90000",
@@ -120,7 +120,7 @@
             "fpr_bound_on_new_pages": 0.0076
           },
           "provenance": {
-            "computed_at": "2026-10-11T13:34:53+00:00",
+            "computed_at": "2026-10-13T06:26:32+00:00",
             "seed": 20250909,
             "digests": {
               "indist": "7bf9438e69e90000",
@@ -168,6 +168,148 @@
               "recall_std": 0.0037,
               "fpr_mean": 0.0034,
               "fpr_std": 0.0025
+            }
+          ]
+        },
+        "transformer": {
+          "evaluation_auprc": 0.6158,
+          "dev_threshold": {
+            "threshold": 0.999728,
+            "recall": 0.0077,
+            "fpr": 0.0,
+            "positives": 260,
+            "negatives": 383
+          },
+          "calibrated_threshold": {
+            "threshold": 0.999708,
+            "recall": 0.0154,
+            "fpr": 0.0026,
+            "positives": 260,
+            "negatives": 383,
+            "allowed_calibration_false_positives": 2,
+            "guaranteed": true,
+            "fpr_bound_on_new_pages": 0.0076
+          },
+          "provenance": {
+            "computed_at": "2026-10-13T06:26:42+00:00",
+            "seed": 20250909,
+            "digests": {
+              "indist": "7bf9438e69e90000",
+              "ood": "ce9096695512a1fa"
+            },
+            "checkpoint": "artifacts/models/transformer_hardening_bipia"
+          },
+          "budget_curve": [
+            {
+              "clean_pages": 25,
+              "allowed_false_positives": 0,
+              "guaranteed": false,
+              "fpr_bound": 0.0385,
+              "recall_mean": 0.0594,
+              "recall_std": 0.1011,
+              "fpr_mean": 0.0188,
+              "fpr_std": 0.0286
+            },
+            {
+              "clean_pages": 50,
+              "allowed_false_positives": 0,
+              "guaranteed": false,
+              "fpr_bound": 0.0196,
+              "recall_mean": 0.036,
+              "recall_std": 0.0505,
+              "fpr_mean": 0.0145,
+              "fpr_std": 0.0149
+            },
+            {
+              "clean_pages": 100,
+              "allowed_false_positives": 0,
+              "guaranteed": true,
+              "fpr_bound": 0.0099,
+              "recall_mean": 0.0123,
+              "recall_std": 0.0074,
+              "fpr_mean": 0.0051,
+              "fpr_std": 0.0058
+            },
+            {
+              "clean_pages": 200,
+              "allowed_false_positives": 1,
+              "guaranteed": true,
+              "fpr_bound": 0.01,
+              "recall_mean": 0.0131,
+              "recall_std": 0.0035,
+              "fpr_mean": 0.0042,
+              "fpr_std": 0.0013
+            }
+          ]
+        },
+        "transformer-segment": {
+          "evaluation_auprc": 0.6287,
+          "dev_threshold": {
+            "threshold": 0.999728,
+            "recall": 0.0077,
+            "fpr": 0.0,
+            "positives": 260,
+            "negatives": 383
+          },
+          "calibrated_threshold": {
+            "threshold": 0.999716,
+            "recall": 0.0077,
+            "fpr": 0.0052,
+            "positives": 260,
+            "negatives": 383,
+            "allowed_calibration_false_positives": 2,
+            "guaranteed": true,
+            "fpr_bound_on_new_pages": 0.0076
+          },
+          "provenance": {
+            "computed_at": "2026-10-13T06:27:05+00:00",
+            "seed": 20250909,
+            "digests": {
+              "indist": "7bf9438e69e90000",
+              "ood": "ce9096695512a1fa"
+            },
+            "checkpoint": "artifacts/models/transformer_hardening_bipia"
+          },
+          "budget_curve": [
+            {
+              "clean_pages": 25,
+              "allowed_false_positives": 0,
+              "guaranteed": false,
+              "fpr_bound": 0.0385,
+              "recall_mean": 0.0323,
+              "recall_std": 0.0733,
+              "fpr_mean": 0.0098,
+              "fpr_std": 0.0183
+            },
+            {
+              "clean_pages": 50,
+              "allowed_false_positives": 0,
+              "guaranteed": false,
+              "fpr_bound": 0.0196,
+              "recall_mean": 0.0346,
+              "recall_std": 0.04,
+              "fpr_mean": 0.0138,
+              "fpr_std": 0.0159
+            },
+            {
+              "clean_pages": 100,
+              "allowed_false_positives": 0,
+              "guaranteed": true,
+              "fpr_bound": 0.0099,
+              "recall_mean": 0.0137,
+              "recall_std": 0.0131,
+              "fpr_mean": 0.0061,
+              "fpr_std": 0.0052
+            },
+            {
+              "clean_pages": 200,
+              "allowed_false_positives": 1,
+              "guaranteed": true,
+              "fpr_bound": 0.01,
+              "recall_mean": 0.0158,
+              "recall_std": 0.0074,
+              "fpr_mean": 0.0064,
+              "fpr_std": 0.0013
             }
           ]
         }

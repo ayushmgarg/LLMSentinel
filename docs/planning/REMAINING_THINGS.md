@@ -3,6 +3,41 @@
 Everything still pending for LLMSentinel, in one place. Written 2026-09-22; the item
 tables below are kept as written, and progress is tracked in the status list.
 
+## Status (2026-10-14) — after cluster round r1
+
+Results in `docs/EXPERIMENTS.md` (2026-10-14); raw outputs in `artifacts/cluster_runs/r1_cluster_kit/`.
+
+**Done:**
+- **B1/F7** — per-source calibration incl. the transformer rows. Finding: calibration keeps the
+  FPR bound but does not recover recall on held-out BIPIA (≤1.5%); InjecAgent not computable.
+- **B4 (position augmentation)** — trained 3 seeds + controls, scored once on v3 with
+  pre-registered tests. **Negative:** no significant gain anywhere, worse on dev at every seed,
+  deployed recall collapses. Not deployed.
+- **B2/F8** — 170 valid fresh rewrites; 89% of caught attacks stay caught (small n).
+- **B7/F6 and F3** — real model (Qwen3-4B-Instruct): attack success 27% none, 25% prompt-only,
+  2% LLMSentinel.
+- **Fresh set v3** — scored once (ledger `artifacts/results/fresh_runs.json`).
+
+**Partly done:**
+- **F4** — cost on clean inputs measured (prompt changed on 3 of 69, nothing withheld);
+  answer *quality* not scored (no reference answers).
+- **D2** — EXPERIMENTS updated; README, report and `docs/fresh_evaluation.md` do not have the
+  cluster results yet.
+
+**Left (only what was already listed or discussed):**
+- **A1** open part: fresh-setup / clean-install check. **A2** screenshots (deferred).
+  **A3/F11** adaptive attacker (optional). **A4/F12** inter-annotator agreement (optional).
+- **B3/F9** NLI soft-claim check — soft claims are now the clearest remaining hole (v3 recall
+  0.12; Sentinel's one real-model miss).
+- Paraphrase-augmentation retrain (the original B4 idea) — train rewrites now exist
+  (`data/processed/paraphrase/train_paraphrases.jsonl`, 210 valid); needs a new fresh set first.
+- **B12/B13, F14** semantic signals; **F13** retrieval poisoning per retriever; **B9** active
+  learning; **B5/B6** deferred.
+- Agentic rule-evolution loop (idea, discussed 2026-10-11; not started).
+- **C1** — try the MCP gateway inside Claude Desktop.
+- **D1** merge PR #2; **E** research paper (after the rest); **D3** move the repo out of
+  OneDrive (very last).
+
 ## Status (2026-10-11)
 
 Details in `docs/EXPERIMENTS.md`, 2026-10-11 entries; the cluster run in `docs/CLUSTER_RUN.md`.

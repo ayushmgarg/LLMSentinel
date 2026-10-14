@@ -1,0 +1,16 @@
+[
+  {
+    "digest": "1fb8bc1f5ab20e8d847eca2fd0a469fa730005f56e227eae3c3db45ab2cdf3e8",
+    "scored_at": "2026-10-13T06:28:00+00:00",
+    "forced": false,
+    "transformer": true,
+    "extras": [
+      "augmented_s1",
+      "augmented_s2",
+      "augmented_s3",
+      "control_s1",
+      "control_s2",
+      "control_s3"
+    ]
+  }
+]

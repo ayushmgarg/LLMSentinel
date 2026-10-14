@@ -1,0 +1,230 @@
+{
+  "run": "augmented",
+  "seed": 20250911,
+  "epochs": 3,
+  "trained_at": "2026-10-13T06:25:15+00:00",
+  "minutes": 1.5,
+  "device": "cuda",
+  "corpus_digest": "0311c325d3ecaa8d",
+  "augmented_digest": "9a115633639334e1",
+  "train_records": 2379,
+  "checkpoint": "artifacts/models/transformer_augmented_seed20250911",
+  "dev": {
+    "passage": {
+      "system": "transformer",
+      "split": "dev",
+      "n": 235,
+      "positives": 80,
+      "negatives": 155,
+      "auprc": 0.7937151180738585,
+      "auroc": 0.8538306451612904,
+      "positive_rate": 0.3404255319148936,
+      "tpr_at_fpr": {
+        "fpr=0.01": 0.1625,
+        "fpr=0.001": 0.1125
+      },
+      "thresholds": {
+        "fpr=0.01": 0.9998738765716553,
+        "fpr=0.001": 0.9998788833618164
+      },
+      "fpr_achieved": {
+        "fpr=0.01": 0.0064516129032258064,
+        "fpr=0.001": 0.0
+      },
+      "fpr_budget_exceeded": {
+        "fpr=0.01": false,
+        "fpr=0.001": false
+      },
+      "hard_negative_fpr": {
+        "fpr=0.01": 0.02127659574468085,
+        "fpr=0.001": 0.0
+      },
+      "per_channel": {
+        "rag_document": {
+          "n": 142.0,
+          "positives": 54.0,
+          "auprc": 0.8729291889977788,
+          "auroc": 0.9174031986531987,
+          "recall@fpr=0.01": 0.24074074074074073,
+          "fpr@fpr=0.01": 0.011363636363636364,
+          "recall@fpr=0.001": 0.16666666666666666,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_metadata": {
+          "n": 19.0,
+          "positives": 5.0,
+          "auprc": 0.6472222222222221,
+          "auroc": 0.7571428571428572,
+          "recall@fpr=0.01": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.0,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_response": {
+          "n": 74.0,
+          "positives": 21.0,
+          "auprc": 0.6103193457851024,
+          "auroc": 0.7457322551662174,
+          "recall@fpr=0.01": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.0,
+          "fpr@fpr=0.001": 0.0
+        }
+      },
+      "per_dataset": {},
+      "per_attack_recall": {
+        "fpr=0.01": {
+          "meta_instruction": 0.0,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.225,
+          "obfuscation__support": 40.0,
+          "unknown": 0.2,
+          "unknown__support": 20.0
+        },
+        "fpr=0.001": {
+          "meta_instruction": 0.0,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.15,
+          "obfuscation__support": 40.0,
+          "unknown": 0.15,
+          "unknown__support": 20.0
+        }
+      },
+      "confusion": {
+        "fpr=0.01": {
+          "tp": 13,
+          "fp": 1,
+          "tn": 154,
+          "fn": 67
+        },
+        "fpr=0.001": {
+          "tp": 9,
+          "fp": 0,
+          "tn": 155,
+          "fn": 71
+        }
+      },
+      "latency_ms": {},
+      "ci": {
+        "auprc": [
+          0.7035186161139367,
+          0.8783197204807794
+        ]
+      },
+      "notes": [],
+      "warnings": []
+    },
+    "segment": {
+      "system": "transformer-segment",
+      "split": "dev",
+      "n": 235,
+      "positives": 80,
+      "negatives": 155,
+      "auprc": 0.8230676596443418,
+      "auroc": 0.8969758064516129,
+      "positive_rate": 0.3404255319148936,
+      "tpr_at_fpr": {
+        "fpr=0.01": 0.2,
+        "fpr=0.001": 0.1375
+      },
+      "thresholds": {
+        "fpr=0.01": 0.9998738765716553,
+        "fpr=0.001": 0.9998788833618164
+      },
+      "fpr_achieved": {
+        "fpr=0.01": 0.0064516129032258064,
+        "fpr=0.001": 0.0
+      },
+      "fpr_budget_exceeded": {
+        "fpr=0.01": false,
+        "fpr=0.001": false
+      },
+      "hard_negative_fpr": {
+        "fpr=0.01": 0.02127659574468085,
+        "fpr=0.001": 0.0
+      },
+      "per_channel": {
+        "rag_document": {
+          "n": 142.0,
+          "positives": 54.0,
+          "auprc": 0.9001071225168666,
+          "auroc": 0.9496001683501682,
+          "recall@fpr=0.01": 0.2962962962962963,
+          "fpr@fpr=0.01": 0.011363636363636364,
+          "recall@fpr=0.001": 0.2037037037037037,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_metadata": {
+          "n": 19.0,
+          "positives": 5.0,
+          "auprc": 0.8285714285714285,
+          "auroc": 0.9142857142857143,
+          "recall@fpr=0.01": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.0,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_response": {
+          "n": 74.0,
+          "positives": 21.0,
+          "auprc": 0.6389721076572559,
+          "auroc": 0.8301886792452831,
+          "recall@fpr=0.01": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.0,
+          "fpr@fpr=0.001": 0.0
+        }
+      },
+      "per_dataset": {},
+      "per_attack_recall": {
+        "fpr=0.01": {
+          "meta_instruction": 0.0,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.25,
+          "obfuscation__support": 40.0,
+          "unknown": 0.3,
+          "unknown__support": 20.0
+        },
+        "fpr=0.001": {
+          "meta_instruction": 0.0,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.2,
+          "obfuscation__support": 40.0,
+          "unknown": 0.15,
+          "unknown__support": 20.0
+        }
+      },
+      "confusion": {
+        "fpr=0.01": {
+          "tp": 16,
+          "fp": 1,
+          "tn": 154,
+          "fn": 64
+        },
+        "fpr=0.001": {
+          "tp": 11,
+          "fp": 0,
+          "tn": 155,
+          "fn": 69
+        }
+      },
+      "latency_ms": {},
+      "ci": {
+        "auprc": [
+          0.7408070552941934,
+          0.8987178576788032
+        ]
+      },
+      "notes": [],
+      "warnings": []
+    }
+  }
+}

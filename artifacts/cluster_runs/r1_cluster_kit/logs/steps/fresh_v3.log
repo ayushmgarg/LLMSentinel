@@ -1,0 +1,46 @@
+fresh 1fb8bc1f5ab2: 73 records (38 injections); dev 235, train 1479
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 61031.31it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8920.62it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8925.68it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 9694.72it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 9045.20it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 9597.53it/s]
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 8977.17it/s]
+  majority         dev AUPRC 0.340  fresh AUPRC 0.521 [0.397, 0.630]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  keyword          dev AUPRC 0.338  fresh AUPRC 0.558 [0.439, 0.676]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  tfidf-word       dev AUPRC 0.684  fresh AUPRC 0.717 [0.572, 0.862]  fresh TPR@dev1% 0.500 (FPR 0.171)
+  tfidf-word+char  dev AUPRC 0.632  fresh AUPRC 0.760 [0.615, 0.911]  fresh TPR@dev1% 0.553 (FPR 0.114)
+  rules-only       dev AUPRC 0.683  fresh AUPRC 0.687 [0.548, 0.818]  fresh TPR@dev1% 0.132 (FPR 0.029)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer      dev AUPRC 0.964  fresh AUPRC 0.734 [0.592, 0.852]  fresh TPR@dev1% 0.184 (FPR 0.029)
+  transformer-segment dev AUPRC 0.938  fresh AUPRC 0.859 [0.763, 0.935]  fresh TPR@dev1% 0.368 (FPR 0.000)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-augmented_s1 dev AUPRC 0.882  fresh AUPRC 0.819 [0.699, 0.913]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  transformer-augmented_s1-segment dev AUPRC 0.906  fresh AUPRC 0.847 [0.733, 0.936]  fresh TPR@dev1% 0.000 (FPR 0.000)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-augmented_s2 dev AUPRC 0.838  fresh AUPRC 0.843 [0.728, 0.925]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  transformer-augmented_s2-segment dev AUPRC 0.852  fresh AUPRC 0.871 [0.769, 0.952]  fresh TPR@dev1% 0.000 (FPR 0.000)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-augmented_s3 dev AUPRC 0.794  fresh AUPRC 0.781 [0.647, 0.908]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  transformer-augmented_s3-segment dev AUPRC 0.823  fresh AUPRC 0.807 [0.677, 0.926]  fresh TPR@dev1% 0.000 (FPR 0.000)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-control_s1 dev AUPRC 0.979  fresh AUPRC 0.714 [0.567, 0.859]  fresh TPR@dev1% 0.237 (FPR 0.057)
+  transformer-control_s1-segment dev AUPRC 0.975  fresh AUPRC 0.853 [0.742, 0.939]  fresh TPR@dev1% 0.421 (FPR 0.086)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-control_s2 dev AUPRC 0.940  fresh AUPRC 0.823 [0.710, 0.914]  fresh TPR@dev1% 0.000 (FPR 0.000)
+  transformer-control_s2-segment dev AUPRC 0.949  fresh AUPRC 0.882 [0.772, 0.962]  fresh TPR@dev1% 0.053 (FPR 0.000)
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (571 > 512). Running this sequence through the model will result in indexing errors
+  transformer-control_s3 dev AUPRC 0.950  fresh AUPRC 0.793 [0.669, 0.893]  fresh TPR@dev1% 0.211 (FPR 0.000)
+  transformer-control_s3-segment dev AUPRC 0.942  fresh AUPRC 0.915 [0.830, 0.978]  fresh TPR@dev1% 0.132 (FPR 0.000)
+  hybrid           dev AUPRC 0.873  fresh AUPRC 0.765 [0.639, 0.879]  fresh TPR@dev1% 0.026 (FPR 0.000)
+  decision rules-only@1%    fresh TPR 0.132 FPR 0.029 | dev TPR 0.275 FPR 0.006
+  decision deployed OR      fresh TPR 0.184 FPR 0.029 | dev TPR 0.825 FPR 0.006
+  decision transformer@1%   fresh TPR 0.184 FPR 0.029 | dev TPR 0.812 FPR 0.006
+  decision deployed OR (segment) fresh TPR 0.368 FPR 0.000 | dev TPR 0.825 FPR 0.000
+  decision deployed OR (transformer-augmented_s1-segment) fresh TPR 0.026 FPR 0.000 | dev TPR 0.475 FPR 0.006
+  decision deployed OR (transformer-augmented_s2-segment) fresh TPR 0.026 FPR 0.000 | dev TPR 0.287 FPR 0.006
+  decision deployed OR (transformer-augmented_s3-segment) fresh TPR 0.026 FPR 0.000 | dev TPR 0.212 FPR 0.006
+  decision deployed OR (transformer-control_s1-segment) fresh TPR 0.421 FPR 0.086 | dev TPR 0.925 FPR 0.006
+  decision deployed OR (transformer-control_s2-segment) fresh TPR 0.079 FPR 0.000 | dev TPR 0.688 FPR 0.000
+  decision deployed OR (transformer-control_s3-segment) fresh TPR 0.132 FPR 0.000 | dev TPR 0.650 FPR 0.000
+wrote artifacts/results/fresh_v3/results_fresh.json and scores.jsonl

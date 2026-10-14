@@ -1,0 +1,7 @@
+python 3.14.8 | torch 2.14.0+cu130 | transformers 5.16.1
+GPU: NVIDIA H100 PCIe MIG 3g.40gb, 39.5 GiB, capability 9.0, bf16 True
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 48105.07it/s]
+canonical checkpoint loads (transformer, device auto)
+backbone distilroberta-base resolves from the local cache
+fresh ledger: 0 entries; v3 digest 1fb8bc1f5ab2
+preflight OK

@@ -1,0 +1,25 @@
+[
+  {
+    "digest": "1fb8bc1f5ab20e8d847eca2fd0a469fa730005f56e227eae3c3db45ab2cdf3e8",
+    "fresh_path": "data/fresh/fresh_eval_v3.yaml",
+    "out": "artifacts/results/fresh_v3",
+    "started_at": "2026-10-13T06:27:07+00:00",
+    "status": "completed",
+    "forced": false,
+    "checkpoint": "artifacts/models/transformer",
+    "extras": [
+      "augmented_s1=artifacts/models/transformer_augmented_seed20250909",
+      "augmented_s2=artifacts/models/transformer_augmented_seed20250910",
+      "augmented_s3=artifacts/models/transformer_augmented_seed20250911",
+      "control_s1=artifacts/models/transformer_control_seed20250909",
+      "control_s2=artifacts/models/transformer_control_seed20250910",
+      "control_s3=artifacts/models/transformer_control_seed20250911"
+    ],
+    "compare": [
+      "augmented_s1:control_s1",
+      "augmented_s2:control_s2",
+      "augmented_s3:control_s3"
+    ],
+    "completed_at": "2026-10-13T06:28:00+00:00"
+  }
+]
