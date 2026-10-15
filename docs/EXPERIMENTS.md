@@ -1726,3 +1726,16 @@ guard flags in their host, 57 of their 64 valid rewrites (89.1%) are still flagg
 hidden 1.00, soft claim 0.83, paraphrase 0/3). Small n; post-hoc. 256 train rewrites (210
 valid) are saved in `data/processed/paraphrase/` for a later paraphrase-augmentation run;
 nothing was trained on them.
+
+## 2026-10-15 · R2.1 Fresh set v4 frozen
+
+`data/fresh/fresh_eval_v4.yaml` (SHA-256 `b4020d05ae3f…`): 84 records — 10 blatant,
+12 paraphrase, 12 soft claim, 6 hidden, 5 poisoned tool descriptions (45 injections); 16
+counterparts, 18 hard negatives, 5 clean tool descriptions. New domains, none from v1–v3.
+Written after only category-level v3 results were known and before any R2 method
+(`docs/planning/R2_PLAN.md`) existed; committed on its own. Reserved for one scoring in
+cluster round r2. Pre-registered soft-claim split: s01–s08 contradict their host page,
+s09–s12 are plausible but unstated (an NLI check can only be expected to catch the first
+group); s05, s06, s11, s12 use no reporting verb. Document payloads sit mostly mid-page
+(24 middle, 3 start, 2 end), where v1 exposed the masking failure. Hard negatives include
+six "tell the customer that X" staff scripts, the output check's known false-positive case.

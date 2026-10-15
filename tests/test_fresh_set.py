@@ -15,9 +15,10 @@ from llmsentinel.rules import ManifestPin, diff_manifest
 
 V2 = FRESH_PATH.with_name("fresh_eval_v2.yaml")
 V3 = FRESH_PATH.with_name("fresh_eval_v3.yaml")
+V4 = FRESH_PATH.with_name("fresh_eval_v4.yaml")
 
 
-@pytest.fixture(scope="module", params=[FRESH_PATH, V2, V3], ids=["v1", "v2", "v3"])
+@pytest.fixture(scope="module", params=[FRESH_PATH, V2, V3, V4], ids=["v1", "v2", "v3", "v4"])
 def fresh(request):
     return load_fresh(request.param, normalise=False)
 
