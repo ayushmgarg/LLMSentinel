@@ -236,11 +236,12 @@ examples/          sample inputs and the MCP gateway demo
 
 ## Licence and data
 
-Code: MIT. Data written for this project: CC0-1.0. No example contains a real secret or a
+Code: MIT ([LICENSE](LICENSE)). Data written for this project: CC0-1.0. No example contains a real secret or a
 real address: attacker addresses use reserved domains such as `.invalid` and `.example`.
 
-The processed dataset in `data/processed/` also contains records taken from two public
-benchmarks, both under the MIT licence:
-[BIPIA](https://github.com/microsoft/BIPIA) (Copyright (c) Microsoft Corporation) and
-[InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) (Copyright (c) 2023 Qiusi Zhan).
-Their original repositories are not included; `corpus build` reads them from your own copy.
+The processed dataset in `data/processed/` also contains
+records from two public benchmarks, [BIPIA](https://github.com/microsoft/BIPIA) and
+[InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) (both MIT). Some BIPIA contexts come
+from WikiTableQuestions and stay under CC BY-SA 4.0. Sources, changes and full licence texts:
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). The original repositories are not included;
+`corpus build` reads them from your own copy.

@@ -102,7 +102,7 @@ no injection examples cannot be calibrated or claimed at all.
 ### BIPIA
 
 - Homepage: https://github.com/microsoft/BIPIA
-- Licence: MIT License (confirmed in the cloned repository); not redistributed here, only loaded from a local clone.
+- Licence: MIT License, Copyright (c) Microsoft Corporation (confirmed in the cloned repository). The processed records in `data/processed/` are redistributed under it; their contexts come from OpenAI Evals (EmailQA, MIT) and WikiTableQuestions (TableQA, CC BY-SA 4.0). See `THIRD_PARTY_NOTICES.md`. The original repository is not included.
 - Citation: Yi et al., Benchmarking and Defending Against Indirect Prompt Injection Attacks on Large Language Models.
 - Acquisition: git clone https://github.com/microsoft/BIPIA into data/raw/bipia (the loader reads data/raw/bipia/benchmark/).
 - Notes: Text (document) channel only. Code-attack subsets are out of scope.
@@ -110,7 +110,7 @@ no injection examples cannot be calibrated or claimed at all.
 ### InjecAgent
 
 - Homepage: https://github.com/uiuc-kang-lab/InjecAgent
-- Licence: MIT License (confirmed in the cloned repository); not redistributed here, only loaded from a local clone.
+- Licence: MIT License, Copyright (c) 2023 Qiusi Zhan (confirmed in the cloned repository). The processed records in `data/processed/` are redistributed under it (see `THIRD_PARTY_NOTICES.md`); the original repository is not included.
 - Citation: Zhan et al., InjecAgent: Benchmarking Indirect Prompt Injections in Tool-Integrated Large Language Model Agents.
 - Acquisition: git clone https://github.com/uiuc-kang-lab/InjecAgent into data/raw/injecagent (the loader reads its data/ directory).
 - Notes: Only the tool-response text is extracted. The benchmark's agent execution harness is out of scope for this project.

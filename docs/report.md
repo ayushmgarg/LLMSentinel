@@ -70,8 +70,9 @@ AI Security Project page for [6].*
 
 ## 3. Data
 
-- **Sources.** BIPIA and InjecAgent (both MIT, cloned locally, never
-  redistributed) plus an authored seed corpus (CC0). Combined (stratified corpus,
+- **Sources.** BIPIA and InjecAgent (both MIT; processed records are shared in the
+  repository with their notices, BIPIA's table contexts under CC BY-SA 4.0 from
+  WikiTableQuestions; see `THIRD_PARTY_NOTICES.md`) plus an authored seed corpus (CC0). Combined (stratified corpus,
   digest `0311c325`): **1,960 records** across all three channels. See Fig.
   `corpus_composition.png` and `docs/corpus_card.md`.
 - **Labels.** Injection = assistant-directed, task-conflicting control text;
