@@ -238,5 +238,9 @@ examples/          sample inputs and the MCP gateway demo
 
 Code: MIT. Data written for this project: CC0-1.0. No example contains a real secret or a
 real address: attacker addresses use reserved domains such as `.invalid` and `.example`.
-The BIPIA and InjecAgent benchmarks are not included; they are loaded from your own copy
-under their own licences.
+
+The processed dataset in `data/processed/` also contains records taken from two public
+benchmarks, both under the MIT licence:
+[BIPIA](https://github.com/microsoft/BIPIA) (Copyright (c) Microsoft Corporation) and
+[InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent) (Copyright (c) 2023 Qiusi Zhan).
+Their original repositories are not included; `corpus build` reads them from your own copy.
