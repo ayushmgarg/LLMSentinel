@@ -36,6 +36,7 @@ from . import __version__
 from .analyst.families import families_from_trace
 from .analyst.review import review_reasons_for
 from .analyst.store import Alert, ScanRecord, ScanStore
+from .models.segment import segments
 from .normalize.units import NormalizedUnit
 from .paths import MODELS_DIR, RESULTS_DIR, relative
 from .policy import CapabilityPolicy, Outcome, PolicyDecision, ProposedAction
@@ -54,6 +55,16 @@ __all__ = [
 ]
 
 _ORDER = {RiskBand.LOW: 0, RiskBand.ELEVATED: 1, RiskBand.HIGH: 2}
+
+
+def load_segment_thresholds(path: str | Path | None = None) -> dict[str, float]:
+    """Dev thresholds for segment scoring (``scripts/select_segment_thresholds.py``)."""
+
+    source = Path(path) if path else RESULTS_DIR / "segment_thresholds.json"
+    if not source.is_file():
+        return {}
+    data = json.loads(source.read_text(encoding="utf-8"))
+    return {key: float(value) for key, value in (data.get("dev") or {}).get("thresholds", {}).items()}
 
 
 def load_dev_thresholds(system: str, path: str | Path | None = None) -> dict[str, float]:
@@ -198,6 +209,8 @@ class Sentinel:
         store: ScanStore | None = None,
         policy: CapabilityPolicy | None = None,
         engine: RuleEngine | None = None,
+        segment_scoring: bool = True,
+        segment_thresholds_path: str | Path | None = None,
     ) -> None:
         if detector not in ("auto", "rules", "transformer"):
             raise ValueError("detector must be 'auto', 'rules' or 'transformer'")
@@ -210,6 +223,13 @@ class Sentinel:
         self.model_thresholds: dict[str, float] = {}
         self.transformer: Any = None
         self.notes: list[str] = []
+        #: "segment": the transformer scores the passage and each sentence and keeps the
+        #: maximum (the deployed default since the fresh-v2 confirmation); "passage" otherwise.
+        self.scoring = "passage"
+        self.segment_scoring = segment_scoring
+        self.segment_thresholds_path = (
+            Path(segment_thresholds_path) if segment_thresholds_path else RESULTS_DIR / "segment_thresholds.json"
+        )
         if not self.rule_thresholds:
             self.notes.append(f"no rules-only dev thresholds in {relative(self.results_path)}; every rule band reads low")
         if detector != "rules":
@@ -234,6 +254,13 @@ class Sentinel:
             return
         self.transformer = TransformerScorer.load(checkpoint)
         self.model_thresholds = thresholds
+        if self.segment_scoring:
+            segment = load_segment_thresholds(self.segment_thresholds_path)
+            if segment:
+                self.model_thresholds = segment
+                self.scoring = "segment"
+            else:
+                self.notes.append("no segment thresholds: the transformer scores whole passages")
 
     @property
     def detector(self) -> str:
@@ -247,6 +274,7 @@ class Sentinel:
             "rules": sorted(rule.rule_id for rule in self.engine.rules),
             "policy": self.policy.config.version,
             "thresholds_source": relative(self.results_path),
+            "scoring": self.scoring if self.transformer is not None else "rules",
         }
 
     # ------------------------------------------------------------ scoring
@@ -270,7 +298,18 @@ class Sentinel:
                     json_path=unit.json_path,
                 )
             )
-        return [float(detail.risk) for detail in self.transformer.score_details(records)]
+        scores = [float(detail.risk) for detail in self.transformer.score_details(records)]
+        if self.scoring == "segment":
+            owner: list[int] = []
+            pieces: list[str] = []
+            for index, unit in enumerate(units):
+                for piece in segments(unit.normalized_text or unit.raw_text):
+                    owner.append(index)
+                    pieces.append(piece)
+            if pieces:
+                for index, value in zip(owner, self.transformer.score_texts(pieces), strict=True):
+                    scores[index] = max(scores[index], float(value))
+        return scores
 
     def _decide(self, verdict: Verdict, model_score: float | None) -> tuple[float, str, bool, str, dict[str, float]]:
         rule_band = verdict.band

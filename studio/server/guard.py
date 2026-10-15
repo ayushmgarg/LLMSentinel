@@ -26,10 +26,11 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
+from llmsentinel.models.segment import segments
 from llmsentinel.normalize.units import NormalizedUnit
 from llmsentinel.rules import RuleEngine
 from llmsentinel.schema import Channel, CorpusRecord, Label
@@ -38,7 +39,7 @@ from llmsentinel.verdict import RiskBand, build_verdict
 from .config import StudioSettings
 from .context import Chunk
 
-__all__ = ["REMOVED_MARKER", "ChunkAssessment", "SentinelGuard", "load_thresholds", "max_band"]
+__all__ = ["REMOVED_MARKER", "ChunkAssessment", "SentinelGuard", "load_segment_thresholds", "load_thresholds", "max_band"]
 
 REMOVED_MARKER = "[removed by LLMSentinel]"
 MAX_SEGMENTS = 80
@@ -55,6 +56,16 @@ def load_thresholds(path: Path, system: str) -> dict[str, float]:
         if entry.get("name") == system and entry.get("dev"):
             return {key: float(value) for key, value in entry["dev"]["thresholds"].items()}
     return {}
+
+
+def load_segment_thresholds(path: Path) -> dict[str, float]:
+    """Dev thresholds for segment scoring, from ``scripts/select_segment_thresholds.py``."""
+
+    path = Path(path)
+    if not path.is_file():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {key: float(value) for key, value in (data.get("dev") or {}).get("thresholds", {}).items()}
 
 
 def max_band(*bands: str | None) -> str:
@@ -164,10 +175,22 @@ class SentinelGuard:
         self.notes: list[str] = []
         if not self.rule_thresholds:
             self.notes.append("No rules-only dev thresholds found in results_dev.json; every rule band reads low.")
+        #: "segment" (max over passage and sentences) or "passage".
+        self.scoring = "passage"
         if self.settings.use_transformer:
             self._load_transformer()
         else:
             self.notes.append("Transformer disabled for this session: using the rules-only detector.")
+        if self.transformer is not None and self.settings.segment_scoring:
+            segment = load_segment_thresholds(self.settings.segment_thresholds_path)
+            if segment:
+                self.model_thresholds = segment
+                self.scoring = "segment"
+            else:
+                self.notes.append(
+                    "No segment thresholds (run scripts/select_segment_thresholds.py): the transformer "
+                    "scores whole passages, which misses injections embedded in benign prose."
+                )
 
     # ----------------------------------------------------------------- setup
     def _load_transformer(self) -> None:
@@ -188,15 +211,17 @@ class SentinelGuard:
         return "transformer + rules" if self.transformer is not None else "rules-only"
 
     def status(self) -> dict[str, Any]:
+        scope = "its riskiest sentence or the whole passage" if self.scoring == "segment" else "the passage"
         rule = (
-            "Flag when the transformer reaches its dev 1%-FPR threshold, or the rule "
-            "engine reaches its dev 0.1%-FPR band."
+            f"Flag when the transformer, scoring {scope}, reaches its dev 1%-FPR threshold, or the "
+            "rule engine reaches its dev 0.1%-FPR band."
             if self.transformer is not None
             else "Flag when the rule engine reaches its dev 1%-FPR threshold."
         )
         return {
             "detector": self.detector,
             "transformer_loaded": self.transformer is not None,
+            "scoring": self.scoring if self.transformer is not None else "rules",
             "decision_rule": rule,
             "rule_thresholds": self.rule_thresholds,
             "model_thresholds": self.model_thresholds if self.transformer is not None else {},
@@ -249,7 +274,22 @@ class SentinelGuard:
                     json_path=json_path,
                 )
             )
-        return list(self.transformer.score_details(records))
+        details = list(self.transformer.score_details(records))
+        if self.scoring != "segment":
+            return details
+        # Segment scoring: a sentence can carry the passage's risk on its own, so a
+        # payload inside benign prose is not masked by the text around it.
+        owner: list[int] = []
+        pieces: list[str] = []
+        for index, (text, _channel, _path, unit) in enumerate(texts):
+            for piece in segments(unit.normalized_text or text):
+                owner.append(index)
+                pieces.append(piece)
+        if pieces:
+            for index, piece, value in zip(owner, pieces, self.transformer.score_texts(pieces), strict=True):
+                if float(value) > float(details[index].risk):
+                    details[index] = replace(details[index], risk=float(value), top_window_text=piece[:200])
+        return details
 
     def _decide(self, rule_band: str, model_detail: Any) -> tuple[bool, str, str | None, float | None, str]:
         if model_detail is None:

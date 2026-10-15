@@ -33,6 +33,10 @@ MAX_TOOLS = 50
 #: Heading of the system-prompt section that lists tools from connected MCP servers.
 MCP_TOOLS_HEADER = "Tools from connected MCP servers (descriptions are provided by those servers):"
 ALLOWED_EXTENSIONS = (".txt", ".md", ".markdown", ".json", ".html", ".htm", ".csv")
+#: What a caller may say a piece of added context is. "auto" (a dropped file) lets
+#: the file type decide; the others are what the paste box sends, so the channel a
+#: chunk is scanned as reflects where the text came from rather than how it parses.
+UPLOAD_KINDS = ("auto", "document", "tool_response", "manifest")
 
 PROVIDER_PRESETS: dict[str, dict[str, str]] = {
     "simulated": {
@@ -136,6 +140,14 @@ class StudioSettings:
     use_transformer: bool = True
     checkpoint: Path = field(default_factory=lambda: MODELS_DIR / "transformer")
     results_path: Path = field(default_factory=lambda: RESULTS_DIR / "results_dev.json")
+    #: Score each sentence as well as the whole passage and keep the maximum, so a
+    #: payload cannot hide inside benign prose. Confirmed on the blind fresh-v2 set
+    #: (docs/EXPERIMENTS.md, 2026-09-27); thresholds are selected on dev by
+    #: scripts/select_segment_thresholds.py. Without that file, passage scoring is used.
+    segment_scoring: bool = True
+    segment_thresholds_path: Path = field(default_factory=lambda: RESULTS_DIR / "segment_thresholds.json")
+    #: Retrieval: "dense" (sentence embeddings) or "tfidf". Detection does not depend on it.
+    retriever: str = "dense"
     top_k: int = 4
     # CPU inference is slow: one qwen3:4b (thinking) answer took 282 s on a 4-core laptop.
     request_timeout_s: float = 600.0
@@ -144,4 +156,7 @@ class StudioSettings:
     #: History database; ``None`` uses the package default (artifacts/analyst/history.sqlite3).
     history_path: Path | None = None
     max_tokens: int = 400
-    temperature: float = 0.2
+    #: 0 so that both runs are decoded the same way: with identical prompts the two
+    #: answers should then match, and any difference is Sentinel's doing. At 0.2 the
+    #: same prompt gave opposite answers in a manual test (2026-10-11).
+    temperature: float = 0.0

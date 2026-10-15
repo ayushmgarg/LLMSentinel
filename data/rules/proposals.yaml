@@ -1,0 +1,6 @@
+# Candidate rules mined from reviewed analyst cases (append-only, advisory).
+# Written by llmsentinel.analyst.proposals; nothing here is part of the scored
+# detector. An approved candidate runs only in the advisory engine
+# (llmsentinel rules check). See docs/research_boundary.md.
+version: 1
+proposals: []

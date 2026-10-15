@@ -9,7 +9,7 @@ across the three columns.
 
 Deterministic and offline: no network, no credentials. The payload uses a
 reserved ``.invalid`` destination and a placeholder token, exactly like the
-demo fixtures.
+other authored fixtures.
 
     python scripts/placement_robustness.py            # rules-only
     python scripts/placement_robustness.py --checkpoint artifacts/models/transformer

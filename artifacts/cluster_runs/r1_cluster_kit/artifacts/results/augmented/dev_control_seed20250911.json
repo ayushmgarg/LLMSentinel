@@ -1,0 +1,230 @@
+{
+  "run": "control",
+  "seed": 20250911,
+  "epochs": 3,
+  "trained_at": "2026-10-13T06:26:16+00:00",
+  "minutes": 0.9,
+  "device": "cuda",
+  "corpus_digest": "0311c325d3ecaa8d",
+  "augmented_digest": null,
+  "train_records": 1479,
+  "checkpoint": "artifacts/models/transformer_control_seed20250911",
+  "dev": {
+    "passage": {
+      "system": "transformer",
+      "split": "dev",
+      "n": 235,
+      "positives": 80,
+      "negatives": 155,
+      "auprc": 0.9497855592246696,
+      "auroc": 0.9678225806451615,
+      "positive_rate": 0.3404255319148936,
+      "tpr_at_fpr": {
+        "fpr=0.01": 0.7375,
+        "fpr=0.001": 0.7375
+      },
+      "thresholds": {
+        "fpr=0.01": 0.9994310736656189,
+        "fpr=0.001": 0.9994310736656189
+      },
+      "fpr_achieved": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "fpr_budget_exceeded": {
+        "fpr=0.01": false,
+        "fpr=0.001": false
+      },
+      "hard_negative_fpr": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "per_channel": {
+        "rag_document": {
+          "n": 142.0,
+          "positives": 54.0,
+          "auprc": 0.9687750571981304,
+          "auroc": 0.9772727272727273,
+          "recall@fpr=0.01": 0.7962962962962963,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.7962962962962963,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_metadata": {
+          "n": 19.0,
+          "positives": 5.0,
+          "auprc": 0.7392857142857143,
+          "auroc": 0.8714285714285714,
+          "recall@fpr=0.01": 0.4,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.4,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_response": {
+          "n": 74.0,
+          "positives": 21.0,
+          "auprc": 0.9313753773550963,
+          "auroc": 0.9649595687331536,
+          "recall@fpr=0.01": 0.6666666666666666,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.6666666666666666,
+          "fpr@fpr=0.001": 0.0
+        }
+      },
+      "per_dataset": {},
+      "per_attack_recall": {
+        "fpr=0.01": {
+          "meta_instruction": 0.8,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.4,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.625,
+          "obfuscation__support": 40.0,
+          "unknown": 1.0,
+          "unknown__support": 20.0
+        },
+        "fpr=0.001": {
+          "meta_instruction": 0.8,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.4,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.625,
+          "obfuscation__support": 40.0,
+          "unknown": 1.0,
+          "unknown__support": 20.0
+        }
+      },
+      "confusion": {
+        "fpr=0.01": {
+          "tp": 59,
+          "fp": 0,
+          "tn": 155,
+          "fn": 21
+        },
+        "fpr=0.001": {
+          "tp": 59,
+          "fp": 0,
+          "tn": 155,
+          "fn": 21
+        }
+      },
+      "latency_ms": {},
+      "ci": {
+        "auprc": [
+          0.9134930599272628,
+          0.974189761540485
+        ]
+      },
+      "notes": [],
+      "warnings": []
+    },
+    "segment": {
+      "system": "transformer-segment",
+      "split": "dev",
+      "n": 235,
+      "positives": 80,
+      "negatives": 155,
+      "auprc": 0.9417596639528432,
+      "auroc": 0.9648790322580645,
+      "positive_rate": 0.3404255319148936,
+      "tpr_at_fpr": {
+        "fpr=0.01": 0.6375,
+        "fpr=0.001": 0.6375
+      },
+      "thresholds": {
+        "fpr=0.01": 0.999843955039978,
+        "fpr=0.001": 0.999843955039978
+      },
+      "fpr_achieved": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "fpr_budget_exceeded": {
+        "fpr=0.01": false,
+        "fpr=0.001": false
+      },
+      "hard_negative_fpr": {
+        "fpr=0.01": 0.0,
+        "fpr=0.001": 0.0
+      },
+      "per_channel": {
+        "rag_document": {
+          "n": 142.0,
+          "positives": 54.0,
+          "auprc": 0.9618154725434864,
+          "auroc": 0.9735900673400675,
+          "recall@fpr=0.01": 0.7407407407407407,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.7407407407407407,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_metadata": {
+          "n": 19.0,
+          "positives": 5.0,
+          "auprc": 0.75,
+          "auroc": 0.8714285714285714,
+          "recall@fpr=0.01": 0.0,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.0,
+          "fpr@fpr=0.001": 0.0
+        },
+        "tool_response": {
+          "n": 74.0,
+          "positives": 21.0,
+          "auprc": 0.9309513575749818,
+          "auroc": 0.9694519317160827,
+          "recall@fpr=0.01": 0.5238095238095238,
+          "fpr@fpr=0.01": 0.0,
+          "recall@fpr=0.001": 0.5238095238095238,
+          "fpr@fpr=0.001": 0.0
+        }
+      },
+      "per_dataset": {},
+      "per_attack_recall": {
+        "fpr=0.01": {
+          "meta_instruction": 0.5333333333333333,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.575,
+          "obfuscation__support": 40.0,
+          "unknown": 1.0,
+          "unknown__support": 20.0
+        },
+        "fpr=0.001": {
+          "meta_instruction": 0.5333333333333333,
+          "meta_instruction__support": 15.0,
+          "metadata_poisoning": 0.0,
+          "metadata_poisoning__support": 5.0,
+          "obfuscation": 0.575,
+          "obfuscation__support": 40.0,
+          "unknown": 1.0,
+          "unknown__support": 20.0
+        }
+      },
+      "confusion": {
+        "fpr=0.01": {
+          "tp": 51,
+          "fp": 0,
+          "tn": 155,
+          "fn": 29
+        },
+        "fpr=0.001": {
+          "tp": 51,
+          "fp": 0,
+          "tn": 155,
+          "fn": 29
+        }
+      },
+      "latency_ms": {},
+      "ci": {
+        "auprc": [
+          0.9087885397740972,
+          0.96936657374521
+        ]
+      },
+      "notes": [],
+      "warnings": []
+    }
+  }
+}

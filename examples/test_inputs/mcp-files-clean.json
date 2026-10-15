@@ -1,0 +1,26 @@
+{
+  "server": "files-mcp",
+  "tools": [
+    {
+      "name": "read_file",
+      "description": "Read a text file from the user's workspace and return its contents.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "Workspace-relative path of the file." }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "list_files",
+      "description": "List files in a workspace folder.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "folder": { "type": "string", "description": "Folder to list, for example docs/." }
+        }
+      }
+    }
+  ]
+}

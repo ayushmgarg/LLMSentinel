@@ -1,0 +1,21 @@
+# LLMSentinel, Altair round 1: everything in docs/CLUSTER_RUN.md, as one plan.
+# One step per line:   name | flags | python script and arguments (run from the project folder)
+# flags: fatal  stop the whole job if this step fails
+#        llm    needs the model server; it is started before the first such step
+#        pack   no command: build the results and models zips now
+# {LLM_URL} and {LLM_NAME} are filled in by the job script. No quotes or globs in arguments.
+# Re-running the same zip skips finished steps. fresh_v3 can only ever succeed once: the
+# score-once ledger lives outside the round (BASE/ledger) and refuses a second scoring.
+
+preflight     | fatal | altair/preflight.py
+augment_check | fatal | scripts/augment_embedded.py --check
+hardening     | fatal | scripts/ood_eval.py train --held-out both --device cuda
+augmented     | fatal | scripts/train_augmented.py --seeds 20250909,20250910,20250911 --control --device cuda
+calibration   |       | scripts/calibrate_per_source.py --transformer
+fresh_v3      |       | scripts/fresh_eval.py --fresh data/fresh/fresh_eval_v3.yaml --out artifacts/results/fresh_v3 --extra augmented_s1=artifacts/models/transformer_augmented_seed20250909 --extra augmented_s2=artifacts/models/transformer_augmented_seed20250910 --extra augmented_s3=artifacts/models/transformer_augmented_seed20250911 --extra control_s1=artifacts/models/transformer_control_seed20250909 --extra control_s2=artifacts/models/transformer_control_seed20250910 --extra control_s3=artifacts/models/transformer_control_seed20250911 --compare augmented_s1:control_s1 --compare augmented_s2:control_s2 --compare augmented_s3:control_s3
+pack_core     | pack  |
+real_model    | llm   | scripts/real_model_eval.py --base-url {LLM_URL} --model {LLM_NAME} --timeout 900
+para_fresh    | llm   | scripts/paraphrase_attacks.py generate --source fresh --variants 3 --base-url {LLM_URL} --model {LLM_NAME}
+para_measure  |       | scripts/paraphrase_attacks.py measure
+para_train    | llm   | scripts/paraphrase_attacks.py generate --source train --variants 2 --base-url {LLM_URL} --model {LLM_NAME}
+

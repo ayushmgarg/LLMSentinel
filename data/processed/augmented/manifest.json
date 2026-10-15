@@ -1,0 +1,35 @@
+{
+  "digest": "9a115633639334e1",
+  "corpus": "data/processed/corpus.jsonl",
+  "corpus_digest": "0311c325d3ecaa8d",
+  "train_records": 1479,
+  "requested": 900,
+  "produced": 900,
+  "seed": 20250909,
+  "hosts_available": {
+    "rag_document": 404,
+    "tool_response": 220
+  },
+  "payloads_available": 763,
+  "distinct_payload_texts_available": 128,
+  "distinct_payload_texts_used": 125,
+  "max_uses_of_one_payload": 30,
+  "by_cell": {
+    "rag_document:start": 150,
+    "rag_document:middle": 150,
+    "rag_document:end": 150,
+    "tool_response:start": 150,
+    "tool_response:middle": 150,
+    "tool_response:end": 150
+  },
+  "train_positions_before": {
+    "rag_document:end": 277,
+    "rag_document:middle": 14,
+    "rag_document:start": 24,
+    "tool_metadata:end": 14,
+    "tool_metadata:start": 9,
+    "tool_response:start": 51,
+    "tool_response:end": 47,
+    "tool_response:middle": 350
+  }
+}

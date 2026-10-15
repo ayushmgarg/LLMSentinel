@@ -1,0 +1,13 @@
+
+=== injecagent: calibration 0 (0 clean used), evaluation 1070 (1054 injections)
+  no clean page in the calibration half: the source's clean hosts all share documents with injected copies, so the connected-component split cannot separate them
+
+=== bipia: calibration 736 (396 clean used), evaluation 643 (260 injections)
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 59521.82it/s]
+  rules-only           eval AUPRC 0.426 | dev threshold: recall 0.019 FPR 0.013 | calibrated: recall 0.000 FPR 0.000
+  tfidf-word+char      eval AUPRC 0.531 | dev threshold: recall 0.000 FPR 0.000 | calibrated: recall 0.004 FPR 0.003
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (913 > 512). Running this sequence through the model will result in indexing errors
+  transformer          eval AUPRC 0.616 | dev threshold: recall 0.008 FPR 0.000 | calibrated: recall 0.015 FPR 0.003
+  transformer-segment  eval AUPRC 0.629 | dev threshold: recall 0.008 FPR 0.000 | calibrated: recall 0.008 FPR 0.005
+
+wrote artifacts/results/calibration/per_source.json

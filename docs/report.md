@@ -77,7 +77,8 @@ AI Security Project page for [6].*
 - **Labels.** Injection = assistant-directed, task-conflicting control text;
   merely discussing attacks is benign. Guideline in
   `docs/annotation_guideline.md`; independent double-annotation with Cohen's κ in
-  `docs/annotation_study.md`. Hard negatives are ≥25% of benign records.
+  `docs/annotation_study.md` — by two LLM annotators given only the guideline, so it
+  measures guideline clarity, not human inter-annotator agreement. Hard negatives are ≥25% of benign records.
 - **Splits.** Grouped by payload family *and* host document; no group crosses
   train/dev/test; leakage audited (`llmsentinel corpus check`). Split seed chosen
   on corpus structure before any model existed.
@@ -108,6 +109,10 @@ AI Security Project page for [6].*
   overlapping windows for long text, scored by the max window; class-weighted
   loss; span-aware window labelling (windows labelled positive only where the
   injected span lands). See `docs/EXPERIMENTS.md` for checkpoint provenance.
+  **Deployed scoring (since 2026-09-27):** the same checkpoint scores the passage
+  *and each of its sentences* (JSON: each string leaf's sentences) and keeps the
+  maximum, with thresholds re-selected on dev — no retraining. Motivated by the
+  fresh-set failure in §6b and confirmed on a second blind set.
 - **Fusion.** Logistic regression over rule features + the transformer
   probability, fitted on dev with grouped (family+host) out-of-fold predictions
   for honest dev reporting. Output used directly for thresholding; not separately
@@ -115,6 +120,10 @@ AI Security Project page for [6].*
 - **Verdict → policy.** The verdict (risk, band, spans, reasons, provenance)
   feeds a deterministic table keyed by (action class × risk band). The detector
   advises; the policy decides; the policy package contains no callables.
+- **Output-side check.** After the model answers, a second line of defence looks
+  for a claim the untrusted context told the answerer to make, a destination taken
+  from flagged or untrusted text, or a leaked secret, using run-time evidence only;
+  high findings withhold the answer (§6b).
 
 ## 5. Evaluation setup
 
@@ -123,7 +132,12 @@ AI Security Project page for [6].*
   Realised FPR is reported next to the target and flagged when the budget is
   missed.
 - **Metrics.** AUPRC (primary), AUROC (comparison only), TPR@1% and @0.1% FPR,
-  hard-negative FPR, per-channel / per-dataset / per-attack, bootstrap CIs.
+  hard-negative FPR, per-channel / per-dataset / per-attack. *Correction
+  (2026-09-27):* earlier versions listed bootstrap CIs here, but the canonical runs
+  used `--bootstrap 0` and saved no per-record test scores, so the canonical test
+  numbers carry **no** confidence interval and no significance test; re-scoring test
+  to add them would break the score-once protocol. CIs and paired tests are reported
+  for dev and the fresh sets (§6b).
 
 ## 6. Results
 
@@ -207,6 +221,35 @@ Transformer rows are the mean ± std over three seeds.
   `assert_over_source` records (highest score 0.34, threshold 0.9954), while the
   answer-shaping rule fires on all 9.
 
+### 6b. Fresh evaluation sets and segment-level scoring (2026-09-27)
+
+Full protocol and tables: `docs/fresh_evaluation.md`. Two small authored sets, each
+frozen by commit before it was scored and scored once: **v1** (107 records, 54
+injections) and **v2** (52 records, 24 injections), the latter written *after* v1
+exposed a failure and *before* the fix for it existed.
+
+- **The deployed decision rule had never been scored.** On v1 it caught 20% of
+  injections at 3.8% FPR (dev: 82.5% at 0.6%); the transformer's v1 AUPRC was 0.661
+  [0.540, 0.789] and it was significantly *worse* than TF-IDF word+char on v1
+  (−0.141 [−0.267, −0.009], p = 0.04).
+- **Diagnosis: benign prose masks an embedded instruction.** Seven blatant payloads
+  scored 0.996–1.000 alone and 0.000–0.050 inside their benign paragraph. The documents
+  fit in one window, so max-over-windows could not help; JSON results escaped because
+  each leaf is scored separately.
+- **Fix, confirmed blind.** Segment scoring (max over the passage and its sentences,
+  same checkpoint, thresholds from dev) lifted v2 AUPRC from 0.748 to **0.865**
+  (paired Δ +0.117 [0.027, 0.227], p = 0.007) and the deployed rule's recall from 0.208 to
+  **0.458** with no false positive (McNemar 6 vs 0, p = 0.031). It costs 0.026 dev AUPRC,
+  raises v1 hard-negative false positives from 1/20 to 3/20, and 2.4× the per-passage
+  latency (108 → 256 ms on a laptop CPU). It is now the deployed default.
+- **Isolation is not the bottleneck.** On v2, every flagged injection was fully removed
+  with 97.7% of the genuine text kept and no benign text removed; the limit is how many
+  are flagged.
+- **Still open.** Paraphrased injections (1 of 6 on v2) and soft claims (1 of 6) are
+  mostly missed by the model; the output-side check extracted 8 of 10 v1 soft claims
+  (extractor before its later fixes), and an answer that repeats one is repaired —
+  the planted sentence removed and the model asked again — or withheld.
+
 ## 7. Robustness (§12)
 
 Full report in `docs/robustness.md`. Recall *kept* from a baseline of detected
@@ -265,6 +308,11 @@ scoring into the aggregate).
   (`assert_over_source`) scored at most 0.34. The rule's weight is a prior: it fires on
   one record in the canonical corpus, so dev gives it no support (dev metrics were
   byte-identical before and after adding it).
+- **The canonical test result overstates prose robustness.** The 0.984 is real for the
+  test split, but a passage-level transformer missed injections embedded in unseen
+  benign prose (§6b); the placement probe for the transformer that would have shown this
+  was never run before the numbers were reported. Segment scoring recovers part of it;
+  the fresh sets are small (24–54 injections) and authored by the project.
 - **Dev thresholds do not survive a change of source.** In-distribution the
   transformer's dev 1% threshold already over-admits on test (2.74%); on a held-out
   benchmark it catches 0–9% of injections. Any real deployment would need to calibrate
@@ -296,9 +344,15 @@ server-side authorisation.
 
 A provenance-aware detector plus a deterministic capability gate catches
 indirect prompt injection across three channels and turns the risk into an
-auditable action decision, with an honest account of where it fails. The
-strongest next steps are removing the source confound (stratified re-split +
-retrain) and validating calibration.
+auditable action decision, with an honest account of where it fails. The source
+confound was removed by the stratified re-split (§9). What the later fresh sets
+showed is sharper: the canonical 0.984 overstated how the passage-level transformer
+handles an instruction embedded in ordinary prose it has not seen, and the
+operating points do not survive a change of source. Segment-level scoring (§6b)
+recovers part of that without retraining; paraphrased attacks, soft claims and
+threshold transfer remain the open problems, and the next steps are per-source
+threshold calibration, retraining with more varied hosts and phrasings, and a
+real-model end-to-end evaluation.
 
 ## Reproduce
 

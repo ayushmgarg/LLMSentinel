@@ -1,11 +1,11 @@
-/* LLMSentinel Studio front-end.
-   Every string that comes from a document, a model or the server is rendered with
-   textContent / text nodes, never innerHTML: the context being inspected is hostile
-   by assumption, and the server's CSP forbids inline script anyway. */
+/* LLMSentinel Studio: the demo page (console, results, analyst workflow).
+
+   Shared helpers -- $, el, icon, tag, api, toast, theme -- live in common.js,
+   which every page loads first. Every string that comes from a document, a model
+   or the server is rendered with textContent, never innerHTML: the context being
+   inspected is hostile by assumption. */
 
 "use strict";
-
-const $ = (selector, root = document) => root.querySelector(selector);
 
 const state = {
   presets: {},
@@ -18,6 +18,7 @@ const state = {
   selected: new Set(),
   selectedManifests: new Set(),
   uploads: [],
+  pasted: 0,
   maxUploads: 12,
   providerEdits: {},
   running: false,
@@ -36,34 +37,6 @@ const INDICATOR_TEXT = {
 };
 
 /* ------------------------------------------------------------------ helpers */
-function el(tag, options = {}, children = []) {
-  const node = document.createElement(tag);
-  if (options.className) node.className = options.className;
-  if (options.text !== undefined && options.text !== null) node.textContent = String(options.text);
-  for (const [key, value] of Object.entries(options.attrs || {})) {
-    if (value !== undefined && value !== null && value !== false) node.setAttribute(key, value === true ? "" : String(value));
-  }
-  for (const child of [].concat(children)) {
-    if (child === null || child === undefined || child === false) continue;
-    node.append(child instanceof Node ? child : document.createTextNode(String(child)));
-  }
-  return node;
-}
-
-function icon(name, className = "icon") {
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", className);
-  svg.setAttribute("aria-hidden", "true");
-  const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-  use.setAttribute("href", `#${name}`);
-  svg.append(use);
-  return svg;
-}
-
-function tag(text, tone = "neutral", iconName = null, extra = "") {
-  return el("span", { className: `tag tag--${tone} ${extra}`.trim() }, [iconName ? icon(iconName) : null, text]);
-}
-
 function pct(value) {
   return value === null || value === undefined ? "n/a" : Number(value).toFixed(3);
 }
@@ -71,84 +44,6 @@ function pct(value) {
 function formatMs(ms) {
   if (ms === null || ms === undefined) return "";
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${Math.round(ms)} ms`;
-}
-
-function plural(n, word) {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
-}
-
-async function api(path, body) {
-  const options = body === undefined
-    ? { headers: { Accept: "application/json" } }
-    : { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) };
-  let response;
-  try {
-    response = await fetch(path, options);
-  } catch (error) {
-    throw Object.assign(new Error("The Studio server is not reachable."), { hint: "Is `python -m studio.server` still running?" });
-  }
-  let data = {};
-  try {
-    data = await response.json();
-  } catch (error) {
-    data = {};
-  }
-  if (!response.ok) {
-    throw Object.assign(new Error(data.error || `Request failed (HTTP ${response.status}).`), { hint: data.hint || "" });
-  }
-  return data;
-}
-
-function toast(title, message = "", tone = "neutral") {
-  const region = $("#toast-region");
-  const node = el("div", { className: `toast toast--${tone}`, attrs: { role: tone === "danger" ? "alert" : "status" } }, [
-    el("strong", { text: title }),
-    message ? el("span", { text: message }) : null,
-  ]);
-  region.append(node);
-  setTimeout(() => {
-    node.classList.add("toast--out");
-    setTimeout(() => node.remove(), 300);
-  }, tone === "danger" ? 7000 : 4000);
-}
-
-/* ------------------------------------------------------------------- theme */
-const THEME_KEY = "llmsentinel-studio-theme";
-
-function storedTheme() {
-  try {
-    const value = localStorage.getItem(THEME_KEY);
-    return value === "light" || value === "dark" ? value : null;
-  } catch (error) {
-    return null; // private window or blocked storage
-  }
-}
-
-function systemTheme() {
-  return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
-}
-
-function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  const button = $("#theme-toggle");
-  if (!button) return;
-  const dark = theme === "dark";
-  button.replaceChildren(icon(dark ? "i-sun" : "i-moon"));
-  button.setAttribute("aria-label", dark ? "Switch to the light theme" : "Switch to the dark theme");
-  button.setAttribute("title", button.getAttribute("aria-label"));
-}
-
-function initTheme() {
-  applyTheme(storedTheme() || systemTheme());
-  $("#theme-toggle").addEventListener("click", () => {
-    const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    try {
-      localStorage.setItem(THEME_KEY, next);
-    } catch (error) {
-      /* not stored; the choice still applies to this tab */
-    }
-    applyTheme(next);
-  });
 }
 
 /* ---------------------------------------------------------------- detector */
@@ -199,33 +94,6 @@ function thresholdText(detector) {
     return `transformer ≥ ${fixed(model["fpr=0.01"])} or rules ≥ ${fixed(rules["fpr=0.001"])}`;
   }
   return `rules ≥ ${fixed(rules["fpr=0.01"])}`;
-}
-
-/* Headline numbers come from the evaluation outputs, not from the markup. */
-function applyEvidence(evidence) {
-  if (!evidence) return;
-  const set = (selector, value) => {
-    const node = $(selector);
-    if (node && value !== undefined && value !== null) node.textContent = Number(value).toFixed(3);
-  };
-  set("#stat-test-auprc", evidence.test_auprc);
-  set("#stat-test-recall", evidence.test_tpr_at_1pct_fpr);
-  const recallLabel = $("#stat-test-recall-label");
-  if (recallLabel && evidence.test_realised_fpr_at_1pct !== undefined && evidence.test_realised_fpr_at_1pct !== null) {
-    const realised = Number(evidence.test_realised_fpr_at_1pct);
-    const over = realised > 0.01 ? ", over budget" : "";
-    recallLabel.textContent = `test recall at the dev 1%-FPR threshold (realised test FPR ${(realised * 100).toFixed(1)}%${over})`;
-  }
-  // The seed mean is stored as 0.9515; rounding it to three places would print a
-  // different number from the one the docs quote, so show the stored precision.
-  const exact = (value) => Number(value).toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
-  const dev = $("#stat-dev-auprc");
-  if (dev && evidence.dev_auprc_mean !== undefined && evidence.dev_auprc_mean !== null) {
-    dev.replaceChildren(document.createTextNode(exact(evidence.dev_auprc_mean)));
-    if (evidence.dev_auprc_std !== undefined && evidence.dev_auprc_std !== null) {
-      dev.append(el("small", { text: ` ± ${exact(evidence.dev_auprc_std)}` }));
-    }
-  }
 }
 
 /* ---------------------------------------------------------------- provider */
@@ -480,7 +348,7 @@ async function addFiles(fileList) {
       continue;
     }
     state.uploads = state.uploads.filter((u) => u.name !== file.name);
-    state.uploads.push({ name: file.name, content });
+    state.uploads.push({ name: file.name, content, kind: "auto" });
   }
   renderUploads();
 }
@@ -492,7 +360,13 @@ function renderUploads() {
       state.uploads = state.uploads.filter((u) => u !== upload);
       renderUploads();
     });
-    return el("li", { className: "chip" }, [icon(KIND_ICON[extensionOf(upload.name).slice(1)] || "i-file"), el("span", { text: upload.name }), remove]);
+    const kindNote = upload.kind && upload.kind !== "auto" ? el("span", { className: "chip__kind", text: PASTE_KIND_LABEL[upload.kind] }) : null;
+    return el("li", { className: "chip" }, [
+      icon(upload.kind === "manifest" ? "i-layers" : KIND_ICON[extensionOf(upload.name).slice(1)] || "i-file"),
+      el("span", { text: upload.name }),
+      kindNote,
+      remove,
+    ]);
   }));
   updateCount();
 }
@@ -513,6 +387,70 @@ function wireDropzone() {
     addFiles(input.files);
     input.value = "";
   });
+}
+
+
+/* ------------------------------------------------------------------- paste */
+/* Saving a .txt file to try one passage is tedious, so text can be pasted -- but
+   then nothing about a filename says what it is, and "a tool returned this" is a
+   fact about provenance, not about whether the text parses as JSON. The dropdown
+   is that fact: it sets the channel the passage is scanned as. */
+const PASTE_KIND_LABEL = {
+  document: "pasted document",
+  tool_response: "pasted tool result",
+  manifest: "pasted tool manifest",
+};
+
+function uniqueName(name) {
+  let candidate = name;
+  let n = 2;
+  while (state.uploads.some((upload) => upload.name === candidate)) {
+    const dot = name.lastIndexOf(".");
+    candidate = dot === -1 ? `${name}-${n}` : `${name.slice(0, dot)}-${n}${name.slice(dot)}`;
+    n += 1;
+  }
+  return candidate;
+}
+
+function parsedJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return undefined;
+  }
+}
+
+function addPasted() {
+  const kind = $("#paste-kind").value;
+  const content = $("#paste-text").value;
+  if (!content.trim()) {
+    toast("Nothing to add", "Paste the text first.", "danger");
+    $("#paste-text").focus();
+    return;
+  }
+  if (state.uploads.length >= state.maxUploads) {
+    toast("Context limit reached", `At most ${state.maxUploads} added items per comparison.`, "danger");
+    return;
+  }
+  if (new Blob([content]).size > MAX_BYTES) {
+    toast("Too long", "Pasted text is limited to 2 MB.", "danger");
+    return;
+  }
+  const data = parsedJson(content);
+  if (kind === "manifest" && !(data && !Array.isArray(data) && Array.isArray(data.tools))) {
+    toast("That is not a tool manifest", 'A manifest is a JSON object with a top-level "tools" list.', "danger");
+    return;
+  }
+  const isJson = kind === "manifest" || (kind === "tool_response" && data !== undefined);
+  state.pasted += 1;
+  const typed = $("#paste-name").value.trim();
+  const fallback = `pasted-${state.pasted}${isJson ? ".json" : ".txt"}`;
+  const name = uniqueName(typed ? (/\.[a-z]+$/i.test(typed) ? typed : typed + (isJson ? ".json" : ".txt")) : fallback);
+  state.uploads.push({ name, content, kind });
+  $("#paste-text").value = "";
+  $("#paste-name").value = "";
+  renderUploads();
+  toast("Added to the context", `${name} · ${PASTE_KIND_LABEL[kind]}`, "success");
 }
 
 /* ---------------------------------------------------------------- question */
@@ -541,17 +479,19 @@ function showSkeleton() {
   $("#results-empty").hidden = true;
   $("#results-body").replaceChildren(
     el("div", { className: "skeleton skeleton--banner" }),
-    el("div", { className: "compare" }, [el("div", { className: "skeleton skeleton--panel" }), el("div", { className: "skeleton skeleton--panel" })]),
+    el("div", { className: "skeleton skeleton--panel" }),
     el("div", { className: "skeleton skeleton--panel" }),
   );
 }
 
 const TONE_ICON = { success: "i-shield-check", danger: "i-alert", warning: "i-shield", neutral: "i-info" };
 
+const RETRIEVAL_TEXT = { dense: "semantic", tfidf: "keyword" };
+
 function renderBanner(result) {
   const summary = result.summary;
   const bits = [
-    `${plural(summary.retrieved, "passage")} retrieved`,
+    `${plural(summary.retrieved, "passage")} retrieved${result.retrieval ? ` (${RETRIEVAL_TEXT[result.retrieval.method] || result.retrieval.method})` : ""}`,
     `${summary.flagged} flagged`,
     `${summary.stripped} stripped`,
     `${summary.withheld} withheld`,
@@ -559,11 +499,13 @@ function renderBanner(result) {
     `Sentinel ${formatMs(result.sentinel.latency_ms)}`,
     result.detector.detector,
   ].filter(Boolean);
+  const notes = (result.retrieval && result.retrieval.notes) || [];
   return el("div", { className: `banner banner--${summary.tone}`, attrs: { role: "status" } }, [
     icon(TONE_ICON[summary.tone] || "i-info", "icon icon--lg"),
     el("div", {}, [
       el("p", { className: "banner__headline", text: summary.headline }),
       el("p", { className: "banner__meta", text: bits.join(" · ") }),
+      notes.length ? el("p", { className: "banner__meta", text: notes.join(" ") }) : null,
     ]),
   ]);
 }
@@ -784,6 +726,62 @@ function renderActions(actions, guarded) {
   ]);
 }
 
+const OUTPUT_KIND = {
+  planted_claim: "Planted claim repeated",
+  flagged_destination: "Address from flagged text",
+  directed_destination: "Address the context told an AI to send data to",
+  context_destination: "Address from untrusted context",
+  secret: "Secret",
+  system_prompt_leak: "System prompt reproduced",
+};
+
+/* The output-side check runs after the model answers, on both runs. On the guarded
+   run it withholds; on the unguarded run it only shows what it would have caught. */
+/* After a repair the delivered answer is the second one; show what was removed and
+   what the first answer said, so the retry is never invisible. */
+function renderRepair(repair) {
+  const box = el("div", {}, [
+    el("p", { className: "label", text: repair.succeeded
+      ? "Output check: the first answer followed an instruction in the context, so LLMSentinel removed it and asked again"
+      : "Output check: removed the instruction and asked again, but the second answer was not clean either" }),
+    el("ul", { className: "reasons" }, repair.removed.map((s) => el("li", {}, [el("strong", { text: "Removed: " }), s]))),
+    el("ul", { className: "reasons" }, repair.first_findings.map((f) => el("li", {}, [
+      el("strong", { text: `${OUTPUT_KIND[f.kind] || f.kind} (${f.severity}): ` }), f.evidence,
+    ]))),
+  ]);
+  if (repair.first_answer) {
+    box.append(el("details", { className: "prompt" }, [
+      el("summary", {}, [icon("i-eye"), "The first answer, before the repair"]),
+      el("pre", { className: "code code--removed", text: repair.first_answer }),
+    ]));
+  }
+  return box;
+}
+
+function renderOutputCheck(side, guarded) {
+  if (guarded && side.output_repair) return renderRepair(side.output_repair);
+  const check = side.output_check;
+  if (!check || !check.findings.length) return null;
+  const withheld = guarded && check.withhold;
+  const title = withheld
+    ? "Output check: answer withheld"
+    : guarded ? "Output check: noted, not withheld" : "Output check (would have caught)";
+  const box = el("div", {}, [
+    el("p", { className: "label", text: title }),
+    el("ul", { className: "reasons" }, check.findings.map((f) => el("li", {}, [
+      el("strong", { text: `${OUTPUT_KIND[f.kind] || f.kind} (${f.severity}): ` }), f.evidence,
+      f.source ? el("span", { className: "muted", text: ` · ${f.source}` }) : null,
+    ]))),
+  ]);
+  if (withheld && side.answer_before_output_check) {
+    box.append(el("details", { className: "prompt" }, [
+      el("summary", {}, [icon("i-eye"), "What the model had written"]),
+      el("pre", { className: "code code--removed", text: side.answer_before_output_check }),
+    ]));
+  }
+  return box;
+}
+
 function renderSide(side, guarded) {
   const title = guarded ? "With LLMSentinel" : "Without Sentinel";
   if (!side.ok) {
@@ -814,6 +812,8 @@ function renderSide(side, guarded) {
       ]))),
     ]));
   }
+  const outputCheck = renderOutputCheck(side, guarded);
+  if (outputCheck) body.append(outputCheck);
   const actions = renderActions(side.actions, guarded);
   if (actions) body.append(actions);
   if (side.notes && side.notes.length) {
@@ -852,9 +852,10 @@ function renderResults(result) {
         el("p", { className: "fine muted", text: (result.detector.notes || []).join(" ") }),
       ]),
     ]) : null,
-    el("div", { className: "compare" }, [renderSide(result.unguarded, false), renderSide(result.guarded, true)]),
-    result.manifests && result.manifests.tools.length ? renderManifestPanel(result) : null,
+    renderSide(result.unguarded, false),
+    renderSide(result.guarded, true),
     result.sentinel.chunks.length ? renderInspection(result) : null,
+    result.manifests && result.manifests.tools.length ? renderManifestPanel(result) : null,
   ].filter(Boolean));
 }
 
@@ -882,6 +883,7 @@ async function runComparison() {
       provider: providerConfig(),
       top_k: Number($("#top-k").value),
       max_tokens: Number($("#max-tokens").value) || undefined,
+      retriever: $("#retriever").value,
     });
     renderResults(result);
     $("#results").focus({ preventScroll: true });
@@ -1210,7 +1212,6 @@ function initAnalyst() {
 
 /* -------------------------------------------------------------------- init */
 async function init() {
-  initTheme();
   initAnalyst();
   document.querySelectorAll('input[name="provider"]').forEach((radio) => radio.addEventListener("change", () => applyProvider(radio.value)));
   $("#base-url").addEventListener("input", rememberEdit);
@@ -1245,6 +1246,7 @@ async function init() {
     }
   });
   wireDropzone();
+  $("#paste-add").addEventListener("click", addPasted);
 
   try {
     const [health, samples] = await Promise.all([api("/api/health"), api("/api/samples")]);
@@ -1253,11 +1255,11 @@ async function init() {
     state.defaultMaxTokens = health.default_max_tokens || state.defaultMaxTokens;
     state.questions = health.questions || [];
     state.maxUploads = (health.limits && health.limits.max_uploads) || state.maxUploads;
+    if (health.retrieval && health.retrieval.default) $("#retriever").value = health.retrieval.default;
     state.samples = samples.items || [];
     state.samples.forEach((s) => state.selected.add(s.doc_id));
     state.manifests = samples.manifests || [];
     state.manifests.forEach((m) => state.selectedManifests.add(m.manifest_id));
-    applyEvidence(health.evidence);
     renderDetector(health.detector);
     renderSamples();
     renderManifests();

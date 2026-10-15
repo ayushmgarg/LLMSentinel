@@ -45,6 +45,8 @@ _SECRET = re.compile(
     r"\b(?:sk-[A-Za-z0-9_-]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,}"
     r"|(?=[A-Za-z0-9_-]*\d)(?=[A-Za-z0-9_-]*[A-Za-z])[A-Za-z0-9_-]{32,})\b"
 )
+#: Secret-shaped tokens; shared with the output-side check.
+SECRET_PATTERN = _SECRET
 
 
 def _reserved(host: str) -> bool:

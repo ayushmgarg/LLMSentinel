@@ -1,0 +1,159 @@
+
+== augmented, seed 20250909: 2379 train records
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 59944.06it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.28it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.28it/s]
+    trained in 1.5 min on cuda -> artifacts/models/transformer_augmented_seed20250909
+    transformer            transformer [dev] AUPRC=0.882 AUROC=0.905 TPR@fpr=0.01=0.463 (FPR=0.0065) TPR@fpr=0.001=0.425 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.906 AUROC=0.933 TPR@fpr=0.01=0.463 (FPR=0.0065) TPR@fpr=0.001=0.450 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+
+== control, seed 20250909: 1479 train records
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 35568.82it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.37it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.37it/s]
+    trained in 0.9 min on cuda -> artifacts/models/transformer_control_seed20250909
+    transformer            transformer [dev] AUPRC=0.979 AUROC=0.985 TPR@fpr=0.01=0.900 (FPR=0.0065) TPR@fpr=0.001=0.825 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.975 AUROC=0.977 TPR@fpr=0.01=0.925 (FPR=0.0065) TPR@fpr=0.001=0.875 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+
+== augmented, seed 20250910: 2379 train records
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 35476.48it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.38it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.38it/s]
+    trained in 1.5 min on cuda -> artifacts/models/transformer_augmented_seed20250910
+    transformer            transformer [dev] AUPRC=0.838 AUROC=0.872 TPR@fpr=0.01=0.250 (FPR=0.0065) TPR@fpr=0.001=0.237 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.852 AUROC=0.899 TPR@fpr=0.01=0.275 (FPR=0.0065) TPR@fpr=0.001=0.263 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+
+== control, seed 20250910: 1479 train records
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 35243.32it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+    trained in 0.9 min on cuda -> artifacts/models/transformer_control_seed20250910
+    transformer            transformer [dev] AUPRC=0.940 AUROC=0.955 TPR@fpr=0.01=0.650 (FPR=0.0000) TPR@fpr=0.001=0.650 (FPR=0.0000) hardFPR@fpr=0.01=0.000 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.949 AUROC=0.959 TPR@fpr=0.01=0.675 (FPR=0.0000) TPR@fpr=0.001=0.675 (FPR=0.0000) hardFPR@fpr=0.01=0.000 hardFPR@fpr=0.001=0.000
+
+== augmented, seed 20250911: 2379 train records
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 35219.88it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.35it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.35it/s]
+    trained in 1.5 min on cuda -> artifacts/models/transformer_augmented_seed20250911
+    transformer            transformer [dev] AUPRC=0.794 AUROC=0.854 TPR@fpr=0.01=0.163 (FPR=0.0065) TPR@fpr=0.001=0.113 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.823 AUROC=0.897 TPR@fpr=0.01=0.200 (FPR=0.0065) TPR@fpr=0.001=0.138 (FPR=0.0000) hardFPR@fpr=0.01=0.021 hardFPR@fpr=0.001=0.000
+
+== control, seed 20250911: 1479 train records
+Loading weights:   0%|          | 0/101 [00:00<?, ?it/s]Loading weights: 100%|██████████| 101/101 [00:00<00:00, 35806.33it/s]
+[transformers] [1mRobertaForSequenceClassification LOAD REPORT[0m from: distilroberta-base
+Key                         | Status     | 
+----------------------------+------------+-
+lm_head.dense.weight        | UNEXPECTED | 
+lm_head.dense.bias          | UNEXPECTED | 
+lm_head.layer_norm.bias     | UNEXPECTED | 
+roberta.pooler.dense.weight | UNEXPECTED | 
+roberta.pooler.dense.bias   | UNEXPECTED | 
+lm_head.layer_norm.weight   | UNEXPECTED | 
+lm_head.bias                | UNEXPECTED | 
+classifier.out_proj.weight  | MISSING    | 
+classifier.dense.bias       | MISSING    | 
+classifier.out_proj.bias    | MISSING    | 
+classifier.dense.weight     | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (592 > 512). Running this sequence through the model will result in indexing errors
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.47it/s]Writing model shards: 100%|██████████| 1/1 [00:00<00:00,  2.47it/s]
+    trained in 0.9 min on cuda -> artifacts/models/transformer_control_seed20250911
+    transformer            transformer [dev] AUPRC=0.950 AUROC=0.968 TPR@fpr=0.01=0.738 (FPR=0.0000) TPR@fpr=0.001=0.738 (FPR=0.0000) hardFPR@fpr=0.01=0.000 hardFPR@fpr=0.001=0.000
+    transformer-segment    transformer-segment [dev] AUPRC=0.942 AUROC=0.965 TPR@fpr=0.01=0.637 (FPR=0.0000) TPR@fpr=0.001=0.637 (FPR=0.0000) hardFPR@fpr=0.01=0.000 hardFPR@fpr=0.001=0.000
+
+wrote artifacts/results/augmented

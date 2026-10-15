@@ -13,7 +13,9 @@ For every ``POST /v1/chat/completions`` the proxy
 2. forwards the request to the upstream model;
 3. **gates** every tool call in the response through the capability policy, in the
    context of what was scanned, and removes the calls the policy does not permit;
-4. records scans and decisions in the analyst history when a store is configured.
+4. runs the output-side check on every reply and withholds one that repeats a claim
+   the tool results told the assistant to make, or carries an address from flagged text;
+5. records scans and decisions in the analyst history when a store is configured.
 
 **This is a demonstration proxy, not production enforcement.** It has no
 authentication of its own, binds to localhost by default, does not support streaming
@@ -29,6 +31,7 @@ import json
 from typing import Any
 
 from .analyst.store import ScanStore
+from .output_check import check_output
 from .sdk import ScanResult, Sentinel
 
 __all__ = ["UNTRUSTED_ROLES", "create_proxy_app", "main"]
@@ -112,13 +115,17 @@ def create_proxy_app(
         withheld = 0
         units = []
         messages = []
+        untrusted: list[str] = []
+        flagged_text: list[str] = []
         for message in body["messages"]:
             if isinstance(message, dict) and message.get("role") in UNTRUSTED_ROLES:
                 result = _scan_message(sentinel, message)
                 scanned += 1
                 units.extend(result.units)
+                untrusted.append(_text(message.get("content")))
                 if result.flagged:
                     withheld += 1
+                    flagged_text.append(_text(message.get("content")))
                     paths = sorted({u.verdict.json_path or "text" for u in result.units if u.flagged})
                     message = {
                         **message,
@@ -168,10 +175,40 @@ def create_proxy_app(
             if not kept and choice.get("finish_reason") == "tool_calls":
                 choice["finish_reason"] = "stop"
 
+        # Output-side check on every returned message: the second line of defence.
+        trusted_system = "\n".join(
+            _text(m.get("content")) for m in body["messages"] if isinstance(m, dict) and m.get("role") == "system"
+        )
+        question = next(
+            (_text(m.get("content")) for m in reversed(body["messages"]) if isinstance(m, dict) and m.get("role") == "user"),
+            "",
+        )
+        outputs_withheld = 0
+        for choice in data.get("choices") or []:
+            message = choice.get("message") if isinstance(choice, dict) else None
+            if not isinstance(message, dict):
+                continue
+            arguments = [str((c.get("function") or {}).get("arguments") or "") for c in message.get("tool_calls") or []]
+            check = check_output(
+                _text(message.get("content")),
+                context=untrusted,
+                flagged=flagged_text,
+                question=question,
+                system_prompt=trusted_system,
+                tool_arguments=arguments,
+            )
+            if check.withhold:
+                outputs_withheld += 1
+                kinds = ", ".join(sorted({f.kind.replace("_", " ") for f in check.findings if f.severity == "high"}))
+                message["content"] = f"[LLMSentinel withheld this reply after the model answered: {kinds}.]"
+                message["tool_calls"] = None
+                choice["finish_reason"] = "stop"
+
         headers = {
             f"{HEADER_PREFIX}-scanned": str(scanned),
             f"{HEADER_PREFIX}-withheld": str(withheld),
             f"{HEADER_PREFIX}-blocked": str(blocked),
+            f"{HEADER_PREFIX}-output-withheld": str(outputs_withheld),
             f"{HEADER_PREFIX}-detector": sentinel.detector,
         }
         return JSONResponse(data, status_code=response.status_code, headers=headers)

@@ -1,0 +1,28 @@
+Loading weights:   0%|          | 0/105 [00:00<?, ?it/s]Loading weights: 100%|██████████| 105/105 [00:00<00:00, 59377.37it/s]
+{
+  "generated": "2026-10-13T06:40:32+00:00",
+  "detector": "transformer + rules",
+  "scoring": "segment",
+  "rewrites_measured": 170,
+  "originals_flagged": 22,
+  "recall_kept": 0.891,
+  "by_category": {
+    "blatant": {
+      "n": 37,
+      "recall_kept": 0.919
+    },
+    "hidden": {
+      "n": 18,
+      "recall_kept": 1.0
+    },
+    "paraphrase": {
+      "n": 3,
+      "recall_kept": 0.0
+    },
+    "soft_claim": {
+      "n": 6,
+      "recall_kept": 0.833
+    }
+  },
+  "protocol": "post-hoc on spent fresh sets; recall kept among originals the deployed guard flags"
+}

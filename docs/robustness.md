@@ -118,8 +118,12 @@ See `scripts/placement_robustness.py` and the experiment log: the rules engine
 is position-invariant by construction (it scores the highest-risk unit and
 aggregates by max), so a payload at the beginning, middle, or end of a long
 document scores identically. The windowed transformer is the position- and
-dilution-sensitive component and is probed with the same script via
-`--checkpoint`.
+dilution-sensitive component. The script accepts `--checkpoint` for it, but that
+probe was **not run** before the canonical results were reported -- a gap this
+document previously glossed. The fresh evaluation set later exposed exactly this
+failure: a payload that scores ≈1.0 on its own scored ≈0 inside a short benign
+paragraph (docs/EXPERIMENTS.md, 2026-09-27). Segment-level scoring, confirmed on a
+second blind set, is the fix now deployed; see `docs/fresh_evaluation.md`.
 
 ## Out of scope (stated limitations)
 

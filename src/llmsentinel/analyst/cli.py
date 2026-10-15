@@ -10,6 +10,13 @@
     llmsentinel manifests approve FILE ...      pin the current declarations as approved
     llmsentinel manifests alerts                open manifest alerts
     llmsentinel manifests ack ALERT_ID ...      acknowledge an alert (it stays in the history)
+    llmsentinel rules propose                   mine candidate rules from reviewed/unexplained cases
+    llmsentinel rules proposals                 list candidates and their review state
+    llmsentinel rules approve ID ... | reject   decide a candidate (advisory only, never auto-enabled)
+    llmsentinel rules check --text ...          run the approved candidates as a second opinion
+    llmsentinel rules shadow                    replay proposed candidates silently over history
+    llmsentinel rules auto-promote [--dry-run]  promote candidates that pass every gate (advisory only)
+    llmsentinel rules rollback ID ...           retire an approved candidate (kept with its history)
 """
 
 from __future__ import annotations
@@ -19,7 +26,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..paths import relative
+from ..paths import CORPUS_PATH, relative
 from .fixtures import DISCOVERED_PATH, promote_to_fixture
 from .store import LABELS, STATS_KEYS, ScanFilter, ScanRecord, ScanStore
 
@@ -204,6 +211,131 @@ def cmd_manifests_ack(args: argparse.Namespace) -> int:
     return 0
 
 
+# ------------------------------------------------------- candidate rules
+def cmd_rules_propose(args: argparse.Namespace) -> int:
+    from .proposals import evaluate_candidates, mine_candidates, write_proposals
+
+    candidates = mine_candidates(
+        _store(args),
+        limit=args.limit,
+        min_support=args.min_support,
+        max_candidates=args.max_candidates,
+    )
+    if not candidates:
+        print("no candidates: nothing in the history is both unexplained by the rules and repeated")
+        return 0
+    candidates = evaluate_candidates(candidates, corpus_path=args.corpus)
+    for candidate in candidates:
+        dev = candidate.dev
+        summary = (
+            f"dev: {dev.get('injections_matched')} injections / {dev.get('benign_matched')} benign"
+            f", {dev.get('injections_missed_by_rules_now')} the rules miss now"
+            if dev.get("available")
+            else f"dev: {dev.get('reason')}"
+        )
+        print(_safe(f"{candidate.candidate_id}  support {candidate.support}  [{candidate.family}] "
+                    f"\"{candidate.phrase}\"  {summary}"))
+    if args.dry_run:
+        print("dry run: nothing written")
+        return 0
+    added, skipped = write_proposals(candidates, path=args.path)
+    print(f"{len(added)} proposal(s) appended to {relative(args.path)}"
+          f"{f', {len(skipped)} already known' if skipped else ''}")
+    print("proposals are advisory: no score changes until a candidate is added to the rule set and re-evaluated")
+    return 0
+
+
+def cmd_rules_proposals(args: argparse.Namespace) -> int:
+    from .proposals import load_proposals
+
+    entries = [e for e in load_proposals(args.path) if not args.status or e.get("status") == args.status]
+    if args.json:
+        print(json.dumps(entries, indent=2))
+        return 0
+    if not entries:
+        print("(no proposals)")
+    for entry in entries:
+        dev = entry.get("dev") or {}
+        print(_safe(f"{entry['candidate_id']}  {entry.get('status')!s:<9} support {entry.get('support')}  "
+                    f"[{entry.get('family')} {entry.get('weight')}]  \"{entry.get('phrase')}\"  "
+                    f"dev +{dev.get('injections_missed_by_rules_now')} / -{dev.get('benign_matched')}"))
+    return 0
+
+
+def cmd_rules_decide(args: argparse.Namespace) -> int:
+    from .proposals import decide_proposal
+
+    try:
+        entry = decide_proposal(
+            args.candidate_id,
+            status=args.status,
+            reviewer=args.by,
+            rationale=args.why,
+            weight=args.weight,
+            family=args.family,
+            path=args.path,
+        )
+    except (KeyError, ValueError) as exc:
+        print(f"error: {exc}")
+        return 2
+    print(_safe(f"{entry['candidate_id']} is now {entry['status']} ({entry['family']} {entry['weight']})"))
+    if args.status == "approved":
+        print("it runs in the advisory engine only (llmsentinel rules check); the scored detector is unchanged")
+    return 0
+
+
+def cmd_rules_shadow(args: argparse.Namespace) -> int:
+    from .promotion import record_shadow, shadow_report
+    from .proposals import load_proposals
+
+    store = _store(args)
+    entries = [e for e in load_proposals(args.path) if e.get("status") == "proposed"]
+    if not entries:
+        print("(no proposed candidates to shadow)")
+    for entry in entries:
+        report = shadow_report(entry, store, limit=args.limit)
+        record_shadow(str(entry["candidate_id"]), report, path=args.path)
+        print(_safe(f"{entry['candidate_id']}  scanned {report['scanned']}  hits {report['hits']}  "
+                    f"false positives {report['false_positives']}  \"{entry.get('phrase')}\""))
+    return 0
+
+
+def cmd_rules_auto_promote(args: argparse.Namespace) -> int:
+    from .promotion import PromotionGate, auto_promote
+
+    gate = PromotionGate(
+        min_sources=args.min_sources,
+        min_shadow_scans=args.min_shadow_scans,
+        max_per_week=args.max_per_week,
+    )
+    results = auto_promote(_store(args), path=args.path, gate=gate, dry_run=args.dry_run)
+    if not results:
+        print("(no proposed candidates)")
+    for result in results:
+        verdict = "PROMOTED" if result["promoted"] else ("would promote" if result["passed"] else "held")
+        print(_safe(f"{result['candidate_id']}  {verdict}  \"{result['phrase']}\""))
+        for check in result["checks"]:
+            print(_safe(f"    [{'x' if check['ok'] else ' '}] {check['check']}: {check['detail']}"))
+    print("promoted candidates run in the advisory engine only; the scored detector is unchanged")
+    return 0
+
+
+def cmd_rules_check(args: argparse.Namespace) -> int:
+    from .proposals import advisory_hits
+
+    text = Path(args.file).read_text(encoding="utf-8") if args.file else args.text
+    hits = advisory_hits(text, channel=args.channel, host_task=args.host_task, path=args.path)
+    if not hits:
+        print("no approved candidate matched (this says nothing about the detector's own verdict)")
+        return 0
+    for hit in hits:
+        print(_safe(f"{hit['rule_id']}  {hit['score']:.3f}  {hit['explanation']}"))
+    from .promotion import advisory_version
+
+    print(f"advisory rule set {advisory_version(args.path)}; run `llmsentinel scan` for the verdict that counts")
+    return 0
+
+
 # ------------------------------------------------------------- register
 def _add_filters(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--kind", choices=["content", "manifest", "action"])
@@ -288,3 +420,52 @@ def register_analyst_commands(sub: Any) -> None:
     ack.add_argument("--by", required=True)
     ack.add_argument("--note", default="")
     ack.set_defaults(func=cmd_manifests_ack)
+
+    from .proposals import PROPOSALS_PATH
+
+    proposals_path = argparse.ArgumentParser(add_help=False)
+    proposals_path.add_argument("--path", default=str(PROPOSALS_PATH), help="proposals file (append-only)")
+
+    rules = sub.add_parser("rules", help="candidate rules mined from reviewed cases (advisory, never auto-enabled)")
+    rsub = rules.add_subparsers(dest="rules_command", required=True)
+
+    propose = rsub.add_parser("propose", parents=[history_path, proposals_path], help="mine candidates from history")
+    propose.add_argument("--limit", type=int, default=500, help="how many recent scans to mine")
+    propose.add_argument("--min-support", type=int, default=2, help="distinct texts a phrase must appear in")
+    propose.add_argument("--max-candidates", type=int, default=20)
+    propose.add_argument("--corpus", default=str(CORPUS_PATH), help="corpus for the dev-split report")
+    propose.add_argument("--dry-run", action="store_true", help="print candidates without writing them")
+    propose.set_defaults(func=cmd_rules_propose)
+
+    listing_p = rsub.add_parser("proposals", parents=[proposals_path], help="list candidates and their state")
+    listing_p.add_argument("--status", choices=["proposed", "approved", "rejected"])
+    listing_p.add_argument("--json", action="store_true")
+    listing_p.set_defaults(func=cmd_rules_proposals)
+
+    shadow = rsub.add_parser("shadow", parents=[history_path, proposals_path], help="run proposed candidates silently over history")
+    shadow.add_argument("--limit", type=int, default=2000, help="how many recent scans to replay")
+    shadow.set_defaults(func=cmd_rules_shadow)
+
+    auto = rsub.add_parser("auto-promote", parents=[history_path, proposals_path], help="promote candidates that pass every gate")
+    auto.add_argument("--dry-run", action="store_true", help="report the gates without promoting")
+    auto.add_argument("--min-sources", type=int, default=3, help="distinct source domains behind a candidate")
+    auto.add_argument("--min-shadow-scans", type=int, default=50, help="scans a candidate must have shadowed")
+    auto.add_argument("--max-per-week", type=int, default=3, help="automatic promotions allowed in 7 days")
+    auto.set_defaults(func=cmd_rules_auto_promote)
+
+    for name, status in (("approve", "approved"), ("reject", "rejected"), ("rollback", "rolled_back")):
+        decide = rsub.add_parser(name, parents=[proposals_path], help=f"mark a candidate {status}")
+        decide.add_argument("candidate_id")
+        decide.add_argument("--by", required=True, help="who decided")
+        decide.add_argument("--why", required=True, help="rationale, at least 15 characters")
+        decide.add_argument("--weight", type=float, default=None, help="override the proposed weight")
+        decide.add_argument("--family", default=None, help="override the proposed family")
+        decide.set_defaults(func=cmd_rules_decide, status=status)
+
+    check_rules = rsub.add_parser("check", parents=[proposals_path], help="run approved candidates over text")
+    group = check_rules.add_mutually_exclusive_group(required=True)
+    group.add_argument("--text")
+    group.add_argument("--file")
+    check_rules.add_argument("--channel", default="rag_document")
+    check_rules.add_argument("--host-task", default=None)
+    check_rules.set_defaults(func=cmd_rules_check)

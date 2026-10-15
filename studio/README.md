@@ -4,12 +4,15 @@ A local web console that shows what LLMSentinel does: **the same model answers t
 same question from the same retrieved context twice — once as retrieved, once after
 LLMSentinel has inspected it — and you see both answers side by side.**
 
-It replaces the old Streamlit demo (`src/llmsentinel/demo/`, kept for reference).
+It replaced the earlier Streamlit demo, which was removed on 2026-10-11 (it is in the git
+history before that date).
 
 ```
 studio/
   server/      Starlette API: providers, retrieval, guard, comparison (Python)
-  web/         static front-end: index.html, styles.css, app.js (no build step)
+  web/         static front-end, no build step: index.html (demo + analyst),
+               about.html and how-it-works.html (the explanations), styles.css,
+               common.js (helpers, theme, nav), app.js (demo), pages.js, sprite.js
   samples/     "unknown" context pack: 10 fictional docs (5 poisoned) and 3 MCP tool
                manifests with their approved snapshots (1 poisoned, 1 changed) (CC0-1.0)
   tests/       pytest suite (runs offline, rules-only, no model needed)
@@ -23,10 +26,26 @@ python -m studio.server
 ```
 
 Open <http://127.0.0.1:8700>. Options: `--port 8700`, `--rules-only` (skip loading
-the transformer), `--max-tokens N` (answer cap for models without a profile).
+the transformer), `--max-tokens N` (answer cap for models without a profile),
+`--retriever dense|tfidf` (semantic retrieval with `all-MiniLM-L6-v2`, the default, or
+TF-IDF; dense falls back to TF-IDF with a note if the model cannot load), and
+`--passage-scoring` (score whole passages only; the default also scores each sentence,
+see `docs/fresh_evaluation.md`).
 
-The page follows your system light/dark setting, and the header has a toggle; the
-choice is kept in that browser. The headline numbers on the landing page are read
+After the model answers, the guarded run passes an **output-side check**: an answer that
+repeats a claim the context told the assistant to make, or carries an address taken from
+flagged text or from an instruction aimed at an AI, is caught. LLMSentinel then removes the
+sentence responsible and **asks the model again** once; the second answer is shown with the
+first one available underneath, and only if the second is caught too is the answer withheld.
+The unguarded run shows what the check would have caught.
+
+Both runs are decoded at temperature 0. When Sentinel changed nothing in what the model saw,
+the banner says so: any difference between the two answers then comes from the model.
+
+Three pages: the demo and the analyst workflow on `/`, what it does and the evidence
+on `/about.html`, and the pipeline in detail on `/how-it-works.html`. Every page
+follows your system light/dark setting, and the header has a toggle; the
+choice is kept in that browser. The headline numbers on the about page are read
 from `artifacts/results/results_test.json` and `seed_variance.json` when the server
 starts, so the page never states numbers of its own. The server binds to localhost only.
 
@@ -41,12 +60,19 @@ or PyTorch the Studio falls back to rules-only and says so.
    OpenAI-compatible `/v1` API.
 2. **Point it at unknown context** — pick sample files and connected MCP servers
    (labels hidden until you switch on *Reveal ground truth*) or drop your own
-   `.txt .md .json .html .csv`. A `.json` with a top-level `"tools"` list is read as
-   a tool manifest.
-3. **Ask** — the top-k passages (TF-IDF) are sent to the model as-is, and again
-   after LLMSentinel. Results show what Sentinel found per passage (score, flag
-   threshold, rule trace, decoded payloads, exactly what was removed) and both answers
-   with objective compromise indicators and every tool request's policy decision.
+   `.txt .md .json .html .csv`. A dropped `.json` with a top-level `"tools"` list is
+   read as a tool manifest. Text can also be **pasted**, with a dropdown saying what
+   it is: a retrieved document, a tool result or a tool manifest. The dropdown sets
+   the channel the passage is scanned as, so a tool result stays a tool result even
+   when it does not parse as JSON, and a tool result that happens to carry a `tools`
+   list is not mistaken for a manifest.
+3. **Ask** — the top-k passages (dense MiniLM retrieval by default, TF-IDF with
+   `--retriever tfidf`) are sent to the model as-is, and again
+   after LLMSentinel. Results are stacked full width, in reading order: the answer
+   without the guard, the answer with it, what Sentinel found per passage (score,
+   flag threshold, rule trace, decoded payloads, exactly what was removed), then the
+   tool manifests. Both answers carry objective compromise indicators and every tool
+   request's policy decision.
 
 ## Which model to use (free, no token limits)
 
@@ -68,7 +94,7 @@ RAM and no GPU (2026-09-15):
 |---|---|---|
 | `llama3.2:3b` | instruct | one comparison (both runs) in about 70 s; answers normally |
 | `qwen3:4b` | **Qwen3-4B-Thinking-2507** (`ollama show`: finetune *Thinking*) | about 3.8 tokens/s; one answer took 282 s and came back empty because reasoning used the 400-token budget. `think: false`, `reasoning_effort: "none"` and `/no_think` did not stop it reasoning |
-| `qwen3:4b-instruct` | Qwen3-4B-Instruct-2507, same 2.5 GB, no thinking mode | use this instead of `qwen3:4b` (not yet measured here) |
+| `qwen3:4b-instruct` | Qwen3-4B-Instruct-2507, same 2.5 GB, no thinking mode | use this instead of `qwen3:4b`. Used for the manual test cases; on a 4-core CPU one real-model evaluation case (three conditions, up to four answers) took 8–15 minutes |
 
 The Studio reads only a model's final answer. It removes `<think>…</think>` blocks,
 ignores Ollama's separate `reasoning` field, and adds a provider note when the token
@@ -122,7 +148,7 @@ The server clamps the cap to 16–8,000.
 | Detector | Guarded run shows no compromise | Guarded prompt still contains injection text |
 |---|---|---|
 | transformer + rules (default) | 6 / 6 | 0 / 6 |
-| rules-only (`--rules-only`) | 3 / 6 | 5 / 6 |
+| rules-only (`--rules-only`) | 3 / 6 before the output check, 6 / 6 after (3 repaired) | 5 / 6 |
 
 Rules-only misses the planted "plan discontinued" note and the support-ticket
 `delete_file` order (the capability policy still blocks that tool), and leaves the
@@ -132,7 +158,7 @@ text" was checked by searching every guarded prompt for the planted phrases and
 
 This is a hand-made demo pack, not an evaluation: accuracy numbers come from
 `docs/report.md`. Known close call: the clean `sync-guide.md` scores 0.991 with the
-transformer, just under its dev 1%-FPR threshold (0.9954).
+transformer, under the deployed segment threshold (0.99944).
 
 ## How isolation works
 
@@ -182,7 +208,7 @@ The sample servers show what each check is for:
 | `calendar-sync` | `create_event` | silently gained a `backup_copy` parameter defaulting to an outside address; the text reads harmless (field risk ≤ 0.13) | digest drift |
 
 Known limit: on `summarize_url` the transformer alone gives 0.984, under its
-0.9954 flag threshold; the rules catch it. `tool_metadata` was the thinnest channel
+flag threshold (0.99944 with segment scoring); the rules catch it. `tool_metadata` was the thinnest channel
 in training (5 test positives in the canonical corpus).
 
 ## Security notes

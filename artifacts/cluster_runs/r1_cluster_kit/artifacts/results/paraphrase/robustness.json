@@ -1,0 +1,1219 @@
+{
+  "generated": "2026-10-13T06:40:32+00:00",
+  "detector": "transformer + rules",
+  "scoring": "segment",
+  "rewrites_measured": 170,
+  "originals_flagged": 22,
+  "recall_kept": 0.891,
+  "by_category": {
+    "blatant": {
+      "n": 37,
+      "recall_kept": 0.919
+    },
+    "hidden": {
+      "n": 18,
+      "recall_kept": 1.0
+    },
+    "paraphrase": {
+      "n": 3,
+      "recall_kept": 0.0
+    },
+    "soft_claim": {
+      "n": 6,
+      "recall_kept": 0.833
+    }
+  },
+  "protocol": "post-hoc on spent fresh sets; recall kept among originals the deployed guard flags",
+  "rows": [
+    {
+      "source_id": "fresh-b-01",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-01",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-01",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-03",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-03",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-03",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-04",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-05",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-b-05",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-05",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-06",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-06",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-06",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-07",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-07",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-07",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-08",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-b-08",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-b-08",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-b-09",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-09",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-09",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-10",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-10",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-10",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-11",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-11",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-11",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-12",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-12",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-b-12",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-p-01",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-01",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-01",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-03",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-03",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-03",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-04",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-04",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-04",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-05",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-05",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-05",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-06",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-07",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-07",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-07",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-08",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-08",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-08",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-09",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-09",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-09",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-10",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-10",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-10",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-11",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-11",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-11",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-12",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-12",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-p-12",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-02",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-02",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-02",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-03",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-03",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-03",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-04",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-04",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-04",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-05",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-06",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-06",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-06",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-07",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-07",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-07",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-08",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-08",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-08",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-09",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-09",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-09",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-s-10",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-10",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-s-10",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-01",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-01",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-01",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-02",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-02",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-02",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-03",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-03",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-03",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-04",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-04",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-04",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-05",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-05",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-05",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-06",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-06",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-06",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-x-08",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-08",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-x-08",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-01",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-01",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-01",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-02",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-02",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-02",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-03",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-03",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-03",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-04",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-04",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-04",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-05",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-05",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-05",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-07",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-07",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-07",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-08",
+      "category": "blatant",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-08",
+      "category": "blatant",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-08",
+      "category": "blatant",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-09",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-09",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-09",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-10",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-10",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-11",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-11",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-11",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-12",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-12",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-12",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-13",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-13",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-13",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-14",
+      "category": "paraphrase",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-14",
+      "category": "paraphrase",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-14",
+      "category": "paraphrase",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-15",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-15",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-15",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-16",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-16",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-16",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-17",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-17",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-17",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-18",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-18",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-18",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-19",
+      "category": "soft_claim",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-19",
+      "category": "soft_claim",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-19",
+      "category": "soft_claim",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-21",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-21",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-21",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-23",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-23",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-23",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": false,
+      "paraphrase_flagged": false
+    },
+    {
+      "source_id": "fresh-v2-24",
+      "category": "hidden",
+      "variant": 0,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-24",
+      "category": "hidden",
+      "variant": 1,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    },
+    {
+      "source_id": "fresh-v2-24",
+      "category": "hidden",
+      "variant": 2,
+      "original_flagged": true,
+      "paraphrase_flagged": true
+    }
+  ]
+}
