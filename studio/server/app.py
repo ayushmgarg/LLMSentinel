@@ -46,8 +46,8 @@ from .retrieval import RETRIEVERS
 __all__ = ["CSP", "create_app", "make_provider"]
 
 CSP = (
-    "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; "
-    "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; "
+    "default-src 'self'; script-src 'self'; style-src 'self'; "
+    "font-src 'self'; img-src 'self' data:; connect-src 'self'; "
     "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
 )
 

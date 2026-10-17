@@ -19,6 +19,7 @@ A1 (clean install), C1 (Claude Desktop), the paper, screenshots, A4 (needs annot
 | R2.9 | Answer-quality judge (prepared) | F4 | cluster | |
 | R2.10 | Cluster round r2 plan and zip (built, not run) | — | laptop | |
 | R2.11 | Docs pass: README, report, fresh-evaluation doc | D2 | laptop | |
+| R2.12 | Studio UI: plain restyle, system fonts, no external requests, phone-width fix | — | laptop | done |
 
 **Protocol.** v4 is frozen in its own commit before R2.2 starts and is scored exactly once,
 in cluster round r2, with every R2 system that has a score. Until then, R2 methods are

@@ -7,9 +7,6 @@
   <meta name="description" content="Research prototype: watch the same model answer from poisoned context, with and without LLMSentinel.">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="styles.css">
   <script src="sprite.js" defer></script>
   <script src="common.js" defer></script>
@@ -38,9 +35,8 @@
   <main id="top">
     <section class="container page-head">
       <div>
-        <p class="eyebrow">Live console</p>
-        <h1>Same model. Same context. With and without Sentinel.</h1>
-        <p class="lede">Point a model at documents and tool servers that may carry instructions aimed at it, ask a question, and read both answers: what the model says from the context as retrieved, and what it says after LLMSentinel has inspected it.</p>
+        <h1>Compare answers with and without LLMSentinel</h1>
+        <p class="lede">Pick a model, some documents and tool servers (some carry hidden instructions), and ask a question. The model answers twice: from the context as retrieved, and after LLMSentinel has checked it.</p>
       </div>
       <div class="page-head__links">
         <a class="btn btn--ghost" href="about.html"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>What it does, and what it does not</a>
