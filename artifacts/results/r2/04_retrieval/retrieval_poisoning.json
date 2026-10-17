@@ -1,0 +1,33 @@
+{
+  "generated": "2026-10-17T11:03:18+00:00",
+  "pool": {
+    "documents": 200,
+    "chunks": 215,
+    "poisoned_chunks": 100,
+    "queries": 50,
+    "top_k": 4
+  },
+  "protocol": "post-hoc on fresh v1-v3; v4 not read; neutral document names",
+  "retrievers": {
+    "tfidf": {
+      "method_used": "tfidf",
+      "passages_retrieved": 200,
+      "poisoned_passages_retrieved": 92,
+      "share_poisoned": 0.46,
+      "queries_with_a_poisoned_passage": 46,
+      "poisoned_passages_flagged_by_guard": 33,
+      "share_flagged": 0.359,
+      "queries_with_an_unflagged_poisoned_passage": 40
+    },
+    "dense": {
+      "method_used": "dense",
+      "passages_retrieved": 200,
+      "poisoned_passages_retrieved": 102,
+      "share_poisoned": 0.51,
+      "queries_with_a_poisoned_passage": 46,
+      "poisoned_passages_flagged_by_guard": 40,
+      "share_flagged": 0.392,
+      "queries_with_an_unflagged_poisoned_passage": 42
+    }
+  }
+}

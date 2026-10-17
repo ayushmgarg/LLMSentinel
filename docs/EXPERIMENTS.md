@@ -1782,3 +1782,22 @@ train split's injected spans) adds 4 injections the guard missed across the thre
 no false alarms — but they are blatant (3) and hidden (1) cases, **0 paraphrases**, which is
 what it was meant to catch. In deployment its bank would be the analyst history's
 human-confirmed injections (`fit_texts`); it stays advisory, beside the frozen systems.
+
+## 2026-10-17 · R2.4 Retrieval poisoning under each retriever (F13)
+
+`scripts/r2_04_retrieval_poisoning.py`, `artifacts/results/r2/04_retrieval/retrieval_poisoning.json`.
+Pool: every document and tool result of fresh v1–v3 under neutral names (poisoned copies of
+each page, its clean original, the hard negatives); 50 queries (each page's own question);
+top-4 as in the Studio; the Studio guard as deployed (segment scoring + rules). Models an
+attacker who plants modified copies next to genuine pages, so poison is over-represented on
+purpose. Post-hoc; v4 not read.
+
+| retriever | poisoned share of retrieved passages | queries with ≥1 poisoned passage | poisoned passages the guard flags |
+|---|---|---|---|
+| TF-IDF | 92 / 200 (46%) | 46 / 50 | 33 / 92 (36%) |
+| dense (MiniLM, Studio default) | 102 / 200 (51%) | 46 / 50 | 40 / 102 (39%) |
+
+Semantic retrieval surfaces slightly more poisoned text (paraphrased and on-topic payloads
+match the question by meaning); the guard flags about the same share under both, so
+detection does not depend on the retriever. The ~37% is the known detector limit on these
+hard sets; the action gate and output check, which act later, are not measured here.
