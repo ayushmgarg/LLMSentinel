@@ -1762,3 +1762,23 @@ loosely related sentence (v1: "no customers were affected" vs "a follow-up revie
 scheduled") — right record, weak reason. 0.08–0.23 s per record on CPU (most records have no
 claim and cost nothing). v1's baseline is the passage-level guard it was scored with.
 To be scored once on v4 in cluster round r2.
+
+## 2026-10-17 · R2.3 Semantic signals (B12 task conflict, B13 similarity to confirmed attacks)
+
+`scripts/r2_03_semantic_eval.py`, `artifacts/results/r2/03_semantic/semantic_eval.json`. All
+systems fitted on train; threshold at 1% FPR on dev; fresh v1–v3 post-hoc (v4 not read).
+
+| system | dev AUPRC | dev recall at 1% FPR | injections added over the deployed guard (v1 / v2 / v3) | clean false alarms |
+|---|---|---|---|---|
+| task-conflict scorer, lexical similarity (Sept. method) | 0.329 | 0.000 | 0 / 0 / 0 | 0 |
+| task-conflict scorer, **MiniLM** embeddings (new) | 0.335 | 0.000 | 0 / 0 / 0 | 0 |
+| similarity to confirmed attacks, MiniLM (new, B13) | **0.605** | 0.113 | +2 / +1 / +1 | 0 |
+
+**B12 is negative:** real sentence embeddings do not rescue the task-conflict scorer (0.329 →
+0.335 dev AUPRC); "far from the user's question" is not a usable injection signal on this
+corpus, as the September run already suggested with the lexical proxy. **B13 helps a little:**
+`llmsentinel.semantic.attack_similarity` (max cosine between a record's sentences and the
+train split's injected spans) adds 4 injections the guard missed across the three sets with
+no false alarms — but they are blatant (3) and hidden (1) cases, **0 paraphrases**, which is
+what it was meant to catch. In deployment its bank would be the analyst history's
+human-confirmed injections (`fit_texts`); it stays advisory, beside the frozen systems.
