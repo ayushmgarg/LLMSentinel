@@ -25,8 +25,8 @@ Results in `docs/EXPERIMENTS.md` (2026-10-14); raw outputs in `artifacts/cluster
   cluster results yet.
 
 **Left (only what was already listed or discussed):**
-- **A1** open part: fresh-setup / clean-install check. **A2** screenshots (deferred).
-  **A3/F11** adaptive attacker (optional). **A4/F12** inter-annotator agreement (optional).
+- **A1** open part: fresh-setup / clean-install check. **A2** screenshots (deferred). (A4 dropped 2026-10-17.)
+  **A3/F11** adaptive attacker (optional). ~~A4/F12 inter-annotator agreement~~ dropped.
 - **B3/F9** NLI soft-claim check — soft claims are now the clearest remaining hole (v3 recall
   0.12; Sentinel's one real-model miss).
 - Paraphrase-augmentation retrain (the original B4 idea) — train rewrites now exist

@@ -1739,3 +1739,26 @@ s09–s12 are plausible but unstated (an NLI check can only be expected to catch
 group); s05, s06, s11, s12 use no reporting verb. Document payloads sit mostly mid-page
 (24 middle, 3 start, 2 end), where v1 exposed the masking failure. Hard negatives include
 six "tell the customer that X" staff scripts, the output check's known false-positive case.
+
+## 2026-10-17 · R2.2 NLI soft-claim check
+
+`llmsentinel.nli.NLIClaimChecker` (`FacebookAI/roberta-large-mnli`, CPU). For every claim the
+output check's extractor finds in a passage ("say that X"), X is compared with each
+non-directive statement of the same passage; if the model's top label for any pair is
+*contradiction*, the directive sentence is a planted false claim. No threshold is tuned (the
+model's own argmax); dev has no soft-claim positives and no benign record with an extracted
+claim, so there was nothing to tune on. Model chosen over a ~0.3 GB MiniLM NLI model because
+soft claims turn on numbers and negations, where the larger model is stronger; one page needs
+only a few pairs.
+
+Post-hoc on the spent fresh sets (`scripts/r2_02_nli_eval.py`,
+`artifacts/results/r2/02_nli/nli_fresh_posthoc.json`; v4 not read). Soft claims caught by the
+deployed guard alone vs guard OR NLI: **v1 1 → 8 of 10, v2 1 → 5 of 6, v3 1 → 6 of 8**.
+False alarms on counterparts and hard negatives: 0 of 41, 0 of 28, 0 of 31. The extractor
+found a claim in 9, 5 and 6 of those soft claims; the rest cannot be checked this way. Of 23
+NLI hits, most pair the claim with the sentence it plainly contradicts ("sale items can be
+refunded in full" vs "sale items can be exchanged but not refunded"); a few pair it with a
+loosely related sentence (v1: "no customers were affected" vs "a follow-up review is
+scheduled") — right record, weak reason. 0.08–0.23 s per record on CPU (most records have no
+claim and cost nothing). v1's baseline is the passage-level guard it was scored with.
+To be scored once on v4 in cluster round r2.

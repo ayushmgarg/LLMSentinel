@@ -4,12 +4,12 @@ One task at a time, each reviewed before the next. Laptop, CPU only; anything th
 GPU or the LLM is prepared here and runs in cluster round r2. Numbering is fixed: outputs
 of task R2.n go to `artifacts/results/r2/<nn>_<name>/`, code and docs say "R2.n", and
 `docs/EXPERIMENTS.md` gets one entry per task titled "R2.n". Not in this round: D1 (merge),
-A1 (clean install), C1 (Claude Desktop), the paper, screenshots, A4 (needs annotators).
+A1 (clean install), C1 (Claude Desktop), the paper, screenshots. A4 (inter-annotator agreement) dropped 2026-10-17.
 
 | # | Task | Item | Runs where | Status |
 |---|---|---|---|---|
 | R2.1 | Fresh set v4, written and frozen **before** any R2 method exists | B0-style | laptop (authoring) | done: digest `b4020d05…` |
-| R2.2 | NLI soft-claim check | B3 / F9 | laptop | |
+| R2.2 | NLI soft-claim check | B3 / F9 | laptop | done: post-hoc soft-claim recall 1→8/10, 1→5/6, 1→6/8, 0 false alarms |
 | R2.3 | Semantic signals: task conflict (B12), similarity to confirmed attacks (B13) | B12, B13, F14 | laptop | |
 | R2.4 | Retrieval poisoning under each retriever | F13 | laptop | |
 | R2.5 | Adaptive attacker, tier a, against rules-only | A3 / F11 | laptop | |
